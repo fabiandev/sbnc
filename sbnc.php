@@ -43,9 +43,10 @@ class sbnc {
 
     private $fields = [];
 
-    private $master = [];
-    private $errors = [];
     private $request = null;
+    private $errors = [];
+
+    private $master = [];
 
     public function __construct() {
         spl_autoload_register('load_modules');
@@ -58,29 +59,34 @@ class sbnc {
     }
 
     private function init() {
+        $this->init_fields();
+        $this->init_master();
+        $this->init_modules();
+    }
+
+    private function init_fields() {
+        if (strcmp($this->options['prefix'], 'random') === 0) {
+            $this->options['prefix'] = substr(md5(microtime()),rand(0,26),4) . '_';
+        }
+
         $this->fields = [
             'js'     => false,
             'prefix' => &$this->options['prefix']
         ];
+    }
 
-        if (strcmp($this->options['prefix'], 'random') === 0) {
-            $this->options['prefix'] = substr(md5(microtime()),rand(0,26),4) . '_';
-        } else {
-            $this->options['prefix'] = 'sbnc_';
-        }
-
+    private function init_master() {
         $this->master = [
             'request'     => &$this->request,
+            'errors'      => &$this->errors,
             'modules'     => &$this->modules,
             'options'     => &$this->options,
             'fields'      => &$this->fields,
         ];
-
-        $this->init_modules();
     }
 
     private function init_modules() {
-        foreach ($this->mudules as $key => $value) {
+        foreach ($this->modules as $key => $value) {
             $this->modules[$key] = new $key($this->master);
         }
     }
