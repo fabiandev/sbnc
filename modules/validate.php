@@ -1,6 +1,19 @@
 <?php
 namespace Sbnc\Modules;
 
+/**
+ * sbnc validate module
+ *
+ * Some validation rules that can be applied on custom fields
+ *
+ * @package    Sbnc
+ * @subpackage Modules
+ * @author     Fabian Pirklbauer <hi@fabianweb.net>
+ * @copyright  2014-2015 Fabian Pirklbauer
+ * @license    https://github.com/fabianweb/sbnc/LICENSE.md
+ * @version    0.1
+ * @link       https://github.com/fabianweb/sbnc/modules/
+ */
 class validate {
 
     /**

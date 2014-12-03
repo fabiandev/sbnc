@@ -33,7 +33,7 @@ class sbnc {
      * Options for sbnc.
      * The second entry for the prefix option should be changed. It
      * is the name for the prefix field, that holds the random prefix
-     * for other fields.
+     * for other fields (begin it with a letter!).
      *
      * @var array
      */
@@ -82,7 +82,7 @@ class sbnc {
     }
 
     /**
-     * Class autoloader
+     * Class auto-loader
      *
      * @param $class
      */
@@ -107,11 +107,12 @@ class sbnc {
      */
     private function init_fields() {
         if (strcmp($this->options['prefix'][0], 'random') === 0) {
-            $this->options['prefix'][0] = substr(md5(microtime()),rand(0,26),4);
+            $this->options['prefix'][0] = chr(rand(97,122)).substr(md5(microtime()),rand(0,26),4);
         }
 
         $this->fields = [
             'js'     => false,
+            'count'  => 0,
             'prefix' => &$this->options['prefix'][0]
         ];
     }
