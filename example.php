@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 require 'sbnc.php';
-$sbnc = new Fw\Sbnc\sbnc();
+$sbnc = new Sbnc\sbnc();
 ?>
 <!doctype html>
 <html lang="en">
@@ -10,7 +10,7 @@ $sbnc = new Fw\Sbnc\sbnc();
     <title>sbnc example</title>
 </head>
 <body>
-
+<h3>v0.2</h3>
 <form action="example.php" method="post">
     <fieldset>
         <legend>Data:</legend>
