@@ -1,7 +1,7 @@
 <?php
 namespace Fw\Sbnc\Modules;
 
-class hidden implements module {
+class hidden {
 
     public function __construct(&$master) {
         $master['fields']['check'] = false;

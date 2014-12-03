@@ -1,6 +1,5 @@
-<?php
+<?
 namespace Fw\Sbnc;
-use Fw\Sbnc\Modules;
 
 /*
  * sbnc
@@ -48,14 +47,15 @@ class sbnc {
 
     private $master = [];
 
+
     public function __construct() {
-        spl_autoload_register('load_modules');
-        array_fill_keys($this->modules, null);
+        $this->modules = array_fill_keys($this->modules, null);
         $this->init();
     }
 
-    private function load_modules($class) {
-        include 'modules/' . $class . '.php';
+    public static function load_modules($class) {
+        $split = explode('\\', $class);
+        include 'modules/' . end($split) . '.php';
     }
 
     private function init() {
@@ -87,7 +87,8 @@ class sbnc {
 
     private function init_modules() {
         foreach ($this->modules as $key => $value) {
-            $this->modules[$key] = new $key($this->master);
+            $class = __NAMESPACE__ . '\\Modules\\' . $key;
+            $this->modules[$key] = new $class($this->master);
         }
     }
 
@@ -113,7 +114,7 @@ class sbnc {
         foreach ($this->fields as $key => $value) {
             $val = $value !== false ? $value : '';
             $id = $this->options['prefix'].$key;
-            $html .= '<input type="text" id="'.$id.'" name="'.$id.'" value="'.$val.'" style="display:none" '.$tag_end.'>\n';
+            $html .= '<input type="text" id="'.$id.'" name="'.$id.'" value="'.$val.'" style="display:none" '.$tag_end.'>'."\n";
         }
 
         return $html;
@@ -133,3 +134,4 @@ class sbnc {
 
 }
 
+spl_autoload_register(array('Fw\Sbnc\sbnc', 'load_modules'));

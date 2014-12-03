@@ -1,7 +1,7 @@
 <?php
 namespace Fw\Sbnc\Modules;
 
-class validate implements module {
+class validate {
 
     private $options = [
         'email' => ['email', 'mail'],

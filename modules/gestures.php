@@ -1,7 +1,7 @@
 <?php
 namespace Fw\Sbnc\Modules;
 
-class gestures implements module {
+class gestures {
 
     /*
      * Options for checking keyboard and mouse usage.

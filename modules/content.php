@@ -1,7 +1,7 @@
 <?php
 namespace Fw\Sbnc\Modules;
 
-class content implements module {
+class content {
 
     private $options = [
         'comment', 'message', 'msg', 'post'
