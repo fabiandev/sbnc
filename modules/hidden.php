@@ -1,5 +1,5 @@
 <?php
-namespace Fw\Sbnc\Modules;
+namespace Sbnc\Modules;
 
 class hidden {
 

@@ -219,4 +219,4 @@ class sbnc {
 }
 
 // Required for module auto loading!
-spl_autoload_register(array('Fw\Sbnc\sbnc', 'load_modules'));
+spl_autoload_register(array('Sbnc\sbnc', 'load_modules'));
