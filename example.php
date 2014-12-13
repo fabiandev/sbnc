@@ -3,6 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 require 'sbnc.php';
 $sbnc = new Sbnc\sbnc();
+$sbnc->check();
 ?>
 <!doctype html>
 <html lang="en">
@@ -15,16 +16,17 @@ $sbnc = new Sbnc\sbnc();
     <fieldset>
         <legend>Data:</legend>
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="" required><br>
+        <input type="text" id="name" name="name" value="<?php $sbnc->filter('name'); ?>" required><br>
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="" required><br>
+        <input type="email" id="email" name="email" value="<?php $sbnc->filter('email'); ?>" required><br>
     </fieldset>
     <fieldset>
         <legend>Message:</legend>
-        <textarea id="message" name="message" required></textarea><br>
+        <textarea id="message" name="message" required><?php $sbnc->filter('message'); ?></textarea><br>
     </fieldset>
     <?php $sbnc->print_fields(); ?>
-    <input type="submit" id="send" value="Submit">
+    <input type="submit" id="submit" value="Submit">
 </form>
+<?php $sbnc->print_js(); ?>
 </body>
 </html>

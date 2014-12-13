@@ -22,11 +22,12 @@ class sbnc {
      * @var array
      */
     private $modules = [
-        'time',
-        'hidden',
-        'gestures',
-        'content',
-        'validate'
+        'Time',
+        'Hidden',
+        'Gestures',
+        'Content',
+        'Validate',
+        'Remote'
     ];
 
     /**
@@ -142,18 +143,18 @@ class sbnc {
 
     /**
      * Runs all checks on the request and returns a
-     * boolean, if it passed.
+     * boolean, if it run tests (method must be post).
      *
-     * @param $request
+     * @param $method
      * @return boolean
      */
-    public function check($request) {
-        $this->request = $request;
+    public function check() {
+        if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') != 0) return false;
+        $this->request = $_POST;
         foreach ($this->modules as $module) {
             $module->check($this->master);
         }
-
-        return null;
+        return true;
     }
 
     /**
@@ -163,6 +164,38 @@ class sbnc {
      */
     public function get_errors() {
         return $this->errors;
+    }
+
+    /**
+     * True if no errors
+     *
+     * @return boolean
+     */
+    public function isValid() {
+        return !(count($this->errors) > 0);
+    }
+
+    /**
+     * True if errors
+     *
+     * @return boolean
+     */
+    public function isInvalid() {
+        return !$this->isValid();
+    }
+
+    /**
+     * Prints errors as an ul
+     *
+     * @param $class
+     */
+    public function print_errors($class = '') {
+        if ($this->isValid()) return;
+        echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
+        foreach ($this->errors as $key => $error) {
+            echo '<li>' . $error . '</li>';
+        }
+        echo '<ul>';
     }
 
     /**
@@ -215,6 +248,24 @@ class sbnc {
      */
     public function print_js() {
         echo $this->get_js();
+    }
+
+    // helper functions
+
+    private function getRequest($key) {
+        return isset($this->request[$key]) ? $this->request[$key] : '';
+    }
+
+    private function isEmpty($value) {
+        return (strlen(trim($value)) == 0);
+    }
+
+    public function filter($key, $nl2br = false) {
+        if($nl2br) {
+            return !$this->isEmpty($this->getRequest($key)) ? nl2br(htmlspecialchars($this->getRequest($key), ENT_QUOTES)) : '';
+        } else {
+            return !$this->isEmpty($this->getRequest($key)) ? htmlspecialchars($this->getRequest($key), ENT_QUOTES) : '';
+        }
     }
 
 }
