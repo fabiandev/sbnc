@@ -14,7 +14,7 @@ namespace Sbnc\Modules;
  * @version    0.1
  * @link       https://github.com/fabianweb/sbnc/modules/
  */
-class Gestures implements Module {
+class Gestures implements ModuleInterface {
 
     /*
      * Options for checking keyboard and mouse usage.

@@ -14,7 +14,7 @@ namespace Sbnc;
  * @link       https://github.com/fabianweb/sbnc
  */
 
-class sbnc {
+class Sbnc {
 
     /**
      * Defines all modules  by it's name in the modules directory

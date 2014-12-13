@@ -1,8 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
-require 'sbnc.php';
-$sbnc = new Sbnc\sbnc();
+require 'Sbnc.php';
+$sbnc = new Sbnc\Sbnc();
 $sbnc->check();
 ?>
 <!doctype html>

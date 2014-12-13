@@ -14,7 +14,7 @@ namespace Sbnc\Modules;
  * @version    0.1
  * @link       https://github.com/fabianweb/sbnc/modules/
  */
-class Remote implements Module {
+class Remote implements ModuleInterface {
 
     /**
      * Module options

@@ -1,7 +1,7 @@
 <?php
-namespace Sbnc\Modules;
+namespace Sbnc;
 
-Interface Module {
+Interface ModuleInterface {
 
     public function __construct(&$master);
     public function check($master);
