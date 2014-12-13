@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc;
+namespace Sbnc\Modules;
 
 Interface ModuleInterface {
 
