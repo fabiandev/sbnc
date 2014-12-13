@@ -16,13 +16,13 @@ $sbnc->check();
     <fieldset>
         <legend>Data:</legend>
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="<?php $sbnc->filter('name'); ?>" required><br>
+        <input type="text" id="name" name="name" value="<?php $sbnc->get_value('name'); ?>" required><br>
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<?php $sbnc->filter('email'); ?>" required><br>
+        <input type="email" id="email" name="email" value="<?php $sbnc->get_value('email'); ?>" required><br>
     </fieldset>
     <fieldset>
         <legend>Message:</legend>
-        <textarea id="message" name="message" required><?php $sbnc->filter('message'); ?></textarea><br>
+        <textarea id="message" name="message" required><?php $sbnc->get_value('message'); ?></textarea><br>
     </fieldset>
     <?php $sbnc->print_fields(); ?>
     <input type="submit" id="submit" value="Submit">

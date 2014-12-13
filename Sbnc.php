@@ -205,8 +205,8 @@ class Sbnc {
      * @param $name
      * @return string
      */
-    public function get_value($name) {
-
+    public function get_value($name, $nl2br = false) {
+        return $this->filter($name, $nl2br);
     }
 
     /**
