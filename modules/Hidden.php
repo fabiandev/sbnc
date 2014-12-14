@@ -21,8 +21,8 @@ class Hidden extends Module implements ModuleInterface {
      *
      * @param $master
      */
-    public function __construct(&$master) {
-        $master['fields']['check'] = false;
+    protected function init() {
+        $this->master['fields']['check'] = null;
     }
 
     /**
@@ -30,7 +30,7 @@ class Hidden extends Module implements ModuleInterface {
      *
      * @param $master
      */
-    public function check($master) {
+    public function check() {
 
     }
 

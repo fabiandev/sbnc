@@ -35,9 +35,9 @@ class Gestures extends Module implements ModuleInterface {
      *
      * @param $master
      */
-    public function __construct(&$master) {
-        $master['fields']['mouse']    = false;
-        $master['fields']['keyboard'] = false;
+    protected function init() {
+        $this->master['fields']['mouse']    = null;
+        $this->master['fields']['keyboard'] = null;
     }
 
     /**
@@ -45,7 +45,7 @@ class Gestures extends Module implements ModuleInterface {
      *
      * @param $master
      */
-    public function check($master) {
+    public function check() {
 
     }
 

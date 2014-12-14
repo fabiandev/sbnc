@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 require 'Sbnc.php';
 $sbnc = new Sbnc\Sbnc();
-$sbnc->check();
+$sbnc->start();
 ?>
 <!doctype html>
 <html lang="en">

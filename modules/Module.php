@@ -1,17 +1,20 @@
 <?php
 namespace Sbnc\Modules;
 
-class Module {
+abstract class Module {
 
-    protected function before() {
+    protected $master;
+
+    public function __construct(&$master) {
+        $this->master = $master;
+        $this->init();
+    }
+
+    public function before() {
 
     }
 
-    protected function init() {
-
-    }
-
-    protected function after() {
+    public function after() {
 
     }
 

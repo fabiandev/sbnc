@@ -36,7 +36,7 @@ class Validate extends Module implements ModuleInterface {
     /**
      * @param $master
      */
-    public function __construct(&$master) {
+    protected function init() {
 
     }
 
@@ -45,7 +45,7 @@ class Validate extends Module implements ModuleInterface {
      *
      * @param $master
      */
-    public function check($master) {
+    public function check() {
 
     }
 

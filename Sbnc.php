@@ -27,7 +27,15 @@ class Sbnc {
         'Gestures',
         'Content',
         'Validate',
-        'Remote',
+        'Remote'
+    ];
+
+    /**
+     * Defines all addons  by it's name in the modules directory
+     *
+     * @var array
+     */
+    private $addons = [
         'FlashErrors'
     ];
 
@@ -80,17 +88,19 @@ class Sbnc {
      */
     public function __construct() {
         $this->modules = array_fill_keys($this->modules, null);
+        $this->addons = array_fill_keys($this->addons, null);
         $this->init();
     }
 
     /**
-     * Class auto-loader
+     * Module auto-loader
      *
      * @param $class
      */
     public static function load_modules($class) {
         $split = explode('\\', $class);
-        include 'modules/' . end($split) . '.php';
+        $sub = $split[count($split)-2];
+        include $sub . '/' . end($split) . '.php';
     }
 
     /**
@@ -101,6 +111,7 @@ class Sbnc {
         $this->init_fields();
         $this->init_master();
         $this->init_modules();
+        $this->init_addons();
     }
 
     /**
@@ -127,6 +138,7 @@ class Sbnc {
             'request'     => &$this->request,
             'errors'      => &$this->errors,
             'modules'     => &$this->modules,
+            'addons'      => &$this->addons,
             'options'     => &$this->options,
             'fields'      => &$this->fields,
         ];
@@ -143,19 +155,52 @@ class Sbnc {
     }
 
     /**
+     * Loads all modules and initializes them.
+     */
+    private function init_addons() {
+        foreach ($this->addons as $key => $value) {
+            $class = __NAMESPACE__ . '\\Addons\\' . $key;
+            $this->addons[$key] = new $class($this->master);
+        }
+    }
+
+    protected function before() {
+        foreach ($this->modules as $module) {
+            $module->before();
+        }
+        foreach ($this->addons as $addon) {
+            $addon->before();
+        }
+    }
+
+    protected function after() {
+        foreach ($this->modules as $module) {
+            $module->after();
+        }
+        foreach ($this->addons as $addon) {
+            $addon->after();
+        }
+    }
+
+    /**
      * Runs all checks on the request and returns a
      * boolean, if it run tests (method must be post).
      *
      * @param $method
      * @return boolean
      */
-    public function check() {
-        if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') != 0) return false;
+    public function start() {
+        $this->before();
+        if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') != 0) {
+            $this->after();
+            return false;
+        }
         $this->request = $_POST;
         foreach ($this->modules as $module) {
             $module->check($this->master);
         }
-        return false;
+        $this->after();
+        return true;
     }
 
     /**
@@ -232,7 +277,7 @@ class Sbnc {
         $tag_end = ($this->options['html5']) ? '' : '/';
 
         foreach ($this->fields as $key => $value) {
-            $val = $value !== false ? $value : '';
+            $val = $value !== null ? $value : '';
             $id = strcmp($key, 'prefix') !== 0 ? $this->options['prefix'][0].$key : $this->options['prefix'][1];
             $html .= '<input type="text" id="'.$id.'" name="'.$id.'" value="'.$val.'" style="display:none" '.$tag_end.'>'."\n";
         }
@@ -283,5 +328,5 @@ class Sbnc {
 
 }
 
-// Required for module auto loading!
-spl_autoload_register(array('Sbnc\sbnc', 'load_modules'));
+// Required for module/addons auto loading!
+spl_autoload_register(array('Sbnc\Sbnc', 'load_modules'));

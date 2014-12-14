@@ -28,19 +28,18 @@ class Content extends Module implements ModuleInterface {
         'comment', 'message', 'msg', 'post'
     ];
 
-    /**
-     * @param $master
-     */
-    public function __construct(&$master) {
+
+    protected function init() {
 
     }
+
 
     /**
      * Starts module check
      *
      * @param $master
      */
-    public function check($master) {
+    public function check() {
 
     }
 

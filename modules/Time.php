@@ -34,8 +34,8 @@ class Time extends Module implements ModuleInterface {
      *
      * @param $master
      */
-    public function __construct(&$master) {
-        $master['fields']['time'] = time();
+    protected function init() {
+        $this->master['fields']['time'] = time();
     }
 
     /**
@@ -43,7 +43,7 @@ class Time extends Module implements ModuleInterface {
      *
      * @param $master
      */
-    public function check($master) {
+    public function check() {
 
     }
 
