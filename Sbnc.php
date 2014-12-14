@@ -27,7 +27,8 @@ class Sbnc {
         'Gestures',
         'Content',
         'Validate',
-        'Remote'
+        'Remote',
+        'FlashErrors'
     ];
 
     /**
@@ -154,7 +155,7 @@ class Sbnc {
         foreach ($this->modules as $module) {
             $module->check($this->master);
         }
-        return true;
+        return false;
     }
 
     /**
@@ -203,10 +204,22 @@ class Sbnc {
      * content, if errors occurred.
      *
      * @param $name
+     * @param $nl2br
      * @return string
      */
-    public function get_value($name, $nl2br = false) {
+    public function get_value($name, $always = false, $nl2br = false) {
+        if (!$always && $this->isValid()) return '';
         return $this->filter($name, $nl2br);
+    }
+
+    /**
+     * Prints what get_value() returns
+     *
+     * @param $name
+     * @param bool $nl2br
+     */
+    public function print_value($name, $always = false, $nl2br = false) {
+        echo $this->get_value($name, $always, $nl2br);
     }
 
     /**
