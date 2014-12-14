@@ -14,7 +14,7 @@ namespace Sbnc\Modules;
  * @version    0.1
  * @link       https://github.com/fabianweb/sbnc/modules/
  */
-class Hidden implements ModuleInterface {
+class Hidden extends Module implements ModuleInterface {
 
     /**
      * Adds a field to sbnc
