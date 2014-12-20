@@ -2,7 +2,7 @@
 namespace Sbnc\Utils;
 
 
-class FlashMessages extends Util {
+class FlashMessages extends Util implements UtilInterface {
 
     protected $enabled = false;
 
