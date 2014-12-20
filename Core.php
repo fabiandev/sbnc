@@ -4,33 +4,15 @@ namespace Sbnc;
 class Core
 {
     protected $fields = [];
-
     protected $request = [];
-
     protected $errors = [];
-
     protected $master = [];
 
     public function __construct() {
-        $this->utils = array_fill_keys($this->utils, null);
-        $this->modules = array_fill_keys($this->modules, null);
-        $this->addons = array_fill_keys($this->addons, null);
         $this->init();
     }
 
-    protected function addon_exists($addon) {
-        return array_key_exists($addon, $this->addons) ? true : false;
-    }
-
-    protected function module_exists($module) {
-        return array_key_exists($module, $this->modules) ? true : false;
-    }
-
-    protected function component_exists($component) {
-        return $this->addon_exists($component) || $this->module_exists($component) ? true : false;
-    }
-
-    protected function init() {
+    private function init() {
         $this->init_fields();
         $this->init_master();
         $this->init_utils();
@@ -38,7 +20,7 @@ class Core
         $this->init_addons();
     }
 
-    protected function init_fields() {
+    private function init_fields() {
         if (strcmp($this->options['prefix'][0], 'random') === 0) {
             $this->options['prefix'][0] = chr(rand(97,122)).substr(md5(microtime()),rand(0,26),4);
         }
@@ -52,7 +34,7 @@ class Core
         ];
     }
 
-    protected function init_master() {
+    private function init_master() {
         $this->master = [
             'request'     => &$this->request,
             'errors'      => &$this->errors,
@@ -64,25 +46,40 @@ class Core
         ];
     }
 
-    protected function init_modules() {
+    private function init_utils() {
+        $this->utils = array_fill_keys($this->utils, null);
+        foreach ($this->utils as $key => $value) {
+            $class = __NAMESPACE__ . '\\Utils\\' . $key;
+            $this->utils[$key] = new $class();
+        }
+    }
+
+    private function init_modules() {
+        $this->modules = array_fill_keys($this->modules, null);
         foreach ($this->modules as $key => $value) {
             $class = __NAMESPACE__ . '\\Modules\\' . $key;
             $this->modules[$key] = new $class($this->master);
         }
     }
 
-    protected function init_addons() {
+    private function init_addons() {
+        $this->addons = array_fill_keys($this->addons, null);
         foreach ($this->addons as $key => $value) {
             $class = __NAMESPACE__ . '\\Addons\\' . $key;
             $this->addons[$key] = new $class($this->master);
         }
     }
 
-    protected function init_utils() {
-        foreach ($this->utils as $key => $value) {
-            $class = __NAMESPACE__ . '\\Utils\\' . $key;
-            $this->utils[$key] = new $class();
-        }
+    protected function addon_exists($addon) {
+        return array_key_exists($addon, $this->addons) ? true : false;
+    }
+
+    protected function module_exists($module) {
+        return array_key_exists($module, $this->modules) ? true : false;
+    }
+
+    protected function component_exists($component) {
+        return $this->addon_exists($component) || $this->module_exists($component) ? true : false;
     }
 
     protected function before() {
@@ -100,6 +97,41 @@ class Core
         }
         foreach ($this->addons as $addon) {
             $addon->after();
+        }
+    }
+
+    protected function manipulate_request() {
+        $prefix = $this->options['prefix'][1];
+        $random_prefix = isset($_POST[$prefix]) ? $_POST[$prefix] : '';
+        $random_prefix_length = strlen($random_prefix);
+        foreach($_POST as $key => $value) {
+            if (strcmp($key, $prefix) == 0) {
+                $this->request['prefix'] = $value;
+            } elseif (strcmp(substr($key, 0, $random_prefix_length), $random_prefix) == 0) {
+                $this->request[substr($key, $random_prefix_length)] = $value;
+            } else {
+                $this->request[$key] = $value;
+            }
+        }
+    }
+
+    protected function get_request($key, $safe = false) {
+        if ($this->addon_exists('Flasher')) {
+            return $this->addons['Flasher']->get_request($key, $safe);
+        }
+        return isset($this->request[$key]) && !$this->is_valid() ? $this->request[$key] : '';
+    }
+
+    protected function is_empty($value) {
+        return (strlen(trim($value)) == 0);
+    }
+
+    protected function filter($key, $nl2br = false, $safe = false) {
+        $value = $this->get_request($key, $safe);
+        if($nl2br) {
+            return !$this->is_empty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
+        } else {
+            return !$this->is_empty($value) ? htmlspecialchars($value, ENT_QUOTES) : '';
         }
     }
 
@@ -123,21 +155,6 @@ class Core
 
         $this->after();
         return true;
-    }
-
-    protected function manipulate_request() {
-        $prefix = $this->options['prefix'][1];
-        $random_prefix = isset($_POST[$prefix]) ? $_POST[$prefix] : '';
-        $random_prefix_length = strlen($random_prefix);
-        foreach($_POST as $key => $value) {
-            if (strcmp($key, $prefix) == 0) {
-                $this->request['prefix'] = $value;
-            } elseif (strcmp(substr($key, 0, $random_prefix_length), $random_prefix) == 0) {
-                $this->request[substr($key, $random_prefix_length)] = $value;
-            } else {
-                $this->request[$key] = $value;
-            }
-        }
     }
 
     public function is_valid() {
@@ -229,26 +246,6 @@ class Core
 
     public function print_js() {
         echo $this->get_js();
-    }
-
-    protected function get_request($key, $safe = false) {
-        if ($this->addon_exists('Flasher')) {
-            return $this->addons['Flasher']->get_request($key, $safe);
-        }
-        return isset($this->request[$key]) && !$this->is_valid() ? $this->request[$key] : '';
-    }
-
-    protected function is_empty($value) {
-        return (strlen(trim($value)) == 0);
-    }
-
-    protected function filter($key, $nl2br = false, $safe = false) {
-        $value = $this->get_request($key, $safe);
-        if($nl2br) {
-            return !$this->is_empty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
-        } else {
-            return !$this->is_empty($value) ? htmlspecialchars($value, ENT_QUOTES) : '';
-        }
     }
 
 }
