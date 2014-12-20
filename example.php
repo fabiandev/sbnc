@@ -4,10 +4,10 @@ ini_set('display_errors', 'On');
 require 'Sbnc.php';
 $sbnc = new Sbnc\Sbnc();
 $my_action = function($sbnc) {
-    // add your action, like sending a mail
+    // add your action, e.g. sending a mail
     // if you use flash messages.
     //
-    // use any sbnc method, like add_error
+    // use any public sbnc method here, like add_error
     // with $sbnc->add_error('My error message');
 };
 $sbnc->start($my_action);
@@ -18,7 +18,7 @@ $sbnc->start($my_action);
     <title>sbnc example</title>
 </head>
 <body>
-<h3>v0.2</h3>
+<h3><a href="http://fabianweb.net/sbnc">sbnc v0.2</a> [<a href="https://github.com/fabianweb/sbnc">github</a>]</h3>
 <?php
 $sbnc->print_errors();
 ?>
