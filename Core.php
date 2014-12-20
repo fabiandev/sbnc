@@ -3,39 +3,14 @@ namespace Sbnc;
 
 class Core
 {
-
-    /**
-     * Holds all fields that need to be included in the form.
-     *
-     * @var array
-     */
     protected $fields = [];
 
-    /**
-     * Holds the request after sending a form.
-     *
-     * @var array
-     */
     protected $request = [];
 
-    /**
-     * All errors that occur during all checks (also modules)
-     *
-     * @var array
-     */
     protected $errors = [];
 
-    /**
-     * Holds references to the request, fields, errors,
-     * modules and options.
-     *
-     * @var array
-     */
     protected $master = [];
 
-    /**
-     * Changes modules array for internal use
-     */
     public function __construct() {
         $this->utils = array_fill_keys($this->utils, null);
         $this->modules = array_fill_keys($this->modules, null);
@@ -55,10 +30,6 @@ class Core
         return $this->addon_exists($component) || $this->module_exists($component) ? true : false;
     }
 
-    /**
-     * List of initialization work that needs to be done
-     * after the constructor in correct order.
-     */
     protected function init() {
         $this->init_fields();
         $this->init_master();
@@ -67,10 +38,6 @@ class Core
         $this->init_addons();
     }
 
-    /**
-     * Generates the random prefix and initializes
-     * main fields.
-     */
     protected function init_fields() {
         if (strcmp($this->options['prefix'][0], 'random') === 0) {
             $this->options['prefix'][0] = chr(rand(97,122)).substr(md5(microtime()),rand(0,26),4);
@@ -85,9 +52,6 @@ class Core
         ];
     }
 
-    /**
-     * Saves all references in $master to pass them to modules.
-     */
     protected function init_master() {
         $this->master = [
             'request'     => &$this->request,
@@ -100,9 +64,6 @@ class Core
         ];
     }
 
-    /**
-     * Loads all modules and initializes them.
-     */
     protected function init_modules() {
         foreach ($this->modules as $key => $value) {
             $class = __NAMESPACE__ . '\\Modules\\' . $key;
@@ -110,9 +71,6 @@ class Core
         }
     }
 
-    /**
-     * Loads all modules and initializes them.
-     */
     protected function init_addons() {
         foreach ($this->addons as $key => $value) {
             $class = __NAMESPACE__ . '\\Addons\\' . $key;
@@ -145,13 +103,6 @@ class Core
         }
     }
 
-    /**
-     * Runs all checks on the request and returns a
-     * boolean, if it run tests (method must be post).
-     *
-     * @param $method
-     * @return boolean
-     */
     public function start() {
         $this->before();
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
@@ -180,11 +131,6 @@ class Core
         return true;
     }
 
-    /**
-     * Returns an array, holding all errors (also from modules)
-     *
-     * @return array
-     */
     public function get_errors() {
         if ($this->addon_exists('Flasher')) {
             return $this->addons['Flasher']->get_errors();
@@ -192,11 +138,6 @@ class Core
         return $this->errors;
     }
 
-    /**
-     * True if no errors
-     *
-     * @return boolean
-     */
     public function is_valid() {
         if ($this->addon_exists('Flasher')) {
             $num_errors = $this->addons['Flasher']->count_errors();
@@ -205,20 +146,10 @@ class Core
         return !(count($this->errors) > 0);
     }
 
-    /**
-     * True if errors
-     *
-     * @return boolean
-     */
     public function is_invalid() {
         return !$this->is_valid();
     }
 
-    /**
-     * Prints errors as an ul
-     *
-     * @param $class
-     */
     public function print_errors($class = '') {
         if ($this->is_valid()) return;
         echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
@@ -228,41 +159,34 @@ class Core
         echo '</ul>';
     }
 
-    public function get_message($key) {
-        return $this->utils['FlashMessages']->get('messages', 'success');
+    public function get_flash_message($type, $key) {
+        return $this->utils['FlashMessages']->get($type, $key);
     }
 
-    public function print_message($key) {
-        echo $this->get_message($key);
+    public function print_flash_message($type, $key) {
+        echo $this->get_message($type, $key);
     }
 
-    /**
-     * Use this method to fill form fields with previous
-     * content, if errors occurred.
-     *
-     * @param $name
-     * @param $nl2br
-     * @return string
-     */
+    public function get_flash_messages($type) {
+        return $this->utils['FlashMessages']->get($type);
+    }
+
+    public function print_flash_messages($type) {
+        echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
+        foreach ($this->get_flash_messages($type) as $key => $message) {
+            echo '<li>' . $message . '</li>';
+        }
+        echo '</ul>';
+    }
+
     public function get_value($name, $nl2br = false) {
         return $this->filter($name, $nl2br);
     }
 
-    /**
-     * Prints what get_value() returns
-     *
-     * @param $name
-     * @param bool $nl2br
-     */
     public function print_value($name, $nl2br = false) {
         echo $this->get_value($name, $nl2br);
     }
 
-    /**
-     * Generates a string, containing all fields as html code.
-     *
-     * @return string
-     */
     public function get_fields() {
         $html = '';
         $tag_end = ($this->options['html5']) ? '' : '/';
@@ -276,25 +200,15 @@ class Core
         return $html;
     }
 
-    /**
-     * Prints what get_fields() returns.
-     */
     public function print_fields() {
         echo $this->get_fields();
     }
 
-    /**
-     * Generates a string, containing all javascript code.
-     *
-     * @return string
-     */
+
     public function get_js() {
         return '';
     }
 
-    /**
-     * Prints what get_js() returns.
-     */
     public function print_js() {
         echo $this->get_js();
     }
@@ -305,7 +219,7 @@ class Core
         if ($this->addon_exists('Flasher')) {
             return $this->addons['Flasher']->get_request($key);
         }
-        return isset($this->request[$key]) ? $this->request[$key] : '';
+        return isset($this->request[$key]) && !$this->is_valid() ? $this->request[$key] : '';
     }
 
     private function is_empty($value) {

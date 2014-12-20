@@ -9,8 +9,7 @@ class Flasher extends Addon implements AddonInterface {
     // set explicit redirect for security reasons!!
     protected $options = [
         'redirect:error'    => [true, null],
-        'redirect:success'  => [true, null],
-        'message:success'   => 'No Spam, Yay!'
+        'redirect:success'  => [true, null]
     ];
 
     protected function init() {
@@ -23,8 +22,6 @@ class Flasher extends Addon implements AddonInterface {
             if (count($this->master['errors']) > 0) {
                 $this->master['utils']['FlashMessages']->flash('request', $this->master['request']);
                 $this->master['utils']['FlashMessages']->flash('errors', $this->master['errors']);
-            } else {
-                $this->master['utils']['FlashMessages']->flash('messages', $this->options['message:success'], 'success');
             }
             if (!empty($this->master['errors']) && $this->options['redirect:error'][0] === true) {
                 if (!$this->options['redirect:error'][1]) {

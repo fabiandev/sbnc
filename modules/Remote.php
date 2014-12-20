@@ -1,19 +1,6 @@
 <?php
 namespace Sbnc\Modules;
 
-/**
- * sbnc remote module
- *
- * Checks against remote spam lists
- *
- * @package    Sbnc
- * @subpackage Modules
- * @author     Fabian Pirklbauer <hi@fabianweb.net>
- * @copyright  2014-2015 Fabian Pirklbauer
- * @license    https://github.com/fabianweb/sbnc/LICENSE.md
- * @version    0.1
- * @link       https://github.com/fabianweb/sbnc/modules/
- */
 class Remote extends Module implements ModuleInterface {
 
     /**
@@ -30,18 +17,10 @@ class Remote extends Module implements ModuleInterface {
         'header' => true
     ];
 
-    /**
-     * @param $master
-     */
     protected function init() {
 
     }
 
-    /**
-     * Starts module check
-     *
-     * @param $master
-     */
     public function check() {
 
     }

@@ -14,7 +14,9 @@ $sbnc->start();
 <h3>v0.2</h3>
 <?php
 $sbnc->print_errors();
-$sbnc->print_message('success');
+if ($sbnc->is_valid()) {
+    echo 'No Spam, Yay!';
+}
 ?>
 <form action="example.php" method="post">
     <fieldset>

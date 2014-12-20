@@ -18,11 +18,6 @@ require 'loader.php';
 class Sbnc extends Core
 {
 
-    /**
-     * Defines all modules  by it's name in the modules directory
-     *
-     * @var array
-     */
     protected $modules = [
         'Time',
         'Hidden',
@@ -32,11 +27,6 @@ class Sbnc extends Core
         'Remote'
     ];
 
-    /**
-     * Defines all addons  by it's name in the modules directory
-     *
-     * @var array
-     */
     protected $addons = [
         'Flasher'
     ];
