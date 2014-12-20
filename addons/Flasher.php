@@ -43,9 +43,10 @@ class Flasher extends Addon implements AddonInterface {
         }
     }
 
-    public function get_errors() {
+    public function get_errors($safe = false) {
         if (!$this->enabled) return $this->master['errors'];
-        return $this->master['utils']['FlashMessages']->get('errors');
+        return $safe ? $this->master['utils']['FlashMessages']->get_safe('errors') :
+                       $this->master['utils']['FlashMessages']->get('errors');
     }
 
     public function count_errors() {
@@ -53,10 +54,10 @@ class Flasher extends Addon implements AddonInterface {
         return $this->master['utils']['FlashMessages']->count('errors');
     }
 
-    public function get_request($key) {
+    public function get_request($key, $safe = false) {
         if (!$this->enabled) return isset($this->master['request'][$key]) ? $this->master['request'][$key] : '';
-        //echo $this->master['utils']['FlashMessages']->get('request', $key);
-        return $this->master['utils']['FlashMessages']->get('request', $key);
+        return $safe ? $this->master['utils']['FlashMessages']->get_safe('request', $key) :
+                       $this->master['utils']['FlashMessages']->get('request', $key);
     }
 
 }

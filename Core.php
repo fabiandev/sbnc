@@ -103,17 +103,32 @@ class Core
         }
     }
 
-    public function start() {
+    public function start($action = null) {
         $this->before();
+
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
             $this->after();
             return false;
         }
 
+        $this->manipulate_request();
+
+        foreach ($this->modules as $module) {
+            $module->check($this->master);
+        }
+
+        if (is_callable($action)) {
+            $action($this);
+        }
+
+        $this->after();
+        return true;
+    }
+
+    protected function manipulate_request() {
         $prefix = $this->options['prefix'][1];
         $random_prefix = isset($_POST[$prefix]) ? $_POST[$prefix] : '';
         $random_prefix_length = strlen($random_prefix);
-
         foreach($_POST as $key => $value) {
             if (strcmp($key, $prefix) == 0) {
                 $this->request['prefix'] = $value;
@@ -123,19 +138,6 @@ class Core
                 $this->request[$key] = $value;
             }
         }
-
-        foreach ($this->modules as $module) {
-            $module->check($this->master);
-        }
-        $this->after();
-        return true;
-    }
-
-    public function get_errors() {
-        if ($this->addon_exists('Flasher')) {
-            return $this->addons['Flasher']->get_errors();
-        }
-        return $this->errors;
     }
 
     public function is_valid() {
@@ -150,6 +152,21 @@ class Core
         return !$this->is_valid();
     }
 
+    public function add_error($error) {
+        if (is_string($error)) {
+            array_push($this->errors, $error);
+            return true;
+        }
+        return false;
+    }
+
+    public function get_errors() {
+        if ($this->addon_exists('Flasher')) {
+            return $this->addons['Flasher']->get_errors();
+        }
+        return $this->errors;
+    }
+
     public function print_errors($class = '') {
         if ($this->is_valid()) return;
         echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
@@ -159,32 +176,34 @@ class Core
         echo '</ul>';
     }
 
-    public function get_flash_message($type, $key) {
-        return $this->utils['FlashMessages']->get($type, $key);
+    public function get_flash_message($type, $key, $safe = false) {
+        return $safe ? $this->utils['FlashMessages']->get_safe($type, $key) :
+                       $this->utils['FlashMessages']->get($type, $key);
     }
 
-    public function print_flash_message($type, $key) {
-        echo $this->get_message($type, $key);
+    public function print_flash_message($type, $key, $safe = false) {
+        echo $this->get_flash_message($type, $key, $safe);
     }
 
-    public function get_flash_messages($type) {
-        return $this->utils['FlashMessages']->get($type);
+    public function get_flash_messages($type, $safe = false) {
+        return $safe ? $this->utils['FlashMessages']->get_safe($type) :
+                       $this->utils['FlashMessages']->get($type);
     }
 
-    public function print_flash_messages($type) {
+    public function print_flash_messages($type, $safe) {
         echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
-        foreach ($this->get_flash_messages($type) as $key => $message) {
+        foreach ($this->get_flash_messages($type, $safe) as $key => $message) {
             echo '<li>' . $message . '</li>';
         }
         echo '</ul>';
     }
 
-    public function get_value($name, $nl2br = false) {
-        return $this->filter($name, $nl2br);
+    public function get_value($name, $nl2br = false, $safe = false) {
+        return $this->filter($name, $nl2br, $safe);
     }
 
-    public function print_value($name, $nl2br = false) {
-        echo $this->get_value($name, $nl2br);
+    public function print_value($name, $nl2br = false, $safe = false) {
+        echo $this->get_value($name, $nl2br, $safe);
     }
 
     public function get_fields() {
@@ -204,7 +223,6 @@ class Core
         echo $this->get_fields();
     }
 
-
     public function get_js() {
         return '';
     }
@@ -213,21 +231,19 @@ class Core
         echo $this->get_js();
     }
 
-    // helper functions
-
-    private function get_request($key) {
+    protected function get_request($key, $safe = false) {
         if ($this->addon_exists('Flasher')) {
-            return $this->addons['Flasher']->get_request($key);
+            return $this->addons['Flasher']->get_request($key, $safe);
         }
         return isset($this->request[$key]) && !$this->is_valid() ? $this->request[$key] : '';
     }
 
-    private function is_empty($value) {
+    protected function is_empty($value) {
         return (strlen(trim($value)) == 0);
     }
 
-    public function filter($key, $nl2br = false) {
-        $value = $this->get_request($key);
+    protected function filter($key, $nl2br = false, $safe) {
+        $value = $this->get_request($key, $safe);
         if($nl2br) {
             return !$this->is_empty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
         } else {

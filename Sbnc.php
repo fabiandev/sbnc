@@ -33,7 +33,7 @@ class Sbnc extends Core
 
 
     protected $utils = [
-        'FlashMessages'
+        'FlashMessages' // this util is required!
     ];
 
     /**

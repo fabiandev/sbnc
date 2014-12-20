@@ -3,7 +3,14 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 require 'Sbnc.php';
 $sbnc = new Sbnc\Sbnc();
-$sbnc->start();
+$my_action = function($sbnc) {
+    // add your action, like sending a mail
+    // if you use flash messages.
+    //
+    // use any sbnc method, like add_error
+    // with $sbnc->add_error('My error message');
+};
+$sbnc->start($my_action);
 ?>
 <!doctype html>
 <html lang="en">
@@ -14,9 +21,6 @@ $sbnc->start();
 <h3>v0.2</h3>
 <?php
 $sbnc->print_errors();
-if ($sbnc->is_valid()) {
-    echo 'No Spam, Yay!';
-}
 ?>
 <form action="example.php" method="post">
     <fieldset>
