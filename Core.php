@@ -242,7 +242,7 @@ class Core
         return (strlen(trim($value)) == 0);
     }
 
-    protected function filter($key, $nl2br = false, $safe) {
+    protected function filter($key, $nl2br = false, $safe = false) {
         $value = $this->get_request($key, $safe);
         if($nl2br) {
             return !$this->is_empty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
