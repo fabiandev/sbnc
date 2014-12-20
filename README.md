@@ -9,4 +9,4 @@ Everything. This version is not compatible with 0.1.x!
 
 ## Requirements
 
-PHP 5.4.0
+PHP 5 >= 5.4.0
