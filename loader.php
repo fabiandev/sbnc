@@ -1,10 +1,12 @@
 <?php
 spl_autoload_register(function ($class) {
     $split = explode('\\', $class);
-    $sub = $split[count($split)-2];
-    if (strcasecmp('sbnc', $sub) === 0) {
-        include end($split) . '.php';
-    } else {
-        include $sub . '/' . end($split) . '.php';
+    $count = count($split);
+    $path = '';
+    for ($i = 0; $i < $count; $i++) {
+        if ($i == 0) continue;
+        $path .= $split[$i].'/';
     }
+    $path = trim($path, '/') . '.php';
+    require_once $path;
 });
