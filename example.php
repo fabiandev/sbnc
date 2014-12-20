@@ -12,6 +12,10 @@ $sbnc->start();
 </head>
 <body>
 <h3>v0.2</h3>
+<?php
+$sbnc->print_errors();
+$sbnc->print_message('success');
+?>
 <form action="example.php" method="post">
     <fieldset>
         <legend>Data:</legend>

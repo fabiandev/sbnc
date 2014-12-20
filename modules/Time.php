@@ -26,7 +26,12 @@ class Time extends Module implements ModuleInterface {
      */
     private $options = [
         'min' => 1,
-        'max' => 3600
+        'max' => 600
+    ];
+
+    private $errors = [
+        'min' => 'Sorry, this was too fast.',
+        'max' => 'Sorry, this took too long. Try again!'
     ];
 
     /**
@@ -44,7 +49,15 @@ class Time extends Module implements ModuleInterface {
      * @param $master
      */
     public function check() {
+        $now = time();
+        $time = $this->master['request']['time'];
+        $diff = $now - $time;
 
+        if ($diff < $this->options['min']) {
+            array_push($this->master['errors'], $this->errors['min']);
+        } elseif ($diff > $this->options['max']) {
+            array_push($this->master['errors'], $this->errors['max']);
+        }
     }
 
 }
