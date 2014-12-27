@@ -241,7 +241,55 @@ class Core
     }
 
     public function get_js() {
-        return '';
+        $lang = !$this->options['html5'] ? ' language="javascript" type="text/javascript"' : '';
+        $prefix = $this->options['prefix'][0];
+        $keyboard_field = $prefix . 'keyboard';
+        $mouse_field = $prefix . 'mouse';
+        $js_field = $prefix . 'js';
+
+$code = <<<CODE
+<script$lang>
+var sbnc = sbnc || {};
+
+sbnc.core = (function() {
+
+    var init,
+        usedKeyboard,
+        usedMouse;
+
+    var keyboardField,
+        mouseField,
+        jsField;
+
+    init = function() {
+        keyboardField = document.getElementById('$keyboard_field');
+        mouseField    = document.getElementById('$mouse_field');
+        jsField       = document.getElementById('$js_field');
+
+        jsField.value = 'true';
+        window.onkeyup     = usedKeyboard;
+        window.onmousemove = usedMouse;
+    };
+
+    usedKeyboard = function() {
+        keyboardField.value = 'true';
+    }
+
+    usedMouse = function() {
+        mouseField.value = 'true';
+    }
+
+    return {
+        init: init
+    };
+
+}());
+
+sbnc.core.init();
+</script>
+
+CODE;
+        return $code;
     }
 
     public function print_js() {
