@@ -16,8 +16,8 @@ class Validate extends Module implements ModuleInterface {
      * @var array
      */
     private $errors = [
-        'email'     => 'Email is not valid.',
-        'url'       => 'URL is not valid.',
+        'email'     => '%field% is not valid',
+        'url'       => '%field% is not valid',
         'required'  => '%field% is required'
     ];
 
@@ -27,10 +27,13 @@ class Validate extends Module implements ModuleInterface {
         'required' => ['email', 'name', 'message']
     ];
 
+    protected function init() {}
+
     public function check() {
         foreach ($this->options as $key => $value) {
             foreach ($value as $name) {
                 if (isset($this->master['request'][$name])) {
+                    if (strcmp($key, 'required') !== 0 && empty($this->master['request'][$name])) continue;
                     $func = 'validate_' . $key;
                     $this->$func($this->master['request'][$name], $name);
                 }
@@ -49,7 +52,8 @@ class Validate extends Module implements ModuleInterface {
 
     protected function validate_email($value, $name) {
         if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
-            array_push($this->master['errors'], $this->errors['email']);
+            $err = str_replace('%field%', $name, $this->errors['email']);
+            array_push($this->master['errors'], $err);
             return false;
         }
         return true;
@@ -57,7 +61,8 @@ class Validate extends Module implements ModuleInterface {
 
     protected function validate_ip($value, $name) {
         if (filter_var($value, FILTER_VALIDATE_IP) === false) {
-            array_push($this->master['errors'], $this->errors['ip']);
+            $err = str_replace('%field%', $name, $this->errors['ip']);
+            array_push($this->master['errors'], $err);
             return false;
         }
         return true;
@@ -65,7 +70,8 @@ class Validate extends Module implements ModuleInterface {
 
     protected function validate_url($value, $name) {
         if (filter_var($value, FILTER_VALIDATE_URL) === false) {
-            array_push($this->master['errors'], $this->errors['url']);
+            $err = str_replace('%field%', $name, $this->errors['url']);
+            array_push($this->master['errors'], $err);
             return false;
         }
         return true;
