@@ -27,15 +27,11 @@ class Validate extends Module implements ModuleInterface {
         'required' => ['email', 'name', 'message']
     ];
 
-    protected function init() {
-
-    }
-
-    protected function check() {
+    public function check() {
         foreach ($this->options as $key => $value) {
             foreach ($value as $name) {
                 if (isset($this->master['request'][$name])) {
-                    $func = 'validate_' . $name;
+                    $func = 'validate_' . $key;
                     $this->$func($this->master['request'][$name], $name);
                 }
             }
