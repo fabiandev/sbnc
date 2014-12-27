@@ -27,7 +27,6 @@ class Core
 
         $this->fields = [
             'js'     => null,
-            'count'  => 0,
             'prefix' => &$this->options['prefix'][0],
             'url'    => 'http' . (($_SERVER['SERVER_PORT'] == 443) ? 's://' : '://') .
                 $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
@@ -191,6 +190,19 @@ class Core
             echo '<li>' . $error . '</li>';
         }
         echo '</ul>';
+    }
+
+    public function get_error() {
+        if ($this->addon_exists('Flasher')) {
+            $errors = $this->addons['Flasher']->get_errors();
+            $err = reset($errors);
+            return reset($errors);
+        }
+        return reset($this->errors);
+    }
+
+    public function print_error() {
+        echo $this->get_error();
     }
 
     public function get_flash_message($type, $key, $safe = false) {

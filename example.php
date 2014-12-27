@@ -21,6 +21,7 @@ $sbnc->start($my_action);
 <h3><a href="http://fabianweb.net/sbnc">sbnc v0.2</a> [<a href="https://github.com/fabianweb/sbnc">github</a>]</h3>
 <?php
 $sbnc->print_errors();
+// OR: $sbnc->print_error();
 ?>
 <form action="example.php" method="post">
     <fieldset>
