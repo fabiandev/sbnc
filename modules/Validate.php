@@ -53,7 +53,7 @@ class Validate extends Module implements ModuleInterface {
         'name'    => ['required', 'min:4', 'max:30'],
         'message' => ['required', 'min:10', 'max:1000'],
 
-        // other examples:
+        // other examples
         'mail'    => ['email', 'required'],
         'url'     => ['url'],
         'link'    => ['url'],
