@@ -10,7 +10,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
     // and create an api key for http:BL
     private $api_key;
 
-    private $ip = '195.211.155.157'; // 195.211.155.157
+    private $ip; // 195.211.155.157
 
     private $flash;
 
@@ -23,8 +23,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
     {
         $this->api_key = file_get_contents('./honeypot.key');
         if (!empty($this->api_key)) $this->enabled = true;
-        //$this->enabled = false;
-        //$this->ip = $this->get_ip();
+        if (empty($this->ip)) $this->ip = $this->get_ip();
         $this->flash = new FlashMessages();
         $this->flash->set_namespace('sbnc_honeypot');
     }
@@ -38,18 +37,21 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         }
 
         if ($this->flash->is_set($this->ip)) {
-            $this->parse($this->flash->get_safe($this->ip));
+            $flash_data = $this->flash->get_safe($this->ip);
+            if($flash_data['spam'] === 1) $this->parse($flash_data);
             return;
         }
 
         $query = $this->api_key . '.' . implode('.', array_reverse(explode('.', $this->ip))) . '.dnsbl.httpbl.org';
         $response = gethostbyname($query);
+
         if (strcmp($query, $response) !== 0) {
             $response = explode('.', $response);
 
             if (strcmp($response[0], '127') === 0) {
 
                 $data = [
+                    'spam'     => 1,
                     'type'     => $response[0],
                     'activity' => $response[1],
                     'threat'   => $response[2],
@@ -60,6 +62,8 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
 
             }
 
+        } else {
+            $this->flash->flash($this->ip, ['spam' => 0]);
         }
 
     }

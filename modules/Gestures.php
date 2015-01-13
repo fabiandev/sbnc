@@ -14,8 +14,8 @@ class Gestures extends Module implements ModuleInterface {
      * @var array
      */
     private $errors = [
-        'mouse'     => 'Spam! Mouse not used',
-        'keyboard'  => 'Spam! Keyboard not used',
+        'mouse'     => 'Mouse not used',
+        'keyboard'  => 'Keyboard not used',
         'js'        => 'JavaScript must be activated'
     ];
 

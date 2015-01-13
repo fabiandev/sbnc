@@ -72,6 +72,7 @@ if ($sbnc->is_valid()) {
 <pre>
 <?php
 print_r($_SESSION);
+//unset($_SESSION['sbnc_honeypot']);
 ?>
 </pre>
 </body>

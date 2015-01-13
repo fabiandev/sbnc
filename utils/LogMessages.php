@@ -21,7 +21,7 @@ class LogMessages extends Util implements UtilInterface {
                 $content .= '|' . $value;
             }
         } else {
-            $content = $data;
+            $content .= '|' . $data;
         }
 
         $content .= '|' . $this->get_ip();
