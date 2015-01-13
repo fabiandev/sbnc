@@ -14,6 +14,7 @@ class Time extends Module implements ModuleInterface {
     ];
 
     protected function init() {
+        $this->enabled = true;
         $this->master['fields']['time'] = time();
     }
 

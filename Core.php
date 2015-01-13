@@ -70,33 +70,49 @@ class Core
     }
 
     protected function addon_exists($addon) {
-        return array_key_exists($addon, $this->addons) ? true : false;
+        return array_key_exists($addon, $this->addons) && $this->addons[$addon]->is_enabled() ? true : false;
     }
 
     protected function module_exists($module) {
-        return array_key_exists($module, $this->modules) ? true : false;
+        return array_key_exists($module, $this->modules) && $this->modules[$module]->is_enabled() ? true : false;
+    }
+
+    protected function util_exists($util) {
+        return array_key_exists($util, $this->utils) && $this->utils[$util]->is_enabled() ? true : false;
     }
 
     protected function component_exists($component) {
-        return $this->addon_exists($component) || $this->module_exists($component) ? true : false;
+        return $this->addon_exists($component) || $this->module_exists($component) ? true : false ||
+               $this->util_exists($component) ? true : false;
+    }
+
+    public function get_addon($addon) {
+        if ($this->addon_exists($addon)) {
+            return $this->addons[$addon];
+        }
+        return null;
+    }
+
+    public function get_module($module) {
+        if ($this->module_exists($module)) return $this->modules[$module];
+        return null;
+    }
+
+    public function get_util($util) {
+        if ($this->util_exists($util)) return $this->utils[$util];
+        return null;
     }
 
     protected function before() {
-        foreach ($this->modules as $module) {
-            $module->before();
-        }
-        foreach ($this->addons as $addon) {
-            $addon->before();
-        }
+        foreach ($this->utils as $util) $util->before();
+        foreach ($this->modules as $module) $module->before();
+        foreach ($this->addons as $addon) $addon->before();
     }
 
     protected function after() {
-        foreach ($this->modules as $module) {
-            $module->after();
-        }
-        foreach ($this->addons as $addon) {
-            $addon->after();
-        }
+        foreach ($this->utils as $util) $util->after();
+        foreach ($this->modules as $module) $module->after();
+        foreach ($this->addons as $addon) $addon->after();
     }
 
     protected function manipulate_request() {
@@ -159,9 +175,9 @@ class Core
     public function is_valid() {
         if ($this->addon_exists('Flasher')) {
             $num_errors = $this->addons['Flasher']->count_errors();
-            return !($num_errors > 0);
+            return $this->utils['FlashMessages']->get('_sbnc', 'redirected') && !($num_errors > 0);
         }
-        return !(count($this->errors) > 0);
+        return !(count($this->errors) > 0) && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
     }
 
     public function is_invalid() {
@@ -184,7 +200,6 @@ class Core
     }
 
     public function print_errors($class = '') {
-        if ($this->is_valid()) return;
         echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
         foreach ($this->get_errors() as $key => $error) {
             echo '<li>' . $error . '</li>';
@@ -195,7 +210,6 @@ class Core
     public function get_error() {
         if ($this->addon_exists('Flasher')) {
             $errors = $this->addons['Flasher']->get_errors();
-            $err = reset($errors);
             return reset($errors);
         }
         return reset($this->errors);
@@ -205,34 +219,16 @@ class Core
         echo $this->get_error();
     }
 
-    public function get_flash_message($type, $key, $safe = false) {
-        return $safe ? $this->utils['FlashMessages']->get_safe($type, $key) :
-                       $this->utils['FlashMessages']->get($type, $key);
-    }
-
-    public function print_flash_message($type, $key, $safe = false) {
-        echo $this->get_flash_message($type, $key, $safe);
-    }
-
-    public function get_flash_messages($type, $safe = false) {
-        return $safe ? $this->utils['FlashMessages']->get_safe($type) :
-                       $this->utils['FlashMessages']->get($type);
-    }
-
-    public function print_flash_messages($type, $safe) {
-        echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
-        foreach ($this->get_flash_messages($type, $safe) as $key => $message) {
-            echo '<li>' . $message . '</li>';
-        }
-        echo '</ul>';
-    }
-
     public function get_value($name, $nl2br = false, $safe = false) {
         return $this->filter($name, $nl2br, $safe);
     }
 
     public function print_value($name, $nl2br = false, $safe = false) {
         echo $this->get_value($name, $nl2br, $safe);
+    }
+
+    public function print_fields() {
+        echo $this->get_fields();
     }
 
     public function get_fields() {
@@ -248,8 +244,8 @@ class Core
         return $html;
     }
 
-    public function print_fields() {
-        echo $this->get_fields();
+    public function print_js() {
+        echo $this->get_js();
     }
 
     public function get_js() {
@@ -302,10 +298,6 @@ sbnc.core.init();
 
 CODE;
         return $code;
-    }
-
-    public function print_js() {
-        echo $this->get_js();
     }
 
 }

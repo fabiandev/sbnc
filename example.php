@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
+error_reporting(E_ALL); // remove this line in production
+ini_set('display_errors', 'On'); // remove this line in production
 require 'Sbnc.php';
 $sbnc = new Sbnc\Sbnc();
 $my_action = function($sbnc) {
@@ -11,6 +11,9 @@ $my_action = function($sbnc) {
     // with $sbnc->add_error('My error message');
 };
 $sbnc->start($my_action);
+if ($sbnc->is_valid()) {
+    echo 'VALID';
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -19,10 +22,14 @@ $sbnc->start($my_action);
 </head>
 <body>
 <h3><a href="http://fabianweb.net/sbnc">sbnc v0.2</a> [<a href="https://github.com/fabianweb/sbnc">github</a>]</h3>
-<?php
-$sbnc->print_errors();
-// OR: $sbnc->print_error();
-?>
+<p>
+    Display All Errors:
+    <?php $sbnc->print_errors(); ?>
+</p>
+<p>
+    Display One Error:<br>
+    <?php $sbnc->print_error(); ?>
+</p>
 <form action="example.php" method="post">
     <fieldset>
         <legend>Data:</legend>
@@ -39,5 +46,12 @@ $sbnc->print_errors();
     <input type="submit" id="submit" value="Submit">
 </form>
 <?php $sbnc->print_js(); ?>
+<?php
+var_dump($_SESSION);
+?>
+<br><br>
+<?php
+var_dump($sbnc->get_util('FlashMessages')->get_safe('_sbnc', 'submitted'));
+?>
 </body>
 </html>

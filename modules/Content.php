@@ -17,7 +17,7 @@ class Content extends Module implements ModuleInterface {
 
 
     protected function init() {
-
+        $this->enabled = true;
     }
 
 

@@ -24,10 +24,13 @@ class Validate extends Module implements ModuleInterface {
     private $options = [
         'email'    => ['email', 'mail'],
         'url'      => ['url', 'link', 'web'],
+        'ip'       => ['ip'],
         'required' => ['email', 'name', 'message']
     ];
 
-    protected function init() {}
+    protected function init() {
+        $this->enabled = true;
+    }
 
     public function check() {
         foreach ($this->options as $key => $value) {

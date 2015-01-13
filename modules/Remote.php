@@ -18,7 +18,7 @@ class Remote extends Module implements ModuleInterface {
     ];
 
     protected function init() {
-
+        $this->enabled = true;
     }
 
     public function check() {

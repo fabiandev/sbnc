@@ -24,6 +24,7 @@ class Gestures extends Module implements ModuleInterface {
     ];
 
     protected function init() {
+        $this->enabled = true;
         $this->master['fields']['mouse']    = null;
         $this->master['fields']['keyboard'] = null;
     }

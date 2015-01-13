@@ -3,9 +3,6 @@ namespace Sbnc\Addons;
 
 class Flasher extends Addon implements AddonInterface {
 
-
-    protected $enabled = false;
-
     // set explicit redirect for security reasons!!
     protected $options = [
         'redirect:error'    => [true, null],
@@ -25,28 +22,34 @@ class Flasher extends Addon implements AddonInterface {
             }
             if (!empty($this->master['errors']) && $this->options['redirect:error'][0] === true) {
                 if (!$this->options['redirect:error'][1]) {
+                    $this->master['utils']['FlashMessages']->flash('_sbnc', ['redirected' => true]);
                     header('Location: ' . $this->master['request']['url']);
                     exit;
                 } else {
+                    $this->master['utils']['FlashMessages']->flash('_sbnc', ['redirected' => true]);
                     header('Location: ' . $this->options['redirect:error'][1]);
                     exit;
                 }
             } elseif (empty($this->master['errors']) && $this->options['redirect:success'][0] === true) {
                 if (!$this->options['redirect:success'][1]) {
+                    $this->master['utils']['FlashMessages']->flash('_sbnc', ['redirected' => true]);
                     header('Location: ' . $this->master['request']['url']);
                     exit;
                 } else {
+                    $this->master['utils']['FlashMessages']->flash('_sbnc', ['redirected' => true]);
                     header('Location: ' . $this->options['redirect:success'][1]);
                     exit;
                 }
             }
         }
+        $this->master['utils']['FlashMessages']->remove('_sbnc', 'redirected');
     }
 
     public function get_errors($safe = false) {
         if (!$this->enabled) return $this->master['errors'];
-        return $safe ? $this->master['utils']['FlashMessages']->get_safe('errors') :
-                       $this->master['utils']['FlashMessages']->get('errors');
+        $response =  $safe ? $this->master['utils']['FlashMessages']->get_safe('errors') :
+                             $this->master['utils']['FlashMessages']->get('errors');
+        return !empty($response) ? $response : $this->master['utils']['FlashMessages']->get_cache('errors');
     }
 
     public function count_errors() {
@@ -56,8 +59,9 @@ class Flasher extends Addon implements AddonInterface {
 
     public function get_request($key, $safe = false) {
         if (!$this->enabled) return isset($this->master['request'][$key]) ? $this->master['request'][$key] : '';
-        return $safe ? $this->master['utils']['FlashMessages']->get_safe('request', $key) :
-                       $this->master['utils']['FlashMessages']->get('request', $key);
+        $response =  $safe ? $this->master['utils']['FlashMessages']->get_safe('request', $key) :
+                             $this->master['utils']['FlashMessages']->get('request', $key);
+        return !empty($response) ? $response : $this->master['utils']['FlashMessages']->get_cache('request', $key);
     }
 
 }
