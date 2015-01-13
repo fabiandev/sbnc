@@ -33,6 +33,7 @@ class Gestures extends Module implements ModuleInterface {
         if (in_array('js', $this->options['mode'])) {
             if (!isset($this->master['request']['js']) || strcmp($this->master['request']['js'], 'true') !== 0) {
                 array_push($this->master['errors'], $this->errors['js']);
+                $this->master['utils']['LogMessages']->log('spam-gestures', 'JavaScript not enabled');
                 return;
             }
         }
@@ -40,12 +41,14 @@ class Gestures extends Module implements ModuleInterface {
         if (in_array('keyboard', $this->options['mode'])) {
             if (!isset($this->master['request']['keyboard']) || strcmp($this->master['request']['keyboard'], 'true') !== 0) {
                 array_push($this->master['errors'], $this->errors['keyboard']);
+                $this->master['utils']['LogMessages']->log('spam-gestures', 'Keyboard not used');
             }
         }
 
         if (in_array('mouse', $this->options['mode'])) {
             if (!isset($this->master['request']['mouse']) || strcmp($this->master['request']['mouse'], 'true') !== 0) {
                 array_push($this->master['errors'], $this->errors['mouse']);
+                $this->master['utils']['LogMessages']->log('spam-gestures', 'Mouse not used');
             }
         }
     }

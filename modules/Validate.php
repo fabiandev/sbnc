@@ -239,7 +239,7 @@ class Validate extends Module implements ModuleInterface {
 
     protected function validate_regex($value, $name, $options) {
         $regex = $options[0];
-        if (count($options) > 1) foreach ($options as $option) $regex += $option;
+        if (count($options) > 1) foreach ($options as $option) $regex .= $option;
         if (!preg_match($regex, $value)) {
             if (isset($this->errors[$name]['regex'])) {
                 $err = str_replace('%field%', $name, $this->errors[$name]['regex']);

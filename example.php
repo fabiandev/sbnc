@@ -68,5 +68,11 @@ if ($sbnc->is_valid()) {
 </form>
 
 <?php $sbnc->print_js(); ?>
+
+<pre>
+<?php
+print_r($_SESSION);
+?>
+</pre>
 </body>
 </html>

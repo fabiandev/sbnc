@@ -21,11 +21,6 @@ class Content extends Module implements ModuleInterface {
     }
 
 
-    /**
-     * Starts module check
-     *
-     * @param $master
-     */
     public function check() {
 
     }

@@ -16,6 +16,7 @@ class Hidden extends Module implements ModuleInterface {
         if (!isset($this->master['request']['check']) ||  strlen(trim($this->master['request']['check'])) != 0) {
             $err = str_replace('%field%', 'check', $this->errors['error']);
             array_push($this->master['errors'], $err);
+            $this->master['utils']['LogMessages']->log('spam-hidden', 'Hidden field was not empty: ' . $this->master['request']['check']);
         }
     }
 

@@ -25,8 +25,10 @@ class Time extends Module implements ModuleInterface {
 
         if ($diff < $this->options['min']) {
             array_push($this->master['errors'], $this->errors['min']);
+            $this->master['utils']['LogMessages']->log('spam-fast-response', 'Submit too fast: < ' . $this->options['min']);
         } elseif ($diff > $this->options['max']) {
             array_push($this->master['errors'], $this->errors['max']);
+            $this->master['utils']['LogMessages']->log('spam-timeout', 'Submit too slow: > ' . $this->options['max']);
         }
     }
 

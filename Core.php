@@ -161,7 +161,7 @@ class Core
         $this->manipulate_request();
 
         foreach ($this->modules as $module) {
-            $module->check($this->master);
+            if ($module->is_enabled()) $module->check($this->master);
         }
 
         if (is_callable($action)) {

@@ -24,7 +24,7 @@ class Sbnc extends Core
         'Gestures',
         'Content',
         'Validate',
-        'Remote'
+        'RemoteHttpBlacklist'
     ];
 
     protected $addons = [
@@ -33,7 +33,8 @@ class Sbnc extends Core
 
 
     protected $utils = [
-        'FlashMessages' // this util is required!
+        'FlashMessages',
+        'LogMessages'
     ];
 
     /**

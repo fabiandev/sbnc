@@ -10,10 +10,14 @@ class FlashMessages extends Util implements UtilInterface {
         'session_name'      => 'sbnc_flash'
     ];
 
+    public function set_namespace($session_name) {
+        $this->options['session_name'] = $session_name;
+    }
+
     protected function init() {
         if (session_status() == PHP_SESSION_DISABLED) return;
         if (session_status() == PHP_SESSION_NONE && headers_sent()) return;
-        if (session_start()) $this->enabled = true;
+        if (session_status() == PHP_SESSION_ACTIVE || session_start()) $this->enabled = true;
         unset($_SESSION[$this->options['session_name']]['_CACHE_']);
     }
 
