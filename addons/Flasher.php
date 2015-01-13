@@ -42,13 +42,13 @@ class Flasher extends Addon implements AddonInterface {
                 }
             }
         }
-        $this->master['utils']['FlashMessages']->remove('_sbnc', 'redirected');
+        // remove messages from session, retrieved from cache
+        $this->master['utils']['FlashMessages']->flush();
     }
 
-    public function get_errors($safe = false) {
+    public function get_errors() {
         if (!$this->enabled) return $this->master['errors'];
-        $response =  $safe ? $this->master['utils']['FlashMessages']->get_safe('errors') :
-                             $this->master['utils']['FlashMessages']->get('errors');
+        $response = $this->master['utils']['FlashMessages']->get('errors');
         return !empty($response) ? $response : $this->master['utils']['FlashMessages']->get_cache('errors');
     }
 
@@ -57,11 +57,17 @@ class Flasher extends Addon implements AddonInterface {
         return $this->master['utils']['FlashMessages']->count('errors');
     }
 
-    public function get_request($key, $safe = false) {
+    public function get_request($key) {
         if (!$this->enabled) return isset($this->master['request'][$key]) ? $this->master['request'][$key] : '';
-        $response =  $safe ? $this->master['utils']['FlashMessages']->get_safe('request', $key) :
-                             $this->master['utils']['FlashMessages']->get('request', $key);
+        $response = $this->master['utils']['FlashMessages']->get('request', $key);
         return !empty($response) ? $response : $this->master['utils']['FlashMessages']->get_cache('request', $key);
+    }
+
+    public function was_submitted() {
+        if ($this->master['utils']['FlashMessages']->is_set('_sbnc', 'redirected')) {
+            return true;
+        }
+        return false;
     }
 
 }

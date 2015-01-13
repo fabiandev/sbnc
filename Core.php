@@ -175,13 +175,17 @@ class Core
     public function is_valid() {
         if ($this->addon_exists('Flasher')) {
             $num_errors = $this->addons['Flasher']->count_errors();
-            return $this->utils['FlashMessages']->get('_sbnc', 'redirected') && !($num_errors > 0);
+            return $this->addons['Flasher']->was_submitted() && !($num_errors > 0); // $this->utils['FlashMessages']->get('_sbnc', 'redirected')
         }
         return !(count($this->errors) > 0) && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
     }
 
     public function is_invalid() {
-        return !$this->is_valid();
+        if ($this->addon_exists('Flasher')) {
+            return !$this->is_valid() && $this->addons['Flasher']->was_submitted();
+        } else {
+            return !$this->is_valid() && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+        }
     }
 
     public function add_error($error) {
@@ -190,6 +194,13 @@ class Core
             return true;
         }
         return false;
+    }
+
+    public function num_errors() {
+        if ($this->addon_exists('Flasher')) {
+            return $this->addons['Flasher']->count_errors();
+        }
+        return count($this->errors);
     }
 
     public function get_errors() {

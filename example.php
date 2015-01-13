@@ -1,19 +1,21 @@
 <?php
 error_reporting(E_ALL); // remove this line in production
 ini_set('display_errors', 'On'); // remove this line in production
+
 require 'Sbnc.php';
+
 $sbnc = new Sbnc\Sbnc();
+
 $my_action = function($sbnc) {
-    // add your action, e.g. sending a mail
-    // if you use flash messages.
+    // add your own actions here
     //
-    // use any public sbnc method here, like add_error
-    // with $sbnc->add_error('My error message');
+    // you can use any public sbnc method at this point!
+    //
+    // it's also a good place to use $sbnc->add_error('My error message');
+    // if you add some logic on your own
 };
+
 $sbnc->start($my_action);
-if ($sbnc->is_valid()) {
-    echo 'VALID';
-}
 ?>
 <!doctype html>
 <html lang="en">
@@ -21,15 +23,34 @@ if ($sbnc->is_valid()) {
     <title>sbnc example</title>
 </head>
 <body>
+
 <h3><a href="http://fabianweb.net/sbnc">sbnc v0.2</a> [<a href="https://github.com/fabianweb/sbnc">github</a>]</h3>
+
+<p>
+<?php
+if ($sbnc->is_valid()) {
+    echo '<h4 style="color:green">The form is valid.</h4>';
+    // you may send an email here if the form was submitted without errors
+} elseif($sbnc->is_invalid()) {
+    echo '<h4 style="color:red">Errors occured</h4>';
+}
+?>
+</p>
+
 <p>
     Display All Errors:
     <?php $sbnc->print_errors(); ?>
+    <?php if ($sbnc->num_errors() < 1) echo 'No errors'; ?>
+
 </p>
+
 <p>
-    Display One Error:<br>
+    Display Single Error:
+    <br><br>
     <?php $sbnc->print_error(); ?>
+    <?php if ($sbnc->num_errors() < 1) echo 'No errors'; ?>
 </p>
+
 <form action="example.php" method="post">
     <fieldset>
         <legend>Data:</legend>
@@ -45,13 +66,7 @@ if ($sbnc->is_valid()) {
     <?php $sbnc->print_fields(); ?>
     <input type="submit" id="submit" value="Submit">
 </form>
+
 <?php $sbnc->print_js(); ?>
-<?php
-var_dump($_SESSION);
-?>
-<br><br>
-<?php
-var_dump($sbnc->get_util('FlashMessages')->get_safe('_sbnc', 'submitted'));
-?>
 </body>
 </html>

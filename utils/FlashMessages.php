@@ -124,6 +124,23 @@ class FlashMessages extends Util implements UtilInterface {
     public function is_set($type, $key = null) {
         if (!$this->enabled) return false;
         if ($key === null) {
+            if (isset($_SESSION[$this->options['session_name']][$type]) || isset($this->cache[$type])) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (isset($_SESSION[$this->options['session_name']][$type][$key]) || isset($this->cache[$type][$key])) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public function in_session($type, $key = null) {
+        if (!$this->enabled) return false;
+        if ($key === null) {
             if (isset($_SESSION[$this->options['session_name']][$type])) {
                 return true;
             } else {
@@ -157,10 +174,41 @@ class FlashMessages extends Util implements UtilInterface {
         }
     }
 
+    public function remove_cached($type, $key = null) {
+        if (!$this->enabled) return false;
+        if ($key === null) {
+            if (isset($this->cache[$type])) {
+                unset($this->cache[$type]);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (isset($this->cache[$type][$key])) {
+                unset($this->cache[$type][$key]);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public function remove_all($type, $key = null) {
+        $this->remove($type, $key);
+        $this->remove_cached($type, $key);
+    }
+
+    public function flush() {
+        unset($_SESSION[$this->options['session_name']]);
+    }
+
     public function count($type) {
         if (!$this->enabled) return false;
-        if (isset($_SESSION[$this->options['session_name']][$type])) {
+        if (isset($_SESSION[$this->options['session_name']][$type]) &&
+            is_array($_SESSION[$this->options['session_name']][$type])) {
             return count($_SESSION[$this->options['session_name']][$type]);
+        } elseif (isset($this->cache[$type]) && is_array($this->cache[$type])) {
+            return count($this->cache[$type]);
         } else {
             return false;
         }
