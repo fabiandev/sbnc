@@ -57,7 +57,6 @@ class LogMessages extends Util implements UtilInterface
 
         $content .= "\r\n";
 
-
         file_put_contents($this->options['file'], $content, FILE_APPEND);
     }
 
