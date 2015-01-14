@@ -1,5 +1,6 @@
 <?php
 namespace sbnc\modules;
+
 use sbnc\Sbnc;
 
 /**
@@ -23,9 +24,9 @@ class Gestures extends Module implements ModuleInterface
      * @var array
      */
     private $errors = [
-        'mouse'    => 'Mouse not used',
+        'mouse' => 'Mouse not used',
         'keyboard' => 'Keyboard not used',
-        'js'       => 'JavaScript must be activated'
+        'js' => 'JavaScript must be activated'
     ];
 
     /*

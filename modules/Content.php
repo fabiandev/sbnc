@@ -1,5 +1,6 @@
 <?php
 namespace sbnc\modules;
+
 use sbnc\Sbnc;
 
 /**
@@ -32,9 +33,9 @@ class Content extends Module implements ModuleInterface
      * @var array
      */
     private $options = [
-        'maxlinks'    => 2,
-        'mailwords'   => true,
-        'spamwords'   => 3,
+        'maxlinks' => 2,
+        'mailwords' => true,
+        'spamwords' => 3,
         'samecontent' => 2
     ];
 
@@ -44,9 +45,9 @@ class Content extends Module implements ModuleInterface
      * @var array
      */
     private $errors = [
-        'maxlinks'    => 'A maximum of %max% links (http://) are allowed on the entire form.',
-        'mailwords'   => 'Mail injection detected. Do not use these words: bcc:, cc:, multipart, [url, Content-Type',
-        'spamwords'   => 'A maximum of %max% blacklisted matches are allowed. You used: %words%',
+        'maxlinks' => 'A maximum of %max% links (http://) are allowed on the entire form.',
+        'mailwords' => 'Mail injection detected. Do not use these words: bcc:, cc:, multipart, [url, Content-Type',
+        'spamwords' => 'A maximum of %max% blacklisted matches are allowed. You used: %words%',
         'samecontent' => 'More than %max% fields contain the exact same content'
     ];
 
@@ -72,7 +73,7 @@ class Content extends Module implements ModuleInterface
         'texas-holdem', 'thorcarlson', 'thx', 'tits', 'titties', 'top-e-site', 'top-site', 'tramadol', 'trading',
         'trim-spa', 'ultram', 'valeofglamorganconservatives', 'valium', 'valtrex', 'viagra', 'vicodin', 'vicoprofen',
         'vioxx', 'visa', 'xanax', 'xenical', 'youtube', 'zolus'
-        ];
+    ];
 
     ######################################################################################
     ######################################################################################
@@ -100,7 +101,7 @@ class Content extends Module implements ModuleInterface
         }
 
         if (in_array('mailwords', $this->options)) {
-            if (preg_match( "/bcc:|cc:|multipart|\[url|Content-Type:/i", $request)) {
+            if (preg_match("/bcc:|cc:|multipart|\[url|Content-Type:/i", $request)) {
                 $err = $this->errors['mailwords'];
                 Sbnc::add_error($err);
                 Sbnc::util('LogMessages')->log('spam-content', 'Mail injection detected');

@@ -97,9 +97,17 @@ class Sbnc
     private static $initialized = false;
 
     // do not allow to create an instance of sbnc
-    private function __construct() {}
-    private function __destruct() {}
-    private function __clone() {}
+    private function __construct()
+    {
+    }
+
+    private function __destruct()
+    {
+    }
+
+    private function __clone()
+    {
+    }
 
     /*
      * Catch all static calls and let the core handle the request

@@ -1,5 +1,6 @@
 <?php
 namespace sbnc\utils;
+
 use sbnc\Sbnc;
 
 /**

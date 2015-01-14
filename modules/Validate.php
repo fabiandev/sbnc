@@ -30,16 +30,16 @@ class Validate extends Module implements ModuleInterface
      */
     private $options = [
         // used by example.php
-        'email'   => ['email', 'required', 'notags'],
-        'name'    => ['required', 'notags', 'min:4', 'max:30'],
+        'email' => ['email', 'required', 'notags'],
+        'name' => ['required', 'notags', 'min:4', 'max:30'],
         'message' => ['required', 'notags', 'min:10', 'max:1000'],
 
         // other examples
         'mail' => ['email', 'required'],
-        'url'  => ['url'],
+        'url' => ['url'],
         'link' => ['url'],
-        'web'  => ['url'],
-        'ip'   => ['ip'],
+        'web' => ['url'],
+        'ip' => ['ip'],
     ];
 
     /**
@@ -50,20 +50,20 @@ class Validate extends Module implements ModuleInterface
      * @var array
      */
     private $errors = [
-        'email'    => [
-            'email'    => 'Check your Email Address!',
+        'email' => [
+            'email' => 'Check your Email Address!',
             'required' => 'No Email Address given.'
         ],
-        'name'    => [
+        'name' => [
             'required' => 'What\'s your name?',
-            'min'      => 'Your name is too short. %min% characters minimum!',
-            'max'      => 'Your name is too long. %max% characters maximum!',
+            'min' => 'Your name is too short. %min% characters minimum!',
+            'max' => 'Your name is too long. %max% characters maximum!',
         ],
         'message' => [
             'required' => 'Please write something :-)',
-            'min'      => 'The message is too short. %min% characters minimum!',
-            'max'      => 'The message is too long. %max% characters maximum!',
-            'notags'   => 'Tags are not allowed in the message!'
+            'min' => 'The message is too short. %min% characters minimum!',
+            'max' => 'The message is too long. %max% characters maximum!',
+            'notags' => 'Tags are not allowed in the message!'
         ]
     ];
 
@@ -74,19 +74,19 @@ class Validate extends Module implements ModuleInterface
      * @var array
      */
     private $default_errors = [
-        'notags'      => '%field% does not allow tags',
-        'email'       => '%field% is not valid',
-        'url'         => '%field% is not valid',
-        'required'    => '%field% is required',
-        'min'         => '%field% must have a minimum of %min% characters',
-        'max'         => '%field% must not have more than %max% characters',
-        'alphanum'    => '%field% only allows alphanumeric characters',
-        'latin'       => '%field% only allows latin characters',
+        'notags' => '%field% does not allow tags',
+        'email' => '%field% is not valid',
+        'url' => '%field% is not valid',
+        'required' => '%field% is required',
+        'min' => '%field% must have a minimum of %min% characters',
+        'max' => '%field% must not have more than %max% characters',
+        'alphanum' => '%field% only allows alphanumeric characters',
+        'latin' => '%field% only allows latin characters',
         'latindigits' => '%field% only allows latin characters and digits',
-        'alpha'       => '%field% only allows alpha characters',
-        'digit'       => '%field% may only contain digits',
-        'numeric'     => '%field% may only contain numeric values',
-        'regex'       => '%field% is not valid'
+        'alpha' => '%field% only allows alpha characters',
+        'digit' => '%field% may only contain digits',
+        'numeric' => '%field% may only contain numeric values',
+        'regex' => '%field% is not valid'
     ];
 
     ######################################################################################
@@ -115,8 +115,9 @@ class Validate extends Module implements ModuleInterface
         }
     }
 
-    protected function validate_notags($value, $name, $options) {
-        if($value != strip_tags($value)) {
+    protected function validate_notags($value, $name, $options)
+    {
+        if ($value != strip_tags($value)) {
             if (isset($this->errors[$name]['notags'])) {
                 $err = str_replace('%field%', $name, $this->errors[$name]['notags']);
             } else {
