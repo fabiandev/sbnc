@@ -26,6 +26,9 @@ class Content extends Module implements ModuleInterface
      *
      * - spamwords
      *      allow a maximum of words from the spamwords list in your form
+     *      multiple words count as one match e.g. "buy viagra today at viagrastore.com"
+     *      gets a score of 1
+     *      to change this behavior set the second value at the spamwords option to true
      *
      * - samecontent
      *      specify in how many fields there may be the exact same content
@@ -35,7 +38,7 @@ class Content extends Module implements ModuleInterface
     private $options = [
         'maxlinks' => 2,
         'mailwords' => true,
-        'spamwords' => 3
+        'spamwords' => [3, false]
     ];
 
     /**
@@ -46,7 +49,7 @@ class Content extends Module implements ModuleInterface
     private $errors = [
         'maxlinks' => 'A maximum of %max% links (http://) are allowed on the entire form.',
         'mailwords' => 'Mail injection detected. Do not use these words: bcc:, cc:, multipart, [url, Content-Type',
-        'spamwords' => 'A maximum of %max% blacklisted matches are allowed. You used: %words%'
+        'spamwords' => 'A maximum of %max% blacklisted matches are allowed. Matches: %words%'
     ];
 
     /**
@@ -55,7 +58,7 @@ class Content extends Module implements ModuleInterface
      * @var array Collection of spam words
      */
     private $spamwords = [
-        'д', 'и', 'ж', 'Ч', 'Б', '. ,', '? ,', '[url=', '[/url]',
+        'д', 'и', 'ж', 'Ч', 'Б', '\. ,', '\? ,', '\[url=', '\[/url\]',
         '-online', '4u', 'aceteminophen', 'adderall', 'adipex', 'advicer', 'ambien', 'anime', 'ass', 'augmentation',
         'baccarat', 'baccarrat', 'bdsm', 'bitch', 'blackjack', 'bllogspot', 'booker', 'breast', 'byob',
         'car-rental-e-site', 'car-rentals-e-site', 'carisoprodol', 'casino', 'casinos', 'cephalaxin', 'chatroom',
@@ -85,7 +88,7 @@ class Content extends Module implements ModuleInterface
     protected function init()
     {
         $this->enabled = true;
-        $this->options['maxlinks']++; // because request
+        $this->options['maxlinks']++;
     }
 
 
@@ -93,7 +96,7 @@ class Content extends Module implements ModuleInterface
     {
         $request = implode(Sbnc::request());
 
-        if (in_array('maxlinks', $this->options)) {
+        if (array_key_exists('maxlinks', $this->options)) {
             if (preg_match_all("/<a|http:/i", $request, $out) > $this->options['maxlinks']) {
                 $err = str_replace('%max%', $this->options['maxlinks'], $this->errors['maxlinks']);
                 Sbnc::add_error($err);
@@ -103,27 +106,30 @@ class Content extends Module implements ModuleInterface
             }
         }
 
-        if (in_array('mailwords', $this->options)) {
+        if (array_key_exists('mailwords', $this->options)) {
             if (preg_match("/bcc:|cc:|multipart|\[url|Content-Type:/i", $request)) {
                 $err = $this->errors['mailwords'];
                 Sbnc::add_error($err);
                 Sbnc::util('LogMessages')->log('spam-content', 'Mail injection detected');
             }
         }
-        if (in_array('spamwords', $this->options)) {
-            $matches = [];
+        if (array_key_exists('spamwords', $this->options)) {
 
-            foreach ($this->spamwords as $word) {
-                if (strripos($request, $word)) {
-                    array_push($matches, $word);
-                }
+            $names = implode('|', $this->spamwords);
+            $regex = '#[-+]?(' .  $names . ')#';
+            preg_match_all($regex, $request, $all_matches);
+
+            if (!$this->options['spamwords'][1]) {
+                $matches = isset($all_matches[0]) ? array_unique($all_matches[0]) : [];
+            } else {
+                $matches = isset($all_matches[0]) ? $all_matches[0] : [];
             }
 
-            if (count($matches) > $this->options['spamwords']) {
+            if (count($matches) > $this->options['spamwords'][0]) {
                 $words = implode(', ', $matches);
-                $err = str_replace(['%max%', '%words%'], [$this->options['maxlinks'], $words], $this->errors['spamwords']);
+                $err = str_replace(['%max%', '%words%'], [$this->options['spamwords'][0], $words], $this->errors['spamwords']);
                 Sbnc::add_error($err);
-                $log = 'More than ' . $this->options['spamwords'] . ' spamwords found: ' . $words;
+                $log = 'More than ' . $this->options['spamwords'][0] . ' spamwords found: ' . $words;
                 Sbnc::util('LogMessages')->log('spam-content', $log);
             }
         }
