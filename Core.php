@@ -3,13 +3,59 @@ namespace sbnc;
 
 class Core
 {
+    ######################################################################################
+    #########################  DO NOT CHANGE CODE IN THIS FILE   #########################
+    #########################   UNLESS YOU KNOW WHAT YOU DO :)   #########################
+    ######################################################################################
+
+    /**
+     * Holds instances of all modules, utils and addons
+     *
+     * @var array
+     */
     protected static $components = [];
-    protected static $request    = [];
-    protected static $fields     = [];
+
+    /**
+     * Holds the request if form was submitted
+     *
+     * @var array
+     */
+    protected static $request = [];
+
+    /**
+     * Holds all fields that should be added by sbnc
+     *
+     * @var array
+     */
+    protected static $fields = [];
+
+    /**
+     * Holds all JavaScript that should be added
+     *
+     * @var array
+     */
     protected static $javascript = [];
-    protected static $options    = [];
-    protected static $errors     = [];
-    protected static $data       = [];
+
+    /**
+     * Holds all options
+     *
+     * @var array
+     */
+    protected static $options = [];
+
+    /**
+     * Holds all error messages
+     *
+     * @var array
+     */
+    protected static $errors = [];
+
+    /**
+     * Additional data that may be added
+     *
+     * @var array
+     */
+    protected static $data = [];
 
     public function __construct(array $data)
     {
@@ -21,6 +67,56 @@ class Core
         self::$options = $data['options'];
     }
 
+    /**
+     * Handles static class calls to the Sbnc class:
+     *
+     * - Sbnc::errors()
+     *    - no parameters
+     *        return whole errors array
+     *    - one parameter (int)
+     *        return specific error by numeric index
+     *
+     * - Sbnc::request()
+     *   - no parameters
+     *         return whole request array
+     *   - one parameter (string)
+     *         return specific request by name (e.g. email field)
+     *
+     * - Sbnc::field() / Sbnc::fields()
+     *   - no parameter
+     *         return array with all fields
+     *   - one parameter (string)
+     *         return specific field by name (e.g. email field)
+     *
+     * - Sbnc::option() / Sbnc::options()
+     *   - no parameter
+     *         return array with all options
+     *   - one parameter
+     *         return specific option by key
+     *
+     * - Sbnc::data()
+     *   - no parameter
+     *         returns data array
+     *   - 1 - 4 parameters
+     *         return specific value by key(s)
+     *
+     * - Sbnc::module() / Sbnc::addon() / Sbnc::util()
+     *   - no parameter
+     *         return array with instances of all components of type
+     *   - one parameter (string)
+     *         return specific component instance by name
+     *
+     * - Other calls e.g. Sbnc::add_error('Custom error')
+     *   - no parameter
+     *         calls a public method of core with no parameters if possible
+     *   - 1 - 4 parameters
+     *         calls a public method of core with 1 - 4 parameter(s) if possible
+     *
+     * @param $name
+     * @param string $params
+     * @return null
+     * @throws \Exception
+     */
     public function call($name, $params = '')
     {
         $count = 0;
@@ -63,6 +159,7 @@ class Core
                     return self::$fields[$first];
                 }
                 return null;
+            case 'option':
             case 'options':
                 if (empty($params)) {
                     if (isset(self::$options)) {
@@ -125,6 +222,9 @@ class Core
         }
     }
 
+    /**
+     * Initializes in correct order
+     */
     public function init()
     {
         $this->init_javascript();
@@ -134,6 +234,9 @@ class Core
         $this->init_component('addons');
     }
 
+    /**
+     * Initializes form fields and adds required ones
+     */
     private function init_fields()
     {
         if (strcmp(self::$options['prefix'][0], 'random') === 0) {
@@ -147,6 +250,11 @@ class Core
         ];
     }
 
+    /**
+     * Initializes all components by type and creates instances
+     *
+     * @param $name component type
+     */
     private function init_component($name)
     {
         self::$components[$name] = array_fill_keys(self::$components[$name], null);
@@ -161,6 +269,9 @@ class Core
         }
     }
 
+    /**
+     * Adds default JavaScript
+     */
     private function init_javascript()
     {
         $lang = !self::$options['html5'] ? ' language="javascript" type="text/javascript"' : '';
@@ -172,6 +283,14 @@ class Core
         self::$javascript['_modules_'] = [];
     }
 
+    /**
+     * Starts sbnc and performs all checks from loaded modules if enabled.
+     * Only POST submits are handled!
+     * Before and after actions are performed on every request.
+     *
+     * @param null $action User defined function called - if provided - after sbnc checks
+     * @return bool
+     */
     public function start($action = null)
     {
         $this->before();
@@ -195,6 +314,9 @@ class Core
         return true;
     }
 
+    /**
+     * Performs before actions from all components
+     */
     private function before()
     {
         foreach (self::$components['utils'] as $util) $util->before();
@@ -202,6 +324,9 @@ class Core
         foreach (self::$components['addons'] as $addon) $addon->before();
     }
 
+    /**
+     * Performs after actions from all components
+     */
     private function after()
     {
         foreach (self::$components['utils'] as $util) $util->after();
@@ -209,6 +334,9 @@ class Core
         foreach (self::$components['addons'] as $addon) $addon->after();
     }
 
+    /**
+     * Manipulates request to make it accessible in sbnc
+     */
     private function manipulate_request()
     {
         $prefix = self::$options['prefix'][1];
@@ -225,6 +353,11 @@ class Core
         }
     }
 
+    /**
+     * Returns true if form has been submitted and it's valid
+     *
+     * @return bool
+     */
     public function is_valid()
     {
         if ($this->addon_exists('Flasher')) {
@@ -234,6 +367,11 @@ class Core
         return !(count(self::$errors) > 0) && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
     }
 
+    /**
+     * Returns false if form has been submitted an errors occured
+     *
+     * @return bool
+     */
     public function is_invalid()
     {
         if ($this->addon_exists('Flasher')) {
@@ -243,45 +381,93 @@ class Core
         }
     }
 
+    /**
+     * Checks if an addon has been loaded and is enabled
+     *
+     * @param $addon
+     * @return bool
+     */
     protected function addon_exists($addon)
     {
         return array_key_exists($addon, self::$components['addons']) && self::$components['addons'][$addon]->is_enabled() ? true : false;
     }
 
+    /**
+     * Checks if a module has been loaded and is enabled
+     *
+     * @param $module
+     * @return bool
+     */
     protected function module_exists($module)
     {
         return array_key_exists($module, self::$components['modules']) && self::$components['modules'][$module]->is_enabled() ? true : false;
     }
 
+    /**
+     * Checks if a util has been loaded and is enabled
+     *
+     * @param $util
+     * @return bool
+     */
     protected function util_exists($util)
     {
         return array_key_exists($util, self::$components['utils']) && self::$components['utils'][$util]->is_enabled() ? true : false;
     }
 
+    /**
+     * Like util_exists but checks for any component
+     *
+     * @param $component
+     * @return bool
+     */
     protected function component_exists($component)
     {
         return $this->addon_exists($component) || $this->module_exists($component) ? true : false ||
         $this->util_exists($component) ? true : false;
     }
 
+    /**
+     * Returns loaded addon instance by name
+     *
+     * @param $addon
+     * @return mixed
+     */
     public function get_addon($addon)
     {
         if ($this->addon_exists($addon)) return self::$components['addons'][$addon];
         return null;
     }
 
+    /**
+     * Returns loaded module instance by name
+     *
+     * @param $module
+     * @return mixed
+     */
     public function get_module($module)
     {
         if ($this->module_exists($module)) return self::$components['modules'][$module];
         return null;
     }
 
+    /**
+     * Returns loaded util instance by name
+     *
+     * @param $util
+     * @return mixed
+     */
     public function get_util($util)
     {
         if ($this->util_exists($util)) return self::$components['utils'][$util];
         return null;
     }
 
+    /**
+     * Retrieves a request (e.g. value of email field) by name from session or class
+     *
+     * @param $key
+     * @return string
+     */
     public function get_request($key)
     {
         if ($this->addon_exists('Flasher')) {
@@ -290,6 +476,11 @@ class Core
         return isset(self::$request[$key]) && !$this->is_valid() ? self::$request[$key] : '';
     }
 
+    /**
+     * Returns all errors from session or class
+     *
+     * @return array
+     */
     public function get_errors()
     {
         if ($this->addon_exists('Flasher')) {
@@ -298,6 +489,11 @@ class Core
         return self::$errors;
     }
 
+    /**
+     * Returns a single error from session or class
+     *
+     * @return mixed
+     */
     public function get_error()
     {
         if ($this->addon_exists('Flasher')) {
@@ -312,6 +508,11 @@ class Core
         return $this->filter($name, $nl2br, $safe);
     }
 
+    /**
+     * Generates html code from all sbnc fields
+     *
+     * @return string
+     */
     public function get_fields()
     {
         $html = '';
@@ -326,6 +527,11 @@ class Core
         return $html;
     }
 
+    /**
+     * Generates javascript code to be included
+     *
+     * @return string
+     */
     public function get_js()
     {
         $js = '';
@@ -336,21 +542,45 @@ class Core
         return $js;
     }
 
+    /**
+     * Adds data to the $data array under a namespace
+     *
+     * @param $namespace
+     * @param $name
+     * @param $value
+     */
     public function add_data($namespace, $name, $value)
     {
         self::$data[$namespace][$name] = $value;
     }
 
+    /**
+     * Adds a field that will be included
+     *
+     * @param $name
+     * @param $value
+     */
     public function add_field($name, $value)
     {
         self::$fields[$name] = $value;
     }
 
+    /**
+     * Adds javascript code
+     *
+     * @param $code
+     */
     public function add_javascript($code)
     {
         array_push(self::$javascript['_modules_'], $code);
     }
 
+    /**
+     * Adds an error message
+     *
+     * @param $error
+     * @return bool
+     */
     public function add_error($error)
     {
         if (is_string($error)) {
@@ -360,6 +590,11 @@ class Core
         return false;
     }
 
+    /**
+     * Number of error messages in errors array
+     *
+     * @return int
+     */
     public function num_errors()
     {
         if ($this->addon_exists('Flasher')) {
@@ -368,6 +603,11 @@ class Core
         return count(self::$errors);
     }
 
+    /**
+     * Echo's all errors in an unordered list
+     *
+     * @param string $class
+     */
     public function print_errors($class = '')
     {
         echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
@@ -377,31 +617,62 @@ class Core
         echo '</ul>';
     }
 
+    /**
+     * Prints a single error
+     */
     public function print_error()
     {
         echo $this->get_error();
     }
 
+    /**
+     * Prints a value.
+     * use it to pre-fill forms, if errors occurred.
+     *
+     * @param $name
+     * @param bool $nl2br
+     * @param bool $safe
+     */
     public function print_value($name, $nl2br = false, $safe = false)
     {
         echo $this->get_value($name, $nl2br, $safe);
     }
 
+    /**
+     * Prints html code of all fields
+     */
     public function print_fields()
     {
         echo $this->get_fields();
     }
 
+    /**
+     * Prints JavaScript code
+     */
     public function print_js()
     {
         echo $this->get_js();
     }
 
+    /**
+     * Checks if value is empty
+     *
+     * @param $value
+     * @return bool
+     */
     protected function is_empty($value)
     {
         return (strlen(trim($value)) == 0);
     }
 
+    /**
+     * Filters a request by name so it's safe to print it in a html page.
+     * Optionally converts line breaks to <br>
+     *
+     * @param $key
+     * @param bool $nl2br
+     * @return string
+     */
     protected function filter($key, $nl2br = false)
     {
         $value = $this->get_request($key);

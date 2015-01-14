@@ -3,19 +3,44 @@ namespace sbnc\utils;
 
 use sbnc\Sbnc;
 
+/**
+ * Class FlashMessages
+ *
+ * Provides the implementation for flash messages
+ *
+ * @package sbnc\utils
+ */
 class FlashMessages extends Util implements UtilInterface
 {
 
-    public $cache = [];
+    ######################################################################################
+    #########################           CONFIGURATION            #########################
+    ######################################################################################
 
+    /**
+     * Default namespace
+     *
+     * @var array
+     */
     protected $options = [
         'session_name' => 'sbnc_flash'
     ];
 
+    ######################################################################################
+    ######################################################################################
+
+
+    /**
+     * Changes the namespace (but does not copy existing entries!)
+     *
+     * @param $session_name
+     */
     public function set_namespace($session_name)
     {
         $this->options['session_name'] = $session_name;
     }
+
+    public $cache = [];
 
     protected function init()
     {

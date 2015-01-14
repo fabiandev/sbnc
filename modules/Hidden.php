@@ -1,14 +1,34 @@
 <?php
 namespace sbnc\modules;
-
 use sbnc\Sbnc;
 
+/**
+ * Class Hidden
+ *
+ * A hidden field must be present and empty
+ *
+ * @package sbnc\modules
+ */
 class Hidden extends Module implements ModuleInterface
 {
 
+    ######################################################################################
+    #########################           CONFIGURATION            #########################
+    ######################################################################################
+
+    /**
+     * Define your custom error message.
+     * %field% will be replaced by the field name
+     *
+     * @var array
+     */
     private $errors = [
         'error' => '%field% is not empty or has been modified'
     ];
+
+    ######################################################################################
+    ######################################################################################
+
 
     protected function init()
     {

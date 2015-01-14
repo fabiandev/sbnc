@@ -1,8 +1,16 @@
 <?php
 namespace sbnc\modules;
 
+/**
+ * Class Content
+ * @package sbnc\modules
+ */
 class Content extends Module implements ModuleInterface
 {
+
+    ######################################################################################
+    #########################           CONFIGURATION            #########################
+    ######################################################################################
 
     /**
      * Module options
@@ -15,6 +23,9 @@ class Content extends Module implements ModuleInterface
     private $options = [
         'comment', 'message', 'msg', 'post'
     ];
+
+    ######################################################################################
+    ######################################################################################
 
 
     protected function init()

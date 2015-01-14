@@ -1,20 +1,44 @@
 <?php
 namespace sbnc\modules;
-
 use sbnc\Sbnc;
 
+/**
+ * Class Time
+ *
+ * Checks for too fast or too late form submits
+ *
+ * @package sbnc\modules
+ */
 class Time extends Module implements ModuleInterface
 {
 
+    ######################################################################################
+    #########################           CONFIGURATION            #########################
+    ######################################################################################
+
+    /**
+     * Set the minimum and maximum time a submit has to take.
+     * Time in seconds.
+     *
+     * @var array
+     */
     private $options = [
         'min' => 1,
         'max' => 600
     ];
 
+    /**
+     * Set your custom error messages
+     *
+     * @var array
+     */
     private $errors = [
         'min' => 'Sorry, this was too fast.',
         'max' => 'Sorry, this took too long. Try again!'
     ];
+
+    ######################################################################################
+    ######################################################################################
 
     protected function init()
     {

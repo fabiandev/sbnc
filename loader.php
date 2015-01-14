@@ -1,4 +1,7 @@
 <?php
+/**
+ * class autoloader
+ */
 spl_autoload_register(function ($class) {
     $split = explode('\\', $class);
     $count = count($split);

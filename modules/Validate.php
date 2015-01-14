@@ -6,15 +6,68 @@ use sbnc\Sbnc;
 class Validate extends Module implements ModuleInterface
 {
 
+    ######################################################################################
+    #########################           CONFIGURATION            #########################
+    ######################################################################################
+
     /**
      * Module options
      *
      * The array-value holds the form-field(s) name(s) for the
      * checks to be applied on. The checks are defined in the
-     * key:
+     * value-array e.g.:
      *
-     * email: check for a valid email
-     * url:   check for a valid url
+     * - The form field with name "email" must be a correctly
+     * formatted email address and is required.
+     *
+     * - The form field with name "message" is required and
+     * must have a minimum of 10 and no more than 1000 chracters.
+     *
+     * - and so on...
+     *
+     * @var array
+     */
+    private $options = [
+        // used by example.php
+        'email'   => ['email', 'required'],
+        'name'    => ['required', 'min:4', 'max:30'],
+        'message' => ['required', 'min:10', 'max:1000'],
+
+        // other examples
+        'mail' => ['email', 'required'],
+        'url'  => ['url'],
+        'link' => ['url'],
+        'web'  => ['url'],
+        'ip'   => ['ip'],
+    ];
+
+    /**
+     * Define custom error messages for every rule defined in options.
+     * You may use the %placeholders% to be replaced by the correct
+     * values.
+     *
+     * @var array
+     */
+    private $errors = [
+        'email'    => [
+            'email'    => 'Check your Email Address!',
+            'required' => 'No Email Address given.'
+        ],
+        'name'    => [
+            'required' => 'What\'s your name?',
+            'min'      => 'Your name is too short. %min% characters minimum!',
+            'max'      => 'Your name is too long. %max% characters maximum!',
+        ],
+        'message' => [
+            'required' => 'Please write something :-)',
+            'min'      => 'The message is too short. %min% characters minimum!',
+            'max'      => 'The message is too long. %max% characters maximum!'
+        ]
+    ];
+
+    /**
+     * default error messages to be used if you didn't define
+     * a custom one.
      *
      * @var array
      */
@@ -33,36 +86,9 @@ class Validate extends Module implements ModuleInterface
         'regex'       => '%field% is not valid'
     ];
 
-    private $errors = [
-        'email'    => [
-            'email'    => 'Check your Email Address!',
-            'required' => 'No Email Address given.'
-        ],
-        'name'    => [
-            'required' => 'What\'s your name?',
-            'min'      => 'Your name is too short. %min% characters minimum!',
-            'max'      => 'Your name is too long. %max% characters maximum!',
-        ],
-        'message' => [
-            'required' => 'Please write something :-)',
-            'min'      => 'The message is too short. %min% characters minimum!',
-            'max'      => 'The message is too long. %max% characters maximum!'
-        ]
-    ];
+    ######################################################################################
+    ######################################################################################
 
-    private $options = [
-        // used by example.php
-        'email'   => ['email', 'required'],
-        'name'    => ['required', 'min:4', 'max:30'],
-        'message' => ['required', 'min:10', 'max:1000'],
-
-        // other examples
-        'mail' => ['email', 'required'],
-        'url'  => ['url'],
-        'link' => ['url'],
-        'web'  => ['url'],
-        'ip'   => ['ip'],
-    ];
 
     protected function init()
     {

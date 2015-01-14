@@ -4,25 +4,53 @@ namespace sbnc\modules;
 use sbnc\Sbnc;
 use sbnc\utils\FlashMessages;
 
+/**
+ * Class RemoteHttpBlacklist
+ *
+ * Checks the client's IP against Project Honeypot's HTTP blacklist
+ * http://www.projecthoneypot.org
+ *
+ * @package sbnc\modules
+ */
 class RemoteHttpBlacklist extends Module implements ModuleInterface
 {
 
-    // sign up for a free account on http://www.projecthoneypot.org and
-    // and create an api key for http:BL
+    ######################################################################################
+    #########################           CONFIGURATION            #########################
+    ######################################################################################
+
+    /**
+     * Sign up for a free account at http://www.projecthoneypot.org and
+     * and create an API key for http:BL
+     *
+     * By default the API key will be loaded from the file honeypot.key
+     * located at the same level as Sbnc.php
+     *
+     * @var
+     */
     private $api_key;
 
-    private $ip; // 195.211.155.157
-
-    private $flash;
-
+    /**
+     * Define your custom error messages.
+     * You may use the %placeholders% from the example to get replaced
+     *
+     * @var array
+     */
     private $errors = [
-        'ip' => 'Spam! Your IP seems modified!',
+        'ip' => 'Your IP seems modified!',
         'spammer' => 'Spammer detected, that was last seen %days% day(s) ago, with around %num% messages per day, of type: %type%'
     ];
 
+    ######################################################################################
+    ######################################################################################
+
+
+    private $ip; // 195.211.155.157
+    private $flash;
+
     protected function init()
     {
-        $this->api_key = file_get_contents('./honeypot.key');
+        if (empty($this->api_key)) $this->api_key = file_get_contents('./honeypot.key');
         if (!empty($this->api_key)) $this->enabled = true;
         if (empty($this->ip)) $this->ip = $this->get_ip();
         $this->flash = new FlashMessages();

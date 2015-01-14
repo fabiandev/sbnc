@@ -1,18 +1,24 @@
 <?php
 namespace sbnc\modules;
-
 use sbnc\Sbnc;
 
+/**
+ * Class Gestures
+ *
+ * checks for client gestures like if a mouse or keyboard was used.
+ * also checks if javascript is enabled
+ *
+ * @package sbnc\modules
+ */
 class Gestures extends Module implements ModuleInterface
 {
 
-    /*
-     * Options for checking keyboard and mouse usage.
-     *
-     * auto:     checks mouse and keyboard on first request
-     *           and only mouse when errors occurred
-     * mouse:    checks mouse usage only
-     * keyboard: checks keyboard usage only
+    ######################################################################################
+    #########################           CONFIGURATION            #########################
+    ######################################################################################
+
+    /**
+     * Define your custom error messages
      *
      * @var array
      */
@@ -22,9 +28,22 @@ class Gestures extends Module implements ModuleInterface
         'js'       => 'JavaScript must be activated'
     ];
 
+    /*
+     * Options for checking keyboard and mouse usage.
+     *
+     * mouse:    checks mouse usage only
+     * keyboard: checks keyboard usage only
+     * js:       if defined, javascript must be enabled
+     *
+     * @var array
+     */
     private $options = [
         'mode' => ['mouse', 'js']
     ];
+
+    ######################################################################################
+    ######################################################################################
+
 
     protected function init()
     {

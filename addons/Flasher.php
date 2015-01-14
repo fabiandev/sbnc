@@ -3,18 +3,44 @@ namespace sbnc\addons;
 
 use sbnc\Sbnc;
 
+/**
+ * Class Flasher
+ *
+ * Uses the util FlashMessages to flash errors and the request to the session.
+ *
+ * @package sbnc\addons
+ */
 class Flasher extends Addon implements AddonInterface
 {
 
-    // set explicit redirect for security reasons!!
+    ######################################################################################
+    #########################           CONFIGURATION            #########################
+    ######################################################################################
+
+    /**
+     * set if there should be a redirect on error/success
+     * add a url to be redirected at the second value like this:
+     * 'redirect:error' => [true, 'http://example.com/about/contact']
+     * 'redirect:success' => [true, 'http://example.com/about/contact']
+     *
+     * set an explicit redirect for security reasons!!
+     *
+     * @var array
+     */
     protected $options = [
         'redirect:error'   => [true, null],
         'redirect:success' => [true, null]
     ];
 
+    ######################################################################################
+    ######################################################################################
+
+
     protected function init()
     {
-        $this->enabled = Sbnc::util('FlashMessages')->is_enabled();
+        if (Sbnc::util_exists('FlashMessages')) {
+            $this->enabled = Sbnc::util('FlashMessages')->is_enabled();
+        }
     }
 
     public function after()
@@ -55,6 +81,11 @@ class Flasher extends Addon implements AddonInterface
         $flash->flush();
     }
 
+    /**
+     * returns array with all errors from session
+     *
+     * @return mixed
+     */
     public function get_errors()
     {
         if (!$this->enabled) return Sbnc::errors();
