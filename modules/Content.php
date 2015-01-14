@@ -35,8 +35,7 @@ class Content extends Module implements ModuleInterface
     private $options = [
         'maxlinks' => 2,
         'mailwords' => true,
-        'spamwords' => 3,
-        'samecontent' => 2
+        'spamwords' => 3
     ];
 
     /**
@@ -47,8 +46,7 @@ class Content extends Module implements ModuleInterface
     private $errors = [
         'maxlinks' => 'A maximum of %max% links (http://) are allowed on the entire form.',
         'mailwords' => 'Mail injection detected. Do not use these words: bcc:, cc:, multipart, [url, Content-Type',
-        'spamwords' => 'A maximum of %max% blacklisted matches are allowed. You used: %words%',
-        'samecontent' => 'More than %max% fields contain the exact same content'
+        'spamwords' => 'A maximum of %max% blacklisted matches are allowed. You used: %words%'
     ];
 
     /**
