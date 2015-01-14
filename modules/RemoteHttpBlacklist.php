@@ -8,6 +8,7 @@ use sbnc\utils\FlashMessages;
  * Class RemoteHttpBlacklist
  *
  * Checks the client's IP against Project Honeypot's HTTP blacklist
+ * Note: only supports IPv4 at this time.
  * http://www.projecthoneypot.org
  *
  * @package sbnc\modules

@@ -5,6 +5,9 @@ use sbnc\Sbnc;
 
 /**
  * Class Content
+ *
+ * Can count links, spam words and block mail injections by keywords
+ *
  * @package sbnc\modules
  */
 class Content extends Module implements ModuleInterface
