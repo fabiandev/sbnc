@@ -37,6 +37,8 @@ class LogMessages extends Util implements UtilInterface
 
     public function log($type, $data)
     {
+        if (!is_writeable($this->options['file'])) return;
+
         $content = '';
         $content .= strtoupper($type);
         $content .= '|' . date('d-m-Y G:i:s', time());
@@ -55,9 +57,8 @@ class LogMessages extends Util implements UtilInterface
 
         $content .= "\r\n";
 
-        if (is_writeable($this->options['file'])) {
-            file_put_contents($this->options['file'], $content, FILE_APPEND);
-        }
+
+        file_put_contents($this->options['file'], $content, FILE_APPEND);
     }
 
     protected function get_ip()
