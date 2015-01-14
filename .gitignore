@@ -8,3 +8,4 @@ pids
 .DS_Store
 *.key.txt
 *.key
+test.php
