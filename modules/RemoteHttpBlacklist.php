@@ -65,7 +65,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
 
     protected function init()
     {
-        if (empty($this->api_key) && !empty($this->$api_key_file)) $this->api_key = file_get_contents($this->$api_key_file);
+        if (empty($this->api_key) && !empty($this->api_key_file)) $this->api_key = file_get_contents($this->api_key_file);
         if (!empty($this->api_key)) $this->enabled = true;
         if (empty($this->ip)) $this->ip = $this->get_ip();
         $this->flash = new FlashMessages();
