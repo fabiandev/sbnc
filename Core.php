@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Sbnc;
 
 class Core
