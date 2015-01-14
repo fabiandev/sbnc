@@ -4,9 +4,12 @@ namespace sbnc;
 class Core
 {
     protected static $components = [];
-    protected static $data       = [];
+    protected static $request    = [];
+    protected static $fields     = [];
+    protected static $javascript = [];
     protected static $options    = [];
     protected static $errors     = [];
+    protected static $data       = [];
 
     public function __construct(array $data) {
         self::$components = [
@@ -18,12 +21,21 @@ class Core
     }
 
     public function __destruct() {
-        ob_flush();
+        //ob_flush();
     }
 
     public function call($name, $params = '') {
-        $first = empty($params) ? '' : is_array($params) ? $params[0] : $params;
-        $count = is_array($params) ? count($params) : 0;
+        $count = 0;
+        $first = $params;
+        if (is_array($params)) {
+            $count = count($params);
+            if ($count == 0) {
+                $first = '';
+            } else {
+                $first = $params[0];
+            }
+        }
+
         switch($name) {
             case 'errors';
                 if (empty($params)) {
@@ -32,6 +44,25 @@ class Core
                     }
                 } elseif (isset(self::$errors[$first])) {
                     return self::$errors[$first];
+                }
+                return null;
+            case 'request';
+                if (empty($params)) {
+                    if (isset(self::$request)) {
+                        return self::$request;
+                    }
+                } elseif (isset(self::$request[$first])) {
+                    return self::$request[$first];
+                }
+                return null;
+            case 'field':
+            case 'fields':
+                if (empty($params)) {
+                    if (isset(self::$fields)) {
+                        return self::$fields;
+                    }
+                } elseif (isset(self::$fields[$first])) {
+                    return self::$fields[$first];
                 }
                 return null;
             case 'options':
@@ -44,12 +75,24 @@ class Core
                 }
                 return null;
             case 'data':
-                if (empty($params)) {
-                    if (isset(self::$data[$name])) {
-                        return self::$data[$name];
+                if ($count == 0) {
+                    return self::$data;
+                } elseif($count == 1) {
+                    if (isset(self::$data[$first])) {
+                        return self::$data[$first];
                     }
-                } elseif (isset(self::$data[$name][$first])) {
-                    return self::$data[$name][$first];
+                } elseif ($count == 2) {
+                    if (isset(self::$data[$first][$params[1]])) {
+                        return self::$data[$first][$params[1]];
+                    }
+                } elseif ($count == 3) {
+                    if (isset(self::$data[$first][$params[1]][$params[2]])) {
+                        return self::$data[$first][$params[1]][$params[2]];
+                    }
+                } elseif ($count == 4) {
+                    if (isset(self::$data[$first][$params[1]][$params[2]][$params[3]])) {
+                        return self::$data[$first][$params[1]][$params[2]][$params[3]];
+                    }
                 }
                 return null;
             case 'module':
@@ -86,6 +129,7 @@ class Core
 
 
     public function init() {
+        $this->init_javascript();
         $this->init_fields();
         $this->init_utils();
         $this->init_modules();
@@ -97,7 +141,7 @@ class Core
     }
 
     public function add_field($name, $value) {
-        self::add_data('fields', $name, $value);
+        self::$fields[$name] = $value;
     }
 
     private function init_fields() {
@@ -105,8 +149,7 @@ class Core
             self::$options['prefix'][0] = chr(rand(97,122)).substr(md5(microtime()),rand(0,26),4);
         }
 
-        self::$data['fields'] = [
-            'js'     => null,
+        self::$fields = [
             'prefix' => &self::$options['prefix'][0],
             'url'    => 'http' . (($_SERVER['SERVER_PORT'] == 443) ? 's://' : '://') .
                 $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
@@ -124,9 +167,11 @@ class Core
     private function init_modules() {
         self::$components['modules'] = array_fill_keys(self::$components['modules'], null);
         foreach (self::$components['modules'] as $key => $value) {
+
             $class = __NAMESPACE__ . '\\modules\\' . $key;
-            self::$components['modules'] = new $class();
+            self::$components['modules'][$key] = new $class();
         }
+
     }
 
     private function init_addons() {
@@ -135,6 +180,20 @@ class Core
             $class = __NAMESPACE__ . '\\addons\\' . $key;
             self::$components['addons'][$key] = new $class();
         }
+    }
+
+    private function init_javascript() {
+        $lang = !self::$options['html5'] ? ' language="javascript" type="text/javascript"' : '';
+        self::$javascript['_before_']  = '<script'.$lang.'>var sbnc = sbnc || {};';
+        self::$javascript['_core_']    = 'sbnc.core = (function() {';
+        self::$javascript['_core_']   .= 'var init; init = function() {};';
+        self::$javascript['_core_']   .= 'return { init: init }; }()); sbnc.core.init();';
+        self::$javascript['_after_']   = '</script>';
+        self::$javascript['_modules_'] = [];
+    }
+
+    public function add_javascript($code) {
+        array_push(self::$javascript['_modules_'], $code);
     }
 
     protected function addon_exists($addon) {
@@ -187,11 +246,11 @@ class Core
         $random_prefix_length = strlen($random_prefix);
         foreach($_POST as $key => $value) {
             if (strcmp($key, $prefix) == 0) {
-                self::$data['request']['prefix'] = $value;
+                self::$fields['prefix'] = $value;
             } elseif (strcmp(substr($key, 0, $random_prefix_length), $random_prefix) == 0) {
-                self::$data['request'][substr($key, $random_prefix_length)] = $value;
+                self::$request[substr($key, $random_prefix_length)] = $value;
             } else {
-                self::$data['request'][$key] = $value;
+                self::$request[$key] = $value;
             }
         }
     }
@@ -200,7 +259,7 @@ class Core
         if ($this->addon_exists('Flasher')) {
             return $this->get_addon('Flasher')->get_request($key, $safe);
         }
-        return isset(self::$data['request'][$key]) && !$this->is_valid() ? self::$data['request'][$key] : '';
+        return isset(self::$request[$key]) && !$this->is_valid() ? self::$request[$key] : '';
     }
 
     protected function is_empty($value) {
@@ -231,10 +290,11 @@ class Core
         }
 
         if (is_callable($action)) {
-            $action($this);
+            $action();
         }
 
         $this->after();
+        echo 'here';
         return true;
     }
 
@@ -312,7 +372,7 @@ class Core
         $html = '';
         $tag_end = (self::$options['html5']) ? '' : '/';
 
-        foreach (self::$data['fields'] as $key => $value) {
+        foreach (self::$fields as $key => $value) {
             $val = $value !== null ? $value : '';
             $id = strcmp($key, 'prefix') !== 0 ? self::$options['prefix'][0].$key : self::$options['prefix'][1];
             $html .= '<input type="text" id="'.$id.'" name="'.$id.'" value="'.$val.'" style="display:none" '.$tag_end.'>'."\n";
@@ -326,55 +386,12 @@ class Core
     }
 
     public function get_js() {
-        $lang = !self::$options['html5'] ? ' language="javascript" type="text/javascript"' : '';
-        $prefix = self::$options['prefix'][0];
-        $keyboard_field = $prefix . 'keyboard';
-        $mouse_field = $prefix . 'mouse';
-        $js_field = $prefix . 'js';
-
-$code = <<<CODE
-<script$lang>
-var sbnc = sbnc || {};
-
-sbnc.core = (function() {
-
-    var init,
-        usedKeyboard,
-        usedMouse;
-
-    var keyboardField,
-        mouseField,
-        jsField;
-
-    init = function() {
-        keyboardField = document.getElementById('$keyboard_field');
-        mouseField    = document.getElementById('$mouse_field');
-        jsField       = document.getElementById('$js_field');
-
-        jsField.value = 'true';
-        window.onkeyup     = usedKeyboard;
-        window.onmousemove = usedMouse;
-    };
-
-    usedKeyboard = function() {
-        keyboardField.value = 'true';
-    }
-
-    usedMouse = function() {
-        mouseField.value = 'true';
-    }
-
-    return {
-        init: init
-    };
-
-}());
-
-sbnc.core.init();
-</script>
-
-CODE;
-        return $code;
+        $js  = '';
+        $js .= self::$javascript['_before_'];
+        $js .= self::$javascript['_core_'];
+        foreach (self::$javascript['_modules_'] as $code) $js .= $code;
+        $js .= self::$javascript['_after_'];
+        return $js;
     }
 
 }

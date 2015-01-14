@@ -28,11 +28,13 @@ class Gestures extends Module implements ModuleInterface {
         $this->enabled = true;
         Sbnc::add_field('mouse', null);
         Sbnc::add_field('keyboard', null);
+        Sbnc::add_field('js', null);
+        Sbnc::add_javascript($this->get_js());
     }
 
     public function check() {
         if (in_array('js', $this->options['mode'])) {
-            $js_value = Sbnc::data(['request', 'js']);
+            $js_value = Sbnc::request('js');
             if (empty($js_value) || strcmp($js_value, 'true') !== 0) {
                 Sbnc::add_error($this->errors['js']);
                 Sbnc::util('LogMessages')->log('spam-gestures', 'JavaScript not enabled');
@@ -41,7 +43,7 @@ class Gestures extends Module implements ModuleInterface {
         }
 
         if (in_array('keyboard', $this->options['mode'])) {
-            $key_value = Sbnc::data(['request', 'keyboard']);
+            $key_value = Sbnc::request('keyboard');
             if (empty($key_value) || strcmp($key_value, 'true') !== 0) {
                 Sbnc::add_error($this->errors['keyboard']);
                 Sbnc::util('LogMessages')->log('spam-gestures', 'Keyboard not used');
@@ -49,12 +51,38 @@ class Gestures extends Module implements ModuleInterface {
         }
 
         if (in_array('mouse', $this->options['mode'])) {
-            $mouse_value = Sbnc::data(['request', 'mouse']);
+            $mouse_value = Sbnc::request('mouse');
             if (empty($mouse_value) || strcmp($mouse_value, 'true') !== 0) {
                 Sbnc::add_error($this->errors['mouse']);
                 Sbnc::util('LogMessages')->log('spam-gestures', 'Mouse not used');
             }
         }
+    }
+
+    protected function get_js()
+    {
+        $prefix = Sbnc::options('prefix')[0];
+        $keyboard_field = $prefix . 'keyboard';
+        $mouse_field = $prefix . 'mouse';
+        $js_field = $prefix . 'js';
+
+        $js  = 'sbnc.gestures = (function() { var init, usedKeyboard, usedMouse;';
+        $js .= 'var keyboardField, mouseField, jsField;';
+        $js .= 'init = function() {';
+        $js .= 'keyboardField = document.getElementById("'.$keyboard_field.'");';
+        $js .= 'mouseField = document.getElementById("'.$mouse_field.'");';
+        $js .= 'jsField = document.getElementById("'.$js_field.'");';
+        $js .= 'jsField.value = "true";';
+        $js .= 'window.onkeyup = usedKeyboard;';
+        $js .= 'window.onmousemove = usedMouse;';
+        $js .= '};';
+        $js .= 'usedKeyboard = function() {  keyboardField.value = "true"; };';
+        $js .= 'usedMouse = function() { mouseField.value = "true"; };';
+        $js .= 'return { init: init };';
+        $js .= '}());';
+        $js .= 'sbnc.gestures.init();';
+
+        return $js;
     }
 
 }

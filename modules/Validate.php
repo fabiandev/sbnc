@@ -69,14 +69,14 @@ class Validate extends Module implements ModuleInterface {
     public function check() {
         foreach ($this->options as $key => $value) {
             foreach ($value as $validator) {
-                $reqkey = Sbnc::data(['request', $key]);
-                if ($reqkey !== null) {
-                    if (strcmp($validator, 'required') !== 0 && empty($reqkey)) continue;
+                $val = Sbnc::request($key);
+                if ($val !== null) {
+                    if (strcmp($validator, 'required') !== 0 && empty($val)) continue;
                     $data = explode(':', $validator);
                     $validator = $data[0];
                     array_shift($data);
                     $func = 'validate_' . $validator;
-                    $this->$func($reqkey, $key, $data);
+                    $this->$func($val, $key, $data);
                 }
             }
         }

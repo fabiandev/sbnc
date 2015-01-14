@@ -23,13 +23,13 @@ class Flasher extends Addon implements AddonInterface {
 
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
             if (count(Sbnc::errors()) > 0) {
-                $flash->flash('request', Sbnc::data('request'));
+                $flash->flash('request', Sbnc::request());
                 $flash->flash('errors', $errors);
             }
             if (!empty($errors) && $this->options['redirect:error'][0] === true) {
                 if (!$this->options['redirect:error'][1]) {
                     $flash->flash('_sbnc', ['redirected' => true]);
-                    header('Location: ' . Sbnc::data(['request', 'url']));
+                    header('Location: ' . Sbnc::request('url'));
                     exit;
                 } else {
                     $flash->flash('_sbnc', ['redirected' => true]);
@@ -39,7 +39,7 @@ class Flasher extends Addon implements AddonInterface {
             } elseif (empty($errors) && $this->options['redirect:success'][0] === true) {
                 if (!$this->options['redirect:success'][1]) {
                     $flash->flash('_sbnc', ['redirected' => true]);
-                    header('Location: ' . Sbnc::data(['request', 'url']));
+                    header('Location: ' . Sbnc::request('url'));
                     exit;
                 } else {
                     $flash->flash('_sbnc', ['redirected' => true]);
@@ -64,7 +64,7 @@ class Flasher extends Addon implements AddonInterface {
     }
 
     public function get_request($key) {
-        if (!$this->enabled) return Sbnc::data(['request', $key]) !== null ? Sbnc::data(['request', $key]) : '';
+        if (!$this->enabled) return Sbnc::request($key) !== null ? Sbnc::request($key) : '';
         $response = Sbnc::util('FlashMessages')->get('request', $key);
         return !empty($response) ? $response : Sbnc::util('FlashMessages')->get_cache('request', $key);
     }

@@ -60,7 +60,7 @@ Sbnc::start();
 
 <pre>
 <?php
-var_dump($_SESSION);
+print_r($_SESSION);
 //unset($_SESSION['sbnc_honeypot']);
 ?>
 </body>

@@ -102,7 +102,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         Sbnc::add_error($err);
 
         $this->flash->flash($this->ip, $data);
-        Sbnc::util('FlashMessages')->log('spam-http-blacklist', ['active '.$days.' day(s) ago', $num . ' messages/day', $type]);
+        Sbnc::util('LogMessages')->log('spam-http-blacklist', ['active '.$days.' day(s) ago', $num . ' messages/day', $type]);
     }
 
     protected function get_ip()

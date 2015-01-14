@@ -21,7 +21,7 @@ class Time extends Module implements ModuleInterface {
 
     public function check() {
         $now = time();
-        $time = Sbnc::get_data(['request', 'time']);
+        $time = Sbnc::request('time');
         $diff = $now - $time;
 
         if ($diff < $this->options['min']) {

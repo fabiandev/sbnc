@@ -5,7 +5,7 @@ use sbnc\Sbnc;
 class Hidden extends Module implements ModuleInterface {
 
     private $errors = [
-        'error'     => 'Spam! %field% is not empty.'
+        'error'     => '%field% is not empty or has been modified'
     ];
 
     protected function init() {
@@ -14,11 +14,11 @@ class Hidden extends Module implements ModuleInterface {
     }
 
     public function check() {
-        $hidden_value = Sbnc::data(['request', 'check']);
+        $hidden_value = Sbnc::request('check');
         if ($hidden_value === null ||  strlen(trim($hidden_value)) != 0) {
             $err = str_replace('%field%', 'check', $this->errors['error']);
             Sbnc::add_error($err);
-            Sbnc::util('LogMessages')->log('spam-hidden', 'Hidden field was not empty: ' . $hidden_value);
+            Sbnc::util('LogMessages')->log('spam-hidden', 'Hidden field was not empty or has been modified/removed: ' . $hidden_value);
         }
     }
 
