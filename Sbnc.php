@@ -45,9 +45,6 @@ class Sbnc
 
 
 
-
-    //##################################################################################################\\
-
     private static $core;
     private static $initialized = false;
 
@@ -72,7 +69,7 @@ class Sbnc
     }
 
     public static function start($action = null) {
-        //ob_start();
+        ob_start();
         self::init();
         self::$core->start($action);
     }
@@ -96,7 +93,7 @@ class Sbnc
     }
 
     public static function print_exception(\Exception $e) {
-        //ob_clean();
+        ob_clean();
         $err  = '<h3>Sorry, there was an error!</h3>';
         $err .= '<pre>';
         $err .= '<span style="font-weight:600">' . $e->getMessage() . '</span>';
@@ -105,7 +102,7 @@ class Sbnc
         $err .= $e->getTraceAsString();
         $err .= '</pre>';
         echo $err;
-        //ob_end_flush();
+        ob_end_flush();
         exit;
     }
 

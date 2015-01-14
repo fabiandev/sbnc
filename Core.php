@@ -21,7 +21,7 @@ class Core
     }
 
     public function __destruct() {
-        //ob_flush();
+        ob_flush();
     }
 
     public function call($name, $params = '') {
