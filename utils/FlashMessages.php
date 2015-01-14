@@ -1,6 +1,8 @@
 <?php
 namespace sbnc\utils;
 
+use sbnc\Sbnc;
+
 class FlashMessages extends Util implements UtilInterface {
 
     public $cache = [];
@@ -14,9 +16,12 @@ class FlashMessages extends Util implements UtilInterface {
     }
 
     protected function init() {
-        if (session_status() == PHP_SESSION_DISABLED) return;
-        if (session_status() == PHP_SESSION_NONE && headers_sent()) return;
+        if (session_status() == PHP_SESSION_DISABLED) $nosess = true;
+        if (session_status() == PHP_SESSION_NONE && headers_sent()) $nosess = true;
         if (session_status() == PHP_SESSION_ACTIVE || session_start()) $this->enabled = true;
+        if (isset($nosess) && $nosess == true) {
+            throw new \Exception('Session could not be created. Be sure you started sbnc before any other output');
+        }
         unset($_SESSION[$this->options['session_name']]['_CACHE_']);
     }
 

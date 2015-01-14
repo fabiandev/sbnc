@@ -20,10 +20,6 @@ class Core
         self::$options = $data['options'];
     }
 
-    public function __destruct() {
-        ob_flush();
-    }
-
     public function call($name, $params = '') {
         $count = 0;
         $first = $params;
@@ -107,7 +103,7 @@ class Core
                 }
                 return null;
             default:
-                $sbnc = Sbnc::core();
+                $sbnc = Sbnc::core(); // only make public methods accessible
                 if (!method_exists($sbnc, $name)) throw new \Exception('Method "'. $name .'" does not exist');
                 if (!is_callable([$sbnc, $name])) throw new \Exception('Method "'. $name .'" could not be called');
                 switch($count) {
@@ -127,21 +123,12 @@ class Core
         }
     }
 
-
     public function init() {
         $this->init_javascript();
         $this->init_fields();
-        $this->init_utils();
-        $this->init_modules();
-        $this->init_addons();
-    }
-
-    public function add_data($namespace, $name, $value) {
-        self::$data[$namespace][$name] = $value;
-    }
-
-    public function add_field($name, $value) {
-        self::$fields[$name] = $value;
+        $this->init_component('utils');
+        $this->init_component('modules');
+        $this->init_component('addons');
     }
 
     private function init_fields() {
@@ -156,29 +143,16 @@ class Core
         ];
     }
 
-    private function init_utils() {
-        self::$components['utils'] = array_fill_keys(self::$components['utils'], null);
-        foreach (self::$components['utils'] as $key => $value) {
-            $class = __NAMESPACE__ . '\\utils\\' . $key;
-            self::$components['utils'][$key] = new $class();
-        }
-    }
+    private function init_component($name) {
+        self::$components[$name] = array_fill_keys(self::$components[$name], null);
+        foreach (self::$components[$name] as $key => $value) {
+            $class = __NAMESPACE__ . '\\'.$name.'\\' . $key;
+            try {
+                self::$components[$name][$key] = new $class();
+            } catch (\Exception $e) {
+                Sbnc::print_exception($e);
+            }
 
-    private function init_modules() {
-        self::$components['modules'] = array_fill_keys(self::$components['modules'], null);
-        foreach (self::$components['modules'] as $key => $value) {
-
-            $class = __NAMESPACE__ . '\\modules\\' . $key;
-            self::$components['modules'][$key] = new $class();
-        }
-
-    }
-
-    private function init_addons() {
-        self::$components['addons'] = array_fill_keys(self::$components['addons'], null);
-        foreach (self::$components['addons'] as $key => $value) {
-            $class = __NAMESPACE__ . '\\addons\\' . $key;
-            self::$components['addons'][$key] = new $class();
         }
     }
 
@@ -192,8 +166,69 @@ class Core
         self::$javascript['_modules_'] = [];
     }
 
-    public function add_javascript($code) {
-        array_push(self::$javascript['_modules_'], $code);
+    public function start($action = null) {
+        $this->before();
+
+        if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
+            $this->after();
+            return false;
+        }
+
+        $this->manipulate_request();
+
+        foreach (self::$components['modules'] as $module) {
+            if ($module->is_enabled()) $module->check();
+        }
+
+        if (is_callable($action)) {
+            $action();
+        }
+
+        $this->after();
+        return true;
+    }
+
+    private function before() {
+        foreach (self::$components['utils'] as $util) $util->before();
+        foreach (self::$components['modules'] as $module) $module->before();
+        foreach (self::$components['addons'] as $addon) $addon->before();
+    }
+
+    private function after() {
+        foreach (self::$components['utils'] as $util) $util->after();
+        foreach (self::$components['modules'] as $module) $module->after();
+        foreach (self::$components['addons'] as $addon) $addon->after();
+    }
+
+    private function manipulate_request() {
+        $prefix = self::$options['prefix'][1];
+        $random_prefix = isset($_POST[$prefix]) ? $_POST[$prefix] : '';
+        $random_prefix_length = strlen($random_prefix);
+        foreach($_POST as $key => $value) {
+            if (strcmp($key, $prefix) == 0) {
+                self::$fields['prefix'] = $value;
+            } elseif (strcmp(substr($key, 0, $random_prefix_length), $random_prefix) == 0) {
+                self::$request[substr($key, $random_prefix_length)] = $value;
+            } else {
+                self::$request[$key] = $value;
+            }
+        }
+    }
+
+    public function is_valid() {
+        if ($this->addon_exists('Flasher')) {
+            $num_errors = $this->get_addon('Flasher')->count_errors();
+            return $this->get_addon('Flasher')->was_submitted() && !($num_errors > 0);
+        }
+        return !(count(self::$errors) > 0) && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+    }
+
+    public function is_invalid() {
+        if ($this->addon_exists('Flasher')) {
+            return !$this->is_valid() && $this->get_addon('Flasher')->was_submitted();
+        } else {
+            return !$this->is_valid() && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+        }
     }
 
     protected function addon_exists($addon) {
@@ -228,90 +263,64 @@ class Core
         return null;
     }
 
-    protected function before() {
-        foreach (self::$components['utils'] as $util) $util->before();
-        foreach (self::$components['modules'] as $module) $module->before();
-        foreach (self::$components['addons'] as $addon) $addon->before();
-    }
-
-    protected function after() {
-        foreach (self::$components['utils'] as $util) $util->after();
-        foreach (self::$components['modules'] as $module) $module->after();
-        foreach (self::$components['addons'] as $addon) $addon->after();
-    }
-
-    protected function manipulate_request() {
-        $prefix = self::$options['prefix'][1];
-        $random_prefix = isset($_POST[$prefix]) ? $_POST[$prefix] : '';
-        $random_prefix_length = strlen($random_prefix);
-        foreach($_POST as $key => $value) {
-            if (strcmp($key, $prefix) == 0) {
-                self::$fields['prefix'] = $value;
-            } elseif (strcmp(substr($key, 0, $random_prefix_length), $random_prefix) == 0) {
-                self::$request[substr($key, $random_prefix_length)] = $value;
-            } else {
-                self::$request[$key] = $value;
-            }
-        }
-    }
-
-    protected function get_request($key, $safe = false) {
+    public function get_request($key) {
         if ($this->addon_exists('Flasher')) {
-            return $this->get_addon('Flasher')->get_request($key, $safe);
+            return $this->get_addon('Flasher')->get_request($key);
         }
         return isset(self::$request[$key]) && !$this->is_valid() ? self::$request[$key] : '';
     }
 
-    protected function is_empty($value) {
-        return (strlen(trim($value)) == 0);
-    }
-
-    protected function filter($key, $nl2br = false) {
-        $value = $this->get_request($key);
-        if($nl2br) {
-            return !$this->is_empty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
-        } else {
-            return !$this->is_empty($value) ? htmlspecialchars($value, ENT_QUOTES) : '';
-        }
-    }
-
-    public function start($action = null) {
-        $this->before();
-
-        if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
-            $this->after();
-            return false;
-        }
-
-        $this->manipulate_request();
-
-        foreach (self::$components['modules'] as $module) {
-            if ($module->is_enabled()) $module->check();
-        }
-
-        if (is_callable($action)) {
-            $action();
-        }
-
-        $this->after();
-        echo 'here';
-        return true;
-    }
-
-    public function is_valid() {
+    public function get_errors() {
         if ($this->addon_exists('Flasher')) {
-            $num_errors = $this->get_addon('Flasher')->count_errors();
-            return $this->get_addon('Flasher')->was_submitted() && !($num_errors > 0);
+            return $this->get_addon('Flasher')->get_errors();
         }
-        return !(count(self::$errors) > 0) && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+        return self::$errors;
     }
 
-    public function is_invalid() {
+    public function get_error() {
         if ($this->addon_exists('Flasher')) {
-            return !$this->is_valid() && $this->get_addon('Flasher')->was_submitted();
-        } else {
-            return !$this->is_valid() && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+            $errors = $this->get_addon('Flasher')->get_errors();
+            return reset($errors);
         }
+        return reset(self::$errors);
+    }
+
+    public function get_value($name, $nl2br = false, $safe = false) {
+        return $this->filter($name, $nl2br, $safe);
+    }
+
+    public function get_fields() {
+        $html = '';
+        $tag_end = (self::$options['html5']) ? '' : '/';
+
+        foreach (self::$fields as $key => $value) {
+            $val = $value !== null ? $value : '';
+            $id = strcmp($key, 'prefix') !== 0 ? self::$options['prefix'][0].$key : self::$options['prefix'][1];
+            $html .= '<input type="text" id="'.$id.'" name="'.$id.'" value="'.$val.'" style="display:none" '.$tag_end.'>'."\n";
+        }
+
+        return $html;
+    }
+
+    public function get_js() {
+        $js  = '';
+        $js .= self::$javascript['_before_'];
+        $js .= self::$javascript['_core_'];
+        foreach (self::$javascript['_modules_'] as $code) $js .= $code;
+        $js .= self::$javascript['_after_'];
+        return $js;
+    }
+
+    public function add_data($namespace, $name, $value) {
+        self::$data[$namespace][$name] = $value;
+    }
+
+    public function add_field($name, $value) {
+        self::$fields[$name] = $value;
+    }
+
+    public function add_javascript($code) {
+        array_push(self::$javascript['_modules_'], $code);
     }
 
     public function add_error($error) {
@@ -329,13 +338,6 @@ class Core
         return count(self::$errors);
     }
 
-    public function get_errors() {
-        if ($this->addon_exists('Flasher')) {
-            return $this->get_addon('Flasher')->get_errors();
-        }
-        return self::$errors;
-    }
-
     public function print_errors($class = '') {
         echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
         foreach ($this->get_errors() as $key => $error) {
@@ -344,20 +346,8 @@ class Core
         echo '</ul>';
     }
 
-    public function get_error() {
-        if ($this->addon_exists('Flasher')) {
-            $errors = $this->get_addon('Flasher')->get_errors();
-            return reset($errors);
-        }
-        return reset(self::$errors);
-    }
-
     public function print_error() {
         echo $this->get_error();
-    }
-
-    public function get_value($name, $nl2br = false, $safe = false) {
-        return $this->filter($name, $nl2br, $safe);
     }
 
     public function print_value($name, $nl2br = false, $safe = false) {
@@ -368,30 +358,21 @@ class Core
         echo $this->get_fields();
     }
 
-    public function get_fields() {
-        $html = '';
-        $tag_end = (self::$options['html5']) ? '' : '/';
-
-        foreach (self::$fields as $key => $value) {
-            $val = $value !== null ? $value : '';
-            $id = strcmp($key, 'prefix') !== 0 ? self::$options['prefix'][0].$key : self::$options['prefix'][1];
-            $html .= '<input type="text" id="'.$id.'" name="'.$id.'" value="'.$val.'" style="display:none" '.$tag_end.'>'."\n";
-        }
-
-        return $html;
-    }
-
     public function print_js() {
         echo $this->get_js();
     }
 
-    public function get_js() {
-        $js  = '';
-        $js .= self::$javascript['_before_'];
-        $js .= self::$javascript['_core_'];
-        foreach (self::$javascript['_modules_'] as $code) $js .= $code;
-        $js .= self::$javascript['_after_'];
-        return $js;
+    protected function is_empty($value) {
+        return (strlen(trim($value)) == 0);
+    }
+
+    protected function filter($key, $nl2br = false) {
+        $value = $this->get_request($key);
+        if($nl2br) {
+            return !$this->is_empty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
+        } else {
+            return !$this->is_empty($value) ? htmlspecialchars($value, ENT_QUOTES) : '';
+        }
     }
 
 }
