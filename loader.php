@@ -5,7 +5,7 @@ spl_autoload_register(function ($class) {
     $path = '';
     for ($i = 0; $i < $count; $i++) {
         if ($i == 0) continue;
-        $path .= $split[$i].'/';
+        $path .= $split[$i] . '/';
     }
     $path = trim($path, '/') . '.php';
     require_once $path;

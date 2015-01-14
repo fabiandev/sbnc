@@ -1,7 +1,8 @@
 <?php
 namespace sbnc\modules;
 
-class Content extends Module implements ModuleInterface {
+class Content extends Module implements ModuleInterface
+{
 
     /**
      * Module options
@@ -16,12 +17,14 @@ class Content extends Module implements ModuleInterface {
     ];
 
 
-    protected function init() {
+    protected function init()
+    {
         $this->enabled = true;
     }
 
 
-    public function check() {
+    public function check()
+    {
 
     }
 

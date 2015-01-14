@@ -6,7 +6,7 @@ ini_set('display_errors', 'On'); // remove this line in production
 require 'Sbnc.php';
 use sbnc\Sbnc;
 
-$my_action = function() {
+$my_action = function () {
     // add your own actions here
     //
     // you can use any public sbnc method at this point!
@@ -27,14 +27,14 @@ Sbnc::start($my_action); // or simply call Sbnc::start();
 <h3><a href="http://fabianweb.net/sbnc">sbnc v0.2</a> [<a href="https://github.com/fabianweb/sbnc">github</a>]</h3>
 
 <p>
-<?php
-if (Sbnc::is_valid()) {
-    echo '<h4 style="color:green">The form is valid.</h4>';
-    // you may send an email here if the form was submitted without errors
-} elseif(Sbnc::is_invalid()) {
-    echo '<h4 style="color:red">Errors occured</h4>';
-}
-?>
+    <?php
+    if (Sbnc::is_valid()) {
+        echo '<h4 style="color:green">The form is valid.</h4>';
+        // you may send an email here if the form was submitted without errors
+    } elseif (Sbnc::is_invalid()) {
+        echo '<h4 style="color:red">Errors occured</h4>';
+    }
+    ?>
 </p>
 
 <p>

@@ -3,19 +3,22 @@ namespace sbnc\addons;
 
 use sbnc\Sbnc;
 
-class Flasher extends Addon implements AddonInterface {
+class Flasher extends Addon implements AddonInterface
+{
 
     // set explicit redirect for security reasons!!
     protected $options = [
-        'redirect:error'    => [true, null],
-        'redirect:success'  => [true, null]
+        'redirect:error'   => [true, null],
+        'redirect:success' => [true, null]
     ];
 
-    protected function init() {
+    protected function init()
+    {
         $this->enabled = Sbnc::util('FlashMessages')->is_enabled();
     }
 
-    public function after() {
+    public function after()
+    {
         if (!$this->enabled) return;
 
         $errors = Sbnc::errors();
@@ -52,24 +55,28 @@ class Flasher extends Addon implements AddonInterface {
         $flash->flush();
     }
 
-    public function get_errors() {
+    public function get_errors()
+    {
         if (!$this->enabled) return Sbnc::errors();
         $response = Sbnc::util('FlashMessages')->get('errors');
         return !empty($response) ? $response : Sbnc::util('FlashMessages')->get_cache('errors');
     }
 
-    public function count_errors() {
+    public function count_errors()
+    {
         if (!$this->enabled) return count(Sbnc::errors());
         return Sbnc::util('FlashMessages')->count('errors');
     }
 
-    public function get_request($key) {
+    public function get_request($key)
+    {
         if (!$this->enabled) return Sbnc::request($key) !== null ? Sbnc::request($key) : '';
         $response = Sbnc::util('FlashMessages')->get('request', $key);
         return !empty($response) ? $response : Sbnc::util('FlashMessages')->get_cache('request', $key);
     }
 
-    public function was_submitted() {
+    public function was_submitted()
+    {
         if (Sbnc::util('FlashMessages')->is_set('_sbnc', 'redirected')) {
             return true;
         }

@@ -1,8 +1,10 @@
 <?php
 namespace sbnc\modules;
+
 use sbnc\Sbnc;
 
-class Time extends Module implements ModuleInterface {
+class Time extends Module implements ModuleInterface
+{
 
     private $options = [
         'min' => 1,
@@ -14,12 +16,14 @@ class Time extends Module implements ModuleInterface {
         'max' => 'Sorry, this took too long. Try again!'
     ];
 
-    protected function init() {
+    protected function init()
+    {
         $this->enabled = true;
         Sbnc::add_field('time', time());
     }
 
-    public function check() {
+    public function check()
+    {
         $now = time();
         $time = Sbnc::request('time');
         $diff = $now - $time;

@@ -2,22 +2,25 @@
 namespace sbnc\utils;
 
 
-class LogMessages extends Util implements UtilInterface {
+class LogMessages extends Util implements UtilInterface
+{
 
     private $options = [
         'file' => './sbnc.log'
     ];
 
-    protected function init() {
+    protected function init()
+    {
         $this->enabled = true;
     }
 
-    public function log($type, $data) {
+    public function log($type, $data)
+    {
         $content = '';
         $content .= strtoupper($type);
         $content .= '|' . date('d-m-Y G:i:s', time());
         if (is_array($data)) {
-            foreach($data as $value) {
+            foreach ($data as $value) {
                 $content .= '|' . $value;
             }
         } else {

@@ -43,8 +43,6 @@ class Sbnc
     ];
 
 
-
-
     private static $core;
     private static $initialized = false;
 
@@ -52,47 +50,53 @@ class Sbnc
     private function __destruct() {}
     private function __clone() {}
 
-    public static function __callStatic($name, $params) {
+    public static function __callStatic($name, $params)
+    {
         self::init();
         try {
             return self::$core->call($name, $params);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             self::print_exception($e);
         }
     }
 
-    public static function core() {
+    public static function core()
+    {
         if (!is_object(self::$core)) {
             self::throw_exception('Core is not initialized');
         }
         return self::$core;
     }
 
-    public static function start($action = null) {
+    public static function start($action = null)
+    {
         self::init();
         self::$core->start($action);
     }
 
-    private static function init() {
+    private static function init()
+    {
         if (!self::$initialized) {
             self::$initialized = true;
-            require_once __DIR__.'/loader.php';
+            require_once __DIR__ . '/loader.php';
             self::$core = new Core([
                 'modules' => self::$modules,
-                'addons'  => self::$addons,
-                'utils'   => self::$utils,
+                'addons' => self::$addons,
+                'utils' => self::$utils,
                 'options' => self::$options
             ]);
             self::$core->init();
         }
     }
 
-    public static function throw_exception($message) {
+    public static function throw_exception($message)
+    {
         self::print_exception(new \Exception($message));
     }
 
-    public static function print_exception(\Exception $e) {
-        $err  = '<h3>Sorry, there was an error!</h3>';
+    public static function print_exception(\Exception $e)
+    {
+        $err = '<h3>Sorry, there was an error!</h3>';
         $err .= '<pre>';
         $err .= '<span style="font-weight:600">' . $e->getMessage() . '</span>';
         $err .= ' in ' . $e->getFile() . ' on line ' . $e->getLine() . ':';

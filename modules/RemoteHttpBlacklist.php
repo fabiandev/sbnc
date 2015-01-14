@@ -1,5 +1,6 @@
 <?php
 namespace sbnc\modules;
+
 use sbnc\Sbnc;
 use sbnc\utils\FlashMessages;
 
@@ -15,7 +16,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
     private $flash;
 
     private $errors = [
-        'ip'      => 'Spam! Your IP seems modified!',
+        'ip' => 'Spam! Your IP seems modified!',
         'spammer' => 'Spammer detected, that was last seen %days% day(s) ago, with around %num% messages per day, of type: %type%'
     ];
 
@@ -38,7 +39,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
 
         if ($this->flash->is_set($this->ip)) {
             $flash_data = $this->flash->get_safe($this->ip);
-            if($flash_data['spam'] === 1) $this->parse($flash_data);
+            if ($flash_data['spam'] === 1) $this->parse($flash_data);
             return;
         }
 
@@ -51,11 +52,11 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
             if (strcmp($response[0], '127') === 0) {
 
                 $data = [
-                    'spam'     => 1,
-                    'type'     => $response[0],
+                    'spam' => 1,
+                    'type' => $response[0],
                     'activity' => $response[1],
-                    'threat'   => $response[2],
-                    'meaning'  => $response[3]
+                    'threat' => $response[2],
+                    'meaning' => $response[3]
                 ];
 
                 $this->parse($data);
@@ -71,7 +72,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
     public function parse($data)
     {
         $days = $data['activity'];
-        $num  = $data['threat'] < 26 ? 100 : $data['threat'] > 25 && $data['threat'] < 51 ? 10000 : 1000000;
+        $num = $data['threat'] < 26 ? 100 : $data['threat'] > 25 && $data['threat'] < 51 ? 10000 : 1000000;
         $type = '';
 
         switch ($data['meaning']) {
@@ -102,7 +103,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         Sbnc::add_error($err);
 
         $this->flash->flash($this->ip, $data);
-        Sbnc::util('LogMessages')->log('spam-http-blacklist', ['active '.$days.' day(s) ago', $num . ' messages/day', $type]);
+        Sbnc::util('LogMessages')->log('spam-http-blacklist', ['active ' . $days . ' day(s) ago', $num . ' messages/day', $type]);
     }
 
     protected function get_ip()

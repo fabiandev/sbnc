@@ -1,8 +1,10 @@
 <?php
 namespace sbnc\modules;
+
 use sbnc\Sbnc;
 
-class Gestures extends Module implements ModuleInterface {
+class Gestures extends Module implements ModuleInterface
+{
 
     /*
      * Options for checking keyboard and mouse usage.
@@ -15,16 +17,17 @@ class Gestures extends Module implements ModuleInterface {
      * @var array
      */
     private $errors = [
-        'mouse'     => 'Mouse not used',
-        'keyboard'  => 'Keyboard not used',
-        'js'        => 'JavaScript must be activated'
+        'mouse'    => 'Mouse not used',
+        'keyboard' => 'Keyboard not used',
+        'js'       => 'JavaScript must be activated'
     ];
 
     private $options = [
         'mode' => ['mouse', 'js']
     ];
 
-    protected function init() {
+    protected function init()
+    {
         $this->enabled = true;
         Sbnc::add_field('mouse', null);
         Sbnc::add_field('keyboard', null);
@@ -32,7 +35,8 @@ class Gestures extends Module implements ModuleInterface {
         Sbnc::add_javascript($this->get_js());
     }
 
-    public function check() {
+    public function check()
+    {
         if (in_array('js', $this->options['mode'])) {
             $js_value = Sbnc::request('js');
             if (empty($js_value) || strcmp($js_value, 'true') !== 0) {
@@ -66,12 +70,12 @@ class Gestures extends Module implements ModuleInterface {
         $mouse_field = $prefix . 'mouse';
         $js_field = $prefix . 'js';
 
-        $js  = 'sbnc.gestures = (function() { var init, usedKeyboard, usedMouse;';
+        $js = 'sbnc.gestures = (function() { var init, usedKeyboard, usedMouse;';
         $js .= 'var keyboardField, mouseField, jsField;';
         $js .= 'init = function() {';
-        $js .= 'keyboardField = document.getElementById("'.$keyboard_field.'");';
-        $js .= 'mouseField = document.getElementById("'.$mouse_field.'");';
-        $js .= 'jsField = document.getElementById("'.$js_field.'");';
+        $js .= 'keyboardField = document.getElementById("' . $keyboard_field . '");';
+        $js .= 'mouseField = document.getElementById("' . $mouse_field . '");';
+        $js .= 'jsField = document.getElementById("' . $js_field . '");';
         $js .= 'jsField.value = "true";';
         $js .= 'window.onkeyup = usedKeyboard;';
         $js .= 'window.onmousemove = usedMouse;';
