@@ -55,7 +55,9 @@ class LogMessages extends Util implements UtilInterface
 
         $content .= "\r\n";
 
-        file_put_contents($this->options['file'], $content, FILE_APPEND);
+        if (is_writeable($this->options['file'])) {
+            file_put_contents($this->options['file'], $content, FILE_APPEND);
+        }
     }
 
     protected function get_ip()
