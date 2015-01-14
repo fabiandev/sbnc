@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc\Modules;
+namespace sbnc\modules;
 
 abstract class Module {
 

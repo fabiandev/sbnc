@@ -1,7 +1,7 @@
 <?php
-namespace Sbnc\Modules;
+namespace sbnc\modules;
 
-use Sbnc\Utils\FlashMessages;
+use sbnc\utils\FlashMessages;
 
 class RemoteHttpBlacklist extends Module implements ModuleInterface
 {

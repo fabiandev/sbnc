@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc\Utils;
+namespace sbnc\utils;
 
 
 class LogMessages extends Util implements UtilInterface {

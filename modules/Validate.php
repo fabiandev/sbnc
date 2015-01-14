@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc\Modules;
+namespace sbnc\modules;
 
 class Validate extends Module implements ModuleInterface {
 

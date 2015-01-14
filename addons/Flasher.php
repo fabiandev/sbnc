@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc\Addons;
+namespace sbnc\addons;
 
 class Flasher extends Addon implements AddonInterface {
 

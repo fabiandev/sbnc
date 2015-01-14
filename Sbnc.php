@@ -1,6 +1,6 @@
 <?php
-namespace Sbnc;
-require 'loader.php';
+namespace sbnc;
+//require 'loader.php';
 
 /**
  * sbnc
@@ -15,10 +15,12 @@ require 'loader.php';
  * @link       https://github.com/fabianweb/sbnc
  */
 
-class Sbnc extends Core
+class Sbnc
 {
 
-    protected $modules = [
+    protected static $core;
+
+    protected static $modules = [
         'Time',
         'Hidden',
         'Gestures',
@@ -27,12 +29,12 @@ class Sbnc extends Core
         'RemoteHttpBlacklist'
     ];
 
-    protected $addons = [
+    protected static $addons = [
         'Flasher'
     ];
 
 
-    protected $utils = [
+    protected static $utils = [
         'FlashMessages', // required
         'LogMessages' // required
     ];
@@ -45,10 +47,38 @@ class Sbnc extends Core
      *
      * @var array
      */
-    protected $options = [
+    protected static $options = [
         'prefix' => ['random', 'a86jg5'],
         'javascript' => true,
         'html5' => true
     ];
+
+    public static function __callStatic($name, $params) {
+        self::init();
+        return Core::call($name, $params);
+    }
+
+    public static function core() {
+        return self::$core;
+    }
+
+    public static function start() {
+        self::init();
+        self::$core->start();
+    }
+
+    public static function init() {
+        static $initialized = false;
+        if (!$initialized) {
+            require_once __DIR__.'/loader.php';
+            self::$core = new Core([
+                'modules' => self::$modules,
+                'addons'  => self::$addons,
+                'utils'   => self::$utils,
+                'options' => self::$options
+            ]);
+            $initialized = true;
+        }
+    }
 
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc\Modules;
+namespace sbnc\modules;
 
 class Hidden extends Module implements ModuleInterface {
 

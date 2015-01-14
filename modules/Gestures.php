@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc\Modules;
+namespace sbnc\modules;
 
 class Gestures extends Module implements ModuleInterface {
 

@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc\Addons;
+namespace sbnc\addons;
 
 Interface AddonInterface {
 

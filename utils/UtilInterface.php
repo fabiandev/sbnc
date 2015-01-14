@@ -1,5 +1,5 @@
 <?php
-namespace Sbnc\Utils;
+namespace sbnc\utils;
 
 Interface UtilInterface {
 
