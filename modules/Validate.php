@@ -26,7 +26,7 @@ class Validate extends Module implements ModuleInterface
      *
      * - and so on...
      *
-     * @var array
+     * @var array Options
      */
     private $options = [
         // used by example.php
@@ -47,7 +47,7 @@ class Validate extends Module implements ModuleInterface
      * You may use the %placeholders% to be replaced by the correct
      * values.
      *
-     * @var array
+     * @var array Custom errors
      */
     private $errors = [
         'email' => [
@@ -71,7 +71,7 @@ class Validate extends Module implements ModuleInterface
      * default error messages to be used if you didn't define
      * a custom one.
      *
-     * @var array
+     * @var array Default errors
      */
     private $default_errors = [
         'notags' => '%field% does not allow tags',

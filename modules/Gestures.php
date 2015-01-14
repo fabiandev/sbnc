@@ -21,7 +21,7 @@ class Gestures extends Module implements ModuleInterface
     /**
      * Define your custom error messages
      *
-     * @var array
+     * @var array Error messages
      */
     private $errors = [
         'mouse' => 'Mouse not used',
@@ -36,7 +36,7 @@ class Gestures extends Module implements ModuleInterface
      * keyboard: checks keyboard usage only
      * js:       if defined, javascript must be enabled
      *
-     * @var array
+     * @var array Options
      */
     private $options = [
         'mode' => ['mouse', 'js']

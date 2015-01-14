@@ -21,7 +21,7 @@ class Referrer extends Module implements ModuleInterface
     /**
      * Set your custom error message
      *
-     * @var array
+     * @var array Error messages
      */
     private $errors = [
         'error' => 'Form must be processed on same page and host as the request came from!'

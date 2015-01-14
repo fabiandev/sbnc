@@ -25,7 +25,7 @@ class Flasher extends Addon implements AddonInterface
      *
      * set an explicit redirect for security reasons!!
      *
-     * @var array
+     * @var array Options
      */
     protected $options = [
         'redirect:error' => [true, null],

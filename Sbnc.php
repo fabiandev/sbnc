@@ -24,7 +24,7 @@ class Sbnc
     /**
      * Defined modules will be loaded
      *
-     * @var array
+     * @var array Modules
      */
     private static $modules = [
         'Time',
@@ -39,7 +39,7 @@ class Sbnc
     /**
      * Defined addons will be loaded
      *
-     * @var array
+     * @var array Addons
      */
     private static $addons = [
         'Flasher'
@@ -48,7 +48,7 @@ class Sbnc
     /**
      * Defined utils will be loaded
      *
-     * @var array
+     * @var array Utils
      */
     private static $utils = [
         'FlashMessages', // required
@@ -69,7 +69,7 @@ class Sbnc
      * -html5
      *      set to false if you don't use the html5 doctype
      *
-     * @var array
+     * @var array Options
      */
     private static $options = [
         'prefix' => ['random', 'a86jg5'],
@@ -85,14 +85,14 @@ class Sbnc
     /**
      * Instance of the sbnc core
      *
-     * @var
+     * @var object Core instance
      */
     private static $core;
 
     /**
      * Set to true if sbnc has been initialized
      *
-     * @var bool
+     * @var bool Initialization status
      */
     private static $initialized = false;
 
@@ -128,7 +128,7 @@ class Sbnc
     /**
      * Returns the core instance
      *
-     * @return mixed
+     * @return mixed Core instance
      */
     public static function core()
     {
@@ -170,7 +170,7 @@ class Sbnc
     /**
      * Throws and prints an exception
      *
-     * @param $message
+     * @param $message String for Exception
      */
     public static function throw_exception($message)
     {

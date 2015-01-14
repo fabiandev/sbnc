@@ -21,7 +21,7 @@ class Time extends Module implements ModuleInterface
      * Set the minimum and maximum time a submit has to take.
      * Time in seconds.
      *
-     * @var array
+     * @var array Options
      */
     private $options = [
         'min' => 1,
@@ -31,7 +31,7 @@ class Time extends Module implements ModuleInterface
     /**
      * Set your custom error messages
      *
-     * @var array
+     * @var array Error messages
      */
     private $errors = [
         'min' => 'Sorry, this was too fast.',

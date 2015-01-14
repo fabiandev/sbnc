@@ -21,7 +21,7 @@ class Hidden extends Module implements ModuleInterface
      * Define your custom error message.
      * %field% will be replaced by the field name
      *
-     * @var array
+     * @var array Error messages
      */
     private $errors = [
         'error' => '%field% is not empty or has been modified'

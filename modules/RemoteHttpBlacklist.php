@@ -23,10 +23,25 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
      * Sign up for a free account at http://www.projecthoneypot.org and
      * and create an API key for http:BL
      *
-     * By default the API key will be loaded from the file honeypot.key
-     * located at the same level as Sbnc.php
+     * By default the API key will be loaded from ta file.
      *
-     * @var
+     * @var string File containing the API Key
+     */
+    private $api_key_file = './honeypot.key';
+
+    /**
+     * You may also place your API Key here.
+     * By doing so, it won't be loaded from the specified file.
+     *
+     * private $api_key = 'YOUR_API_KEY';
+     *
+     * For security reasons, this is not recommended though. Consider placing the file containing
+     * the key outside of the public directory, or add the key as an environment variable.
+     * You can get it from an environment variable like this:
+     *
+     * private $api_key = getenv('NAME_OF_VARIABLE');
+     *
+     * @var string API Key
      */
     private $api_key;
 
@@ -34,7 +49,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
      * Define your custom error messages.
      * You may use the %placeholders% from the example to get replaced
      *
-     * @var array
+     * @var array Error messages
      */
     private $errors = [
         'ip' => 'Your IP seems modified!',
@@ -50,7 +65,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
 
     protected function init()
     {
-        if (empty($this->api_key)) $this->api_key = file_get_contents('./honeypot.key');
+        if (empty($this->api_key) && !empty($this->$api_key_file)) $this->api_key = file_get_contents($this->$api_key_file);
         if (!empty($this->api_key)) $this->enabled = true;
         if (empty($this->ip)) $this->ip = $this->get_ip();
         $this->flash = new FlashMessages();

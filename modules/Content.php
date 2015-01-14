@@ -30,7 +30,7 @@ class Content extends Module implements ModuleInterface
      * - samecontent
      *      specify in how many fields there may be the exact same content
      *
-     * @var array
+     * @var array Options
      */
     private $options = [
         'maxlinks' => 2,
@@ -42,7 +42,7 @@ class Content extends Module implements ModuleInterface
     /**
      * Set your custom error messages
      *
-     * @var array
+     * @var array Error messages
      */
     private $errors = [
         'maxlinks' => 'A maximum of %max% links (http://) are allowed on the entire form.',
@@ -51,6 +51,11 @@ class Content extends Module implements ModuleInterface
         'samecontent' => 'More than %max% fields contain the exact same content'
     ];
 
+    /**
+     * List of spam words
+     *
+     * @var array Collection of spam words
+     */
     private $spamwords = [
         'д', 'и', 'ж', 'Ч', 'Б', '. ,', '? ,', '[url=', '[/url]',
         '-online', '4u', 'aceteminophen', 'adderall', 'adipex', 'advicer', 'ambien', 'anime', 'ass', 'augmentation',

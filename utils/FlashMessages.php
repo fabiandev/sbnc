@@ -20,7 +20,7 @@ class FlashMessages extends Util implements UtilInterface
     /**
      * Default namespace
      *
-     * @var array
+     * @var array Options
      */
     protected $options = [
         'session_name' => 'sbnc_flash'

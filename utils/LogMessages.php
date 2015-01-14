@@ -20,7 +20,7 @@ class LogMessages extends Util implements UtilInterface
     /**
      * Log file
      *
-     * @var array
+     * @var array Options
      */
     private $options = [
         'file' => './sbnc.log'

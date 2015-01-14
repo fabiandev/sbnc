@@ -11,49 +11,49 @@ class Core
     /**
      * Holds instances of all modules, utils and addons
      *
-     * @var array
+     * @var array Components
      */
     protected static $components = [];
 
     /**
      * Holds the request if form was submitted
      *
-     * @var array
+     * @var array Request
      */
     protected static $request = [];
 
     /**
      * Holds all fields that should be added by sbnc
      *
-     * @var array
+     * @var array Fields
      */
     protected static $fields = [];
 
     /**
      * Holds all JavaScript that should be added
      *
-     * @var array
+     * @var array JavaScript
      */
     protected static $javascript = [];
 
     /**
      * Holds all options
      *
-     * @var array
+     * @var array Options
      */
     protected static $options = [];
 
     /**
      * Holds all error messages
      *
-     * @var array
+     * @var array Errors
      */
     protected static $errors = [];
 
     /**
      * Additional data that may be added
      *
-     * @var array
+     * @var array Data
      */
     protected static $data = [];
 
@@ -112,10 +112,10 @@ class Core
      *   - 1 - 4 parameters
      *         calls a public method of core with 1 - 4 parameter(s) if possible
      *
-     * @param $name
-     * @param string $params
-     * @return null
-     * @throws \Exception
+     * @param string $name Name of called method
+     * @param string $params Parameters of called method
+     * @return mixed Expected value or null
+     * @throws \Exception If a method could not be called as expected
      */
     public function call($name, $params = '')
     {
@@ -253,7 +253,7 @@ class Core
     /**
      * Initializes all components by type and creates instances
      *
-     * @param $name component type
+     * @param string $name Initializes modules, utils or addons
      */
     private function init_component($name)
     {
@@ -288,8 +288,8 @@ class Core
      * Only POST submits are handled!
      * Before and after actions are performed on every request.
      *
-     * @param null $action User defined function called - if provided - after sbnc checks
-     * @return bool
+     * @param null $action User defined function called - if provided - after all spam checks
+     * @return bool True if method was POST, false otherwise
      */
     public function start($action = null)
     {
@@ -356,7 +356,7 @@ class Core
     /**
      * Returns true if form has been submitted and it's valid
      *
-     * @return bool
+     * @return bool True if valid, false otherwise
      */
     public function is_valid()
     {
@@ -370,7 +370,7 @@ class Core
     /**
      * Returns false if form has been submitted an errors occured
      *
-     * @return bool
+     * @return bool True if invalid, false otherwise
      */
     public function is_invalid()
     {
@@ -384,8 +384,8 @@ class Core
     /**
      * Checks if an addon has been loaded and is enabled
      *
-     * @param $addon
-     * @return bool
+     * @param string $addon Addon name
+     * @return bool True if addon exists
      */
     protected function addon_exists($addon)
     {
@@ -395,8 +395,8 @@ class Core
     /**
      * Checks if a module has been loaded and is enabled
      *
-     * @param $module
-     * @return bool
+     * @param string $module Module name
+     * @return bool True if module exists
      */
     protected function module_exists($module)
     {
@@ -406,8 +406,8 @@ class Core
     /**
      * Checks if a util has been loaded and is enabled
      *
-     * @param $util
-     * @return bool
+     * @param string $util Util name
+     * @return bool True if util exists
      */
     protected function util_exists($util)
     {
@@ -417,8 +417,8 @@ class Core
     /**
      * Like util_exists but checks for any component
      *
-     * @param $component
-     * @return bool
+     * @param string $component Component name
+     * @return bool True if module, addon or util with this name exists
      */
     protected function component_exists($component)
     {
@@ -429,8 +429,8 @@ class Core
     /**
      * Returns loaded addon instance by name
      *
-     * @param $addon
-     * @return mixed
+     * @param string $addon Addon name
+     * @return mixed Addon instance or null
      */
     public function get_addon($addon)
     {
@@ -441,8 +441,8 @@ class Core
     /**
      * Returns loaded module instance by name
      *
-     * @param $module
-     * @return mixed
+     * @param string $module Module name
+     * @return mixed Module instance or null
      */
     public function get_module($module)
     {
@@ -453,8 +453,8 @@ class Core
     /**
      * Returns loaded util instance by name
      *
-     * @param $util
-     * @return mixed
+     * @param string $util Util name
+     * @return mixed Util instance or null
      */
     public function get_util($util)
     {
@@ -465,8 +465,8 @@ class Core
     /**
      * Retrieves a request (e.g. value of email field) by name from session or class
      *
-     * @param $key
-     * @return string
+     * @param string $key Input field name
+     * @return string Value of sent input field
      */
     public function get_request($key)
     {
@@ -479,7 +479,7 @@ class Core
     /**
      * Returns all errors from session or class
      *
-     * @return array
+     * @return array Errors
      */
     public function get_errors()
     {
@@ -492,7 +492,7 @@ class Core
     /**
      * Returns a single error from session or class
      *
-     * @return mixed
+     * @return string Error
      */
     public function get_error()
     {
@@ -511,7 +511,7 @@ class Core
     /**
      * Generates html code from all sbnc fields
      *
-     * @return string
+     * @return string HTML of input fields
      */
     public function get_fields()
     {
@@ -530,7 +530,7 @@ class Core
     /**
      * Generates javascript code to be included
      *
-     * @return string
+     * @return string JavaScript code
      */
     public function get_js()
     {
@@ -545,9 +545,9 @@ class Core
     /**
      * Adds data to the $data array under a namespace
      *
-     * @param $namespace
-     * @param $name
-     * @param $value
+     * @param string $namespace Namespace for data set
+     * @param string $name Name (key) for data
+     * @param string $value Value
      */
     public function add_data($namespace, $name, $value)
     {
@@ -557,8 +557,8 @@ class Core
     /**
      * Adds a field that will be included
      *
-     * @param $name
-     * @param $value
+     * @param string $name Name of input field
+     * @param string $value Default value
      */
     public function add_field($name, $value)
     {
@@ -568,7 +568,7 @@ class Core
     /**
      * Adds javascript code
      *
-     * @param $code
+     * @param string $code Adds JavaScript
      */
     public function add_javascript($code)
     {
@@ -578,8 +578,8 @@ class Core
     /**
      * Adds an error message
      *
-     * @param $error
-     * @return bool
+     * @param string $error Error message
+     * @return bool True if has been added
      */
     public function add_error($error)
     {
@@ -593,7 +593,7 @@ class Core
     /**
      * Number of error messages in errors array
      *
-     * @return int
+     * @return int Number of errors
      */
     public function num_errors()
     {
@@ -606,7 +606,7 @@ class Core
     /**
      * Echo's all errors in an unordered list
      *
-     * @param string $class
+     * @param string $class Class for HTML unordered list
      */
     public function print_errors($class = '')
     {
@@ -629,13 +629,12 @@ class Core
      * Prints a value.
      * use it to pre-fill forms, if errors occurred.
      *
-     * @param $name
-     * @param bool $nl2br
-     * @param bool $safe
+     * @param string $name Name of input field
+     * @param bool $nl2br Convert line breaks to HTML <br>
      */
-    public function print_value($name, $nl2br = false, $safe = false)
+    public function print_value($name, $nl2br = false)
     {
-        echo $this->get_value($name, $nl2br, $safe);
+        echo $this->get_value($name, $nl2br);
     }
 
     /**
@@ -657,8 +656,8 @@ class Core
     /**
      * Checks if value is empty
      *
-     * @param $value
-     * @return bool
+     * @param string $value Value to check
+     * @return bool True if value is empty
      */
     protected function is_empty($value)
     {
@@ -669,9 +668,9 @@ class Core
      * Filters a request by name so it's safe to print it in a html page.
      * Optionally converts line breaks to <br>
      *
-     * @param $key
-     * @param bool $nl2br
-     * @return string
+     * @param string $key Request field name
+     * @param bool $nl2br Convert line breaks to HTML <br>
+     * @return string Filtered value
      */
     protected function filter($key, $nl2br = false)
     {
