@@ -107,7 +107,6 @@ class Content extends Module implements ModuleInterface
             }
         }
         if (in_array('spamwords', $this->options)) {
-
             $matches = [];
 
             foreach ($this->spamwords as $word) {
