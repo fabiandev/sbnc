@@ -1,5 +1,6 @@
 <?php
 namespace sbnc\modules;
+use sbnc\Sbnc;
 
 class Validate extends Module implements ModuleInterface {
 
@@ -68,13 +69,14 @@ class Validate extends Module implements ModuleInterface {
     public function check() {
         foreach ($this->options as $key => $value) {
             foreach ($value as $validator) {
-                if (isset($this->master['request'][$key])) {
-                    if (strcmp($validator, 'required') !== 0 && empty($this->master['request'][$key])) continue;
+                $reqkey = Sbnc::data(['request', $key]);
+                if ($reqkey !== null) {
+                    if (strcmp($validator, 'required') !== 0 && empty($reqkey)) continue;
                     $data = explode(':', $validator);
                     $validator = $data[0];
                     array_shift($data);
                     $func = 'validate_' . $validator;
-                    $this->$func($this->master['request'][$key], $key, $data);
+                    $this->$func($reqkey, $key, $data);
                 }
             }
         }
@@ -87,7 +89,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['required']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -100,7 +102,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['email']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -113,7 +115,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['ip']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -126,7 +128,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['url']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -139,7 +141,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace(['%field%', '%min%'], [$name, $options[0]], $this->default_errors['min']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -152,7 +154,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace(['%field%', '%max%'], [$name, $options[0]], $this->default_errors['max']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -165,7 +167,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['alphanum']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -178,7 +180,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['latin']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -191,7 +193,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['latindigits']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -204,7 +206,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['alpha']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -217,7 +219,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['digit']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -231,7 +233,7 @@ class Validate extends Module implements ModuleInterface {
                 $err = str_replace('%field%', $name, $this->default_errors['numeric']);
             }
 
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;
@@ -246,7 +248,7 @@ class Validate extends Module implements ModuleInterface {
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['regex']);
             }
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return false;
         }
         return true;

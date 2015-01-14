@@ -1,6 +1,6 @@
 <?php
 namespace sbnc\modules;
-
+use sbnc\Sbnc;
 use sbnc\utils\FlashMessages;
 
 class RemoteHttpBlacklist extends Module implements ModuleInterface
@@ -32,7 +32,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
     {
         if (!filter_var($this->ip, FILTER_VALIDATE_IP)) {
             $err = $this->errors['error'];
-            array_push($this->master['errors'], $err);
+            Sbnc::add_error($err);
             return;
         }
 
@@ -99,10 +99,10 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         }
 
         $err = str_replace(['%days%', '%num%', '%type%'], [$days, number_format($num, 0, '.', ','), $type], $this->errors['spammer']);
-        array_push($this->master['errors'], $err);
+        Sbnc::add_error($err);
 
         $this->flash->flash($this->ip, $data);
-        $this->master['utils']['LogMessages']->log('spam-http-blacklist', ['active '.$days.' day(s) ago', $num . ' messages/day', $type]);
+        Sbnc::util('FlashMessages')->log('spam-http-blacklist', ['active '.$days.' day(s) ago', $num . ' messages/day', $type]);
     }
 
     protected function get_ip()

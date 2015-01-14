@@ -8,11 +8,6 @@ class Core
     protected static $options    = [];
     protected static $errors     = [];
 
-    /*protected $fields = [];
-    protected $request = [];
-    protected $errors = [];
-    protected $master = [];*/
-
     public function __construct(array $data) {
         self::$components = [
             'modules' => $data['modules'],
@@ -20,50 +15,89 @@ class Core
             'utils'   => $data['utils']
         ];
         self::$options = $data['options'];
-        $this->init();
     }
 
+    public function __destruct() {
+        ob_flush();
+    }
 
-    public static function call($func, array &$params = array()) {
-        list($class, $method) = $func;
-        $instance = is_object($class);
-
-        switch (count($params)) {
-            case 0:
-                return ($instance) ?
-                    $class->$method() :
-                    $class::$method();
-            case 1:
-                return ($instance) ?
-                    $class->$method($params[0]) :
-                    $class::$method($params[0]);
-            case 2:
-                return ($instance) ?
-                    $class->$method($params[0], $params[1]) :
-                    $class::$method($params[0], $params[1]);
-            case 3:
-                return ($instance) ?
-                    $class->$method($params[0], $params[1], $params[2]) :
-                    $class::$method($params[0], $params[1], $params[2]);
-            case 4:
-                return ($instance) ?
-                    $class->$method($params[0], $params[1], $params[2], $params[3]) :
-                    $class::$method($params[0], $params[1], $params[2], $params[3]);
-            case 5:
-                return ($instance) ?
-                    $class->$method($params[0], $params[1], $params[2], $params[3], $params[4]) :
-                    $class::$method($params[0], $params[1], $params[2], $params[3], $params[4]);
+    public function call($name, $params = '') {
+        $first = empty($params) ? '' : is_array($params) ? $params[0] : $params;
+        $count = is_array($params) ? count($params) : 0;
+        switch($name) {
+            case 'errors';
+                if (empty($params)) {
+                    if (isset(self::$errors)) {
+                        return self::$errors;
+                    }
+                } elseif (isset(self::$errors[$first])) {
+                    return self::$errors[$first];
+                }
+                return null;
+            case 'options':
+                if (empty($params)) {
+                    if (isset(self::$options)) {
+                        return self::$options;
+                    }
+                } elseif (isset(self::$options[$first])) {
+                    return self::$options[$first];
+                }
+                return null;
+            case 'data':
+                if (empty($params)) {
+                    if (isset(self::$data[$name])) {
+                        return self::$data[$name];
+                    }
+                } elseif (isset(self::$data[$name][$first])) {
+                    return self::$data[$name][$first];
+                }
+                return null;
+            case 'module':
+            case 'addon':
+            case 'util':
+                if (empty($params)) {
+                    if (isset(self::$components[$name.'s'])) {
+                        return self::$components[$name.'s'];
+                    }
+                } elseif (isset(self::$components[$name.'s'][$first])) {
+                    return self::$components[$name.'s'][$first];
+                }
+                return null;
             default:
-                return call_user_func_array($func, $params);
+                $sbnc = Sbnc::core();
+                if (!method_exists($sbnc, $name)) throw new \Exception('Method "'. $name .'" does not exist');
+                if (!is_callable([$sbnc, $name])) throw new \Exception('Method "'. $name .'" could not be called');
+                switch($count) {
+                    case 0:
+                        return $sbnc->$name();
+                    case 1:
+                        return $sbnc->$name($params[0]);
+                    case 2:
+                        return $sbnc->$name($params[0], $params[1]);
+                    case 3:
+                        return $sbnc->$name($params[0], $params[1], $params[2]);
+                    case 4:
+                        return $sbnc->$name($params[0], $params[1], $params[2], $params[3]);
+                    default:
+                        return null;
+                }
         }
     }
 
 
-    private function init() {
+    public function init() {
         $this->init_fields();
         $this->init_utils();
         $this->init_modules();
         $this->init_addons();
+    }
+
+    public function add_data($namespace, $name, $value) {
+        self::$data[$namespace][$name] = $value;
+    }
+
+    public function add_field($name, $value) {
+        self::add_data('fields', $name, $value);
     }
 
     private function init_fields() {
@@ -71,7 +105,7 @@ class Core
             self::$options['prefix'][0] = chr(rand(97,122)).substr(md5(microtime()),rand(0,26),4);
         }
 
-        $this->fields = [
+        self::$data['fields'] = [
             'js'     => null,
             'prefix' => &self::$options['prefix'][0],
             'url'    => 'http' . (($_SERVER['SERVER_PORT'] == 443) ? 's://' : '://') .
@@ -183,8 +217,6 @@ class Core
     }
 
     public function start($action = null) {
-        echo 'start';
-        exit;
         $this->before();
 
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {

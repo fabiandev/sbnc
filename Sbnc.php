@@ -17,10 +17,7 @@ namespace sbnc;
 
 class Sbnc
 {
-
-    protected static $core;
-
-    protected static $modules = [
+    private static $modules = [
         'Time',
         'Hidden',
         'Gestures',
@@ -29,47 +26,60 @@ class Sbnc
         'RemoteHttpBlacklist'
     ];
 
-    protected static $addons = [
+    private static $addons = [
         'Flasher'
     ];
 
 
-    protected static $utils = [
+    private static $utils = [
         'FlashMessages', // required
         'LogMessages' // required
     ];
 
-    /**
-     * Options for sbnc.
-     * The second entry for the prefix option should be changed. It
-     * is the name for the prefix field, that holds the random prefix
-     * for other fields (begin it with a letter!).
-     *
-     * @var array
-     */
-    protected static $options = [
+    private static $options = [
         'prefix' => ['random', 'a86jg5'],
         'javascript' => true,
         'html5' => true
     ];
 
+
+
+
+
+    //##################################################################################################\\
+
+    private static $core;
+    private static $initialized = false;
+
+    private function __construct() {}
+    private function __destruct() {}
+    private function __clone() {}
+
     public static function __callStatic($name, $params) {
         self::init();
-        return Core::call($name, $params);
+        try {
+            return self::$core->call($name, $params);
+        } catch(\Exception $e) {
+            self::print_exception($e);
+        }
     }
 
     public static function core() {
+        if (!is_object(self::$core)) {
+            self::throw_exception('Core is not initialized');
+        }
         return self::$core;
     }
 
     public static function start() {
+        ob_start();
         self::init();
         self::$core->start();
     }
 
-    public static function init() {
-        static $initialized = false;
-        if (!$initialized) {
+    private static function init() {
+        if (!self::$initialized) {
+            self::$initialized = true;
             require_once __DIR__.'/loader.php';
             self::$core = new Core([
                 'modules' => self::$modules,
@@ -77,8 +87,26 @@ class Sbnc
                 'utils'   => self::$utils,
                 'options' => self::$options
             ]);
-            $initialized = true;
+            self::$core->init();
         }
+    }
+
+    public static function throw_exception($message) {
+        self::print_exception(new \Exception($message));
+    }
+
+    public static function print_exception(\Exception $e) {
+        ob_clean();
+        $err  = '<h3>Sorry, there was an error!</h3>';
+        $err .= '<pre>';
+        $err .= '<span style="font-weight:600">' . $e->getMessage() . '</span>';
+        $err .= ' in ' . $e->getFile() . ' on line ' . $e->getLine() . ':';
+        $err .= '<br><br>';
+        $err .= $e->getTraceAsString();
+        $err .= '</pre>';
+        echo $err;
+        ob_end_flush();
+        exit;
     }
 
 }

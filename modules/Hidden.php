@@ -1,5 +1,6 @@
 <?php
 namespace sbnc\modules;
+use sbnc\Sbnc;
 
 class Hidden extends Module implements ModuleInterface {
 
@@ -9,14 +10,15 @@ class Hidden extends Module implements ModuleInterface {
 
     protected function init() {
         $this->enabled = true;
-        $this->master['fields']['check'] = null;
+        Sbnc::add_field('check', null);
     }
 
     public function check() {
-        if (!isset($this->master['request']['check']) ||  strlen(trim($this->master['request']['check'])) != 0) {
+        $hidden_value = Sbnc::data(['request', 'check']);
+        if ($hidden_value === null ||  strlen(trim($hidden_value)) != 0) {
             $err = str_replace('%field%', 'check', $this->errors['error']);
-            array_push($this->master['errors'], $err);
-            $this->master['utils']['LogMessages']->log('spam-hidden', 'Hidden field was not empty: ' . $this->master['request']['check']);
+            Sbnc::add_error($err);
+            Sbnc::util('LogMessages')->log('spam-hidden', 'Hidden field was not empty: ' . $hidden_value);
         }
     }
 

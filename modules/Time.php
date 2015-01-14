@@ -1,5 +1,6 @@
 <?php
 namespace sbnc\modules;
+use sbnc\Sbnc;
 
 class Time extends Module implements ModuleInterface {
 
@@ -15,20 +16,20 @@ class Time extends Module implements ModuleInterface {
 
     protected function init() {
         $this->enabled = true;
-        $this->master['fields']['time'] = time();
+        Sbnc::add_field('time', time());
     }
 
     public function check() {
         $now = time();
-        $time = $this->master['request']['time'];
+        $time = Sbnc::get_data(['request', 'time']);
         $diff = $now - $time;
 
         if ($diff < $this->options['min']) {
-            array_push($this->master['errors'], $this->errors['min']);
-            $this->master['utils']['LogMessages']->log('spam-fast-response', 'Submit too fast: < ' . $this->options['min']);
+            Sbnc::add_error($this->errors['min']);
+            Sbnc::util('LogMessages')->log('spam-fast-response', 'Submit too fast: < ' . $this->options['min']);
         } elseif ($diff > $this->options['max']) {
-            array_push($this->master['errors'], $this->errors['max']);
-            $this->master['utils']['LogMessages']->log('spam-timeout', 'Submit too slow: > ' . $this->options['max']);
+            Sbnc::add_error($this->errors['max']);
+            Sbnc::util('LogMessages')->log('spam-timeout', 'Submit too slow: > ' . $this->options['max']);
         }
     }
 

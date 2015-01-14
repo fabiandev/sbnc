@@ -3,7 +3,6 @@ namespace sbnc\addons;
 
 abstract class Addon {
 
-    protected $master;
     protected $enabled = false;
 
     public function is_enabled() {
@@ -14,8 +13,7 @@ abstract class Addon {
         return !$this->is_enabled();
     }
 
-    public function __construct(&$master) {
-        $this->master = $master;
+    public function __construct() {
         $this->init();
     }
 

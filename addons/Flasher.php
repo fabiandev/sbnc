@@ -1,6 +1,8 @@
 <?php
 namespace sbnc\addons;
 
+use sbnc\Sbnc;
+
 class Flasher extends Addon implements AddonInterface {
 
     // set explicit redirect for security reasons!!
@@ -10,61 +12,65 @@ class Flasher extends Addon implements AddonInterface {
     ];
 
     protected function init() {
-        $this->enabled = $this->master['utils']['FlashMessages']->is_enabled();
+        $this->enabled = Sbnc::util('FlashMessages')->is_enabled();
     }
 
     public function after() {
         if (!$this->enabled) return;
+
+        $errors = Sbnc::errors();
+        $flash = Sbnc::util('FlashMessages');
+
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
-            if (count($this->master['errors']) > 0) {
-                $this->master['utils']['FlashMessages']->flash('request', $this->master['request']);
-                $this->master['utils']['FlashMessages']->flash('errors', $this->master['errors']);
+            if (count(Sbnc::errors()) > 0) {
+                $flash->flash('request', Sbnc::data('request'));
+                $flash->flash('errors', $errors);
             }
-            if (!empty($this->master['errors']) && $this->options['redirect:error'][0] === true) {
+            if (!empty($errors) && $this->options['redirect:error'][0] === true) {
                 if (!$this->options['redirect:error'][1]) {
-                    $this->master['utils']['FlashMessages']->flash('_sbnc', ['redirected' => true]);
-                    header('Location: ' . $this->master['request']['url']);
+                    $flash->flash('_sbnc', ['redirected' => true]);
+                    header('Location: ' . Sbnc::data(['request', 'url']));
                     exit;
                 } else {
-                    $this->master['utils']['FlashMessages']->flash('_sbnc', ['redirected' => true]);
+                    $flash->flash('_sbnc', ['redirected' => true]);
                     header('Location: ' . $this->options['redirect:error'][1]);
                     exit;
                 }
-            } elseif (empty($this->master['errors']) && $this->options['redirect:success'][0] === true) {
+            } elseif (empty($errors) && $this->options['redirect:success'][0] === true) {
                 if (!$this->options['redirect:success'][1]) {
-                    $this->master['utils']['FlashMessages']->flash('_sbnc', ['redirected' => true]);
-                    header('Location: ' . $this->master['request']['url']);
+                    $flash->flash('_sbnc', ['redirected' => true]);
+                    header('Location: ' . Sbnc::data(['request', 'url']));
                     exit;
                 } else {
-                    $this->master['utils']['FlashMessages']->flash('_sbnc', ['redirected' => true]);
+                    $flash->flash('_sbnc', ['redirected' => true]);
                     header('Location: ' . $this->options['redirect:success'][1]);
                     exit;
                 }
             }
         }
         // remove messages from session, retrieved from cache
-        $this->master['utils']['FlashMessages']->flush();
+        $flash->flush();
     }
 
     public function get_errors() {
-        if (!$this->enabled) return $this->master['errors'];
-        $response = $this->master['utils']['FlashMessages']->get('errors');
-        return !empty($response) ? $response : $this->master['utils']['FlashMessages']->get_cache('errors');
+        if (!$this->enabled) return Sbnc::errors();
+        $response = Sbnc::util('FlashMessages')->get('errors');
+        return !empty($response) ? $response : Sbnc::util('FlashMessages')->get_cache('errors');
     }
 
     public function count_errors() {
-        if (!$this->enabled) return count($this->master['errors']);
-        return $this->master['utils']['FlashMessages']->count('errors');
+        if (!$this->enabled) return count(Sbnc::errors());
+        return Sbnc::util('FlashMessages')->count('errors');
     }
 
     public function get_request($key) {
-        if (!$this->enabled) return isset($this->master['request'][$key]) ? $this->master['request'][$key] : '';
-        $response = $this->master['utils']['FlashMessages']->get('request', $key);
-        return !empty($response) ? $response : $this->master['utils']['FlashMessages']->get_cache('request', $key);
+        if (!$this->enabled) return Sbnc::data(['request', $key]) !== null ? Sbnc::data(['request', $key]) : '';
+        $response = Sbnc::util('FlashMessages')->get('request', $key);
+        return !empty($response) ? $response : Sbnc::util('FlashMessages')->get_cache('request', $key);
     }
 
     public function was_submitted() {
-        if ($this->master['utils']['FlashMessages']->is_set('_sbnc', 'redirected')) {
+        if (Sbnc::util('FlashMessages')->is_set('_sbnc', 'redirected')) {
             return true;
         }
         return false;

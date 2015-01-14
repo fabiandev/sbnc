@@ -1,5 +1,6 @@
 <?php
 namespace sbnc\modules;
+use sbnc\Sbnc;
 
 class Gestures extends Module implements ModuleInterface {
 
@@ -25,30 +26,33 @@ class Gestures extends Module implements ModuleInterface {
 
     protected function init() {
         $this->enabled = true;
-        $this->master['fields']['mouse']    = null;
-        $this->master['fields']['keyboard'] = null;
+        Sbnc::add_field('mouse', null);
+        Sbnc::add_field('keyboard', null);
     }
 
     public function check() {
         if (in_array('js', $this->options['mode'])) {
-            if (!isset($this->master['request']['js']) || strcmp($this->master['request']['js'], 'true') !== 0) {
-                array_push($this->master['errors'], $this->errors['js']);
-                $this->master['utils']['LogMessages']->log('spam-gestures', 'JavaScript not enabled');
+            $js_value = Sbnc::data(['request', 'js']);
+            if (empty($js_value) || strcmp($js_value, 'true') !== 0) {
+                Sbnc::add_error($this->errors['js']);
+                Sbnc::util('LogMessages')->log('spam-gestures', 'JavaScript not enabled');
                 return;
             }
         }
 
         if (in_array('keyboard', $this->options['mode'])) {
-            if (!isset($this->master['request']['keyboard']) || strcmp($this->master['request']['keyboard'], 'true') !== 0) {
-                array_push($this->master['errors'], $this->errors['keyboard']);
-                $this->master['utils']['LogMessages']->log('spam-gestures', 'Keyboard not used');
+            $key_value = Sbnc::data(['request', 'keyboard']);
+            if (empty($key_value) || strcmp($key_value, 'true') !== 0) {
+                Sbnc::add_error($this->errors['keyboard']);
+                Sbnc::util('LogMessages')->log('spam-gestures', 'Keyboard not used');
             }
         }
 
         if (in_array('mouse', $this->options['mode'])) {
-            if (!isset($this->master['request']['mouse']) || strcmp($this->master['request']['mouse'], 'true') !== 0) {
-                array_push($this->master['errors'], $this->errors['mouse']);
-                $this->master['utils']['LogMessages']->log('spam-gestures', 'Mouse not used');
+            $mouse_value = Sbnc::data(['request', 'mouse']);
+            if (empty($mouse_value) || strcmp($mouse_value, 'true') !== 0) {
+                Sbnc::add_error($this->errors['mouse']);
+                Sbnc::util('LogMessages')->log('spam-gestures', 'Mouse not used');
             }
         }
     }
