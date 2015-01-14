@@ -18,10 +18,11 @@ class Validate extends Module implements ModuleInterface
      * value-array e.g.:
      *
      * - The form field with name "email" must be a correctly
-     * formatted email address and is required.
+     * formatted email address, is required and does not allow tags.
      *
      * - The form field with name "message" is required and
      * must have a minimum of 10 and no more than 1000 chracters.
+     * It also does not allow tags.
      *
      * - and so on...
      *
@@ -29,9 +30,9 @@ class Validate extends Module implements ModuleInterface
      */
     private $options = [
         // used by example.php
-        'email'   => ['email', 'required'],
-        'name'    => ['required', 'min:4', 'max:30'],
-        'message' => ['required', 'min:10', 'max:1000'],
+        'email'   => ['email', 'required', 'notags'],
+        'name'    => ['required', 'notags', 'min:4', 'max:30'],
+        'message' => ['required', 'notags', 'min:10', 'max:1000'],
 
         // other examples
         'mail' => ['email', 'required'],
@@ -61,7 +62,8 @@ class Validate extends Module implements ModuleInterface
         'message' => [
             'required' => 'Please write something :-)',
             'min'      => 'The message is too short. %min% characters minimum!',
-            'max'      => 'The message is too long. %max% characters maximum!'
+            'max'      => 'The message is too long. %max% characters maximum!',
+            'notags'   => 'Tags are not allowed in the message!'
         ]
     ];
 
@@ -72,6 +74,7 @@ class Validate extends Module implements ModuleInterface
      * @var array
      */
     private $default_errors = [
+        'notags'      => '%field% does not allow tags',
         'email'       => '%field% is not valid',
         'url'         => '%field% is not valid',
         'required'    => '%field% is required',
@@ -110,6 +113,19 @@ class Validate extends Module implements ModuleInterface
                 }
             }
         }
+    }
+
+    protected function validate_notags($value, $name, $options) {
+        if($value != strip_tags($value)) {
+            if (isset($this->errors[$name]['notags'])) {
+                $err = str_replace('%field%', $name, $this->errors[$name]['notags']);
+            } else {
+                $err = str_replace('%field%', $name, $this->default_errors['notags']);
+            }
+            Sbnc::add_error($err);
+            return false;
+        }
+        return true;
     }
 
     protected function validate_required($value, $name, $options)

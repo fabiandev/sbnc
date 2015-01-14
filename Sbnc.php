@@ -1,13 +1,12 @@
 <?php
 namespace sbnc;
-//require 'loader.php';
 
 /**
- * sbnc
+ * Class Sbnc
  *
  * Blocks Spam without any human interaction.
  *
- * @package    Sbnc
+ * @package    sbnc
  * @author     Fabian Pirklbauer <hi@fabianweb.net>
  * @copyright  2014-2015 Fabian Pirklbauer
  * @license    https://github.com/fabianweb/sbnc/LICENSE.md
@@ -33,7 +32,8 @@ class Sbnc
         'Gestures',
         'Content',
         'Validate',
-        'RemoteHttpBlacklist'
+        'RemoteHttpBlacklist',
+        'Referrer'
     ];
 
     /**
