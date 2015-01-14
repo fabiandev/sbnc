@@ -88,7 +88,7 @@ class Content extends Module implements ModuleInterface
     protected function init()
     {
         $this->enabled = true;
-        $this->options['maxlinks']++;
+        $this->options['maxlinks']++; // count up because request includes form url
     }
 
 
