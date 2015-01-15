@@ -18,7 +18,7 @@ Nearly finished for a first developer release. v0.2 will replace the master soon
 ## Quickstart
 
 Please note, that the quick start only covers the very basics of sbnc. There is much more to
-know and a lot of possibilities. This readme will be updated within the next weeks with more
+know and a lot of settings you may change. This readme will be updated within the next weeks with more
 details.
 
 #### Include the class
@@ -30,7 +30,7 @@ use sbnc\Sbnc;
 Sbnc::start();
 ```
 
-Be sure to include and start sbnc before any other output has been done as it makes use of sessions and
+Be sure to include and start sbnc before any other output has started, as it makes use of sessions and
 header redirects!
 
 #### Create a form
@@ -44,10 +44,12 @@ header redirects!
 </form>
 ```
 
-Create a form and let sbc pre-fill input fields if errors occurred with ```Sbnc::print_value('name');```
-Don't forget to add fields required by sbnc with ```Sbnc::print_fields();```
+Create a form and let sbnc pre-fill input fields if errors occurred with ```Sbnc::print_value('name');```
+Don't forget to add the required sbnc fields ```Sbnc::print_fields();```
+
 Also make sure the form method is POST and the action points to the same file as the request comes from.
-The action may point to another page if you adjust the settings.
+
+The action may point to another page if you do not load the Referrer module.
 
 #### Add JavaScript
 
@@ -55,7 +57,7 @@ The action may point to another page if you adjust the settings.
 Sbnc::print_js();
 ```
 
-Add JavaScript after the html form.
+Add JavaScript after the html form. A good place would be just before ```</body>```
 
 #### Check if submit was valid
 
@@ -69,3 +71,11 @@ if (Sbnc::is_valid()) {
 
 Use this checks to know, if the form has been submitted in the previous request and if it's been valid.
 By default sbnc uses flash messages and redirects, so reloading the page won't result in another submit.
+
+#### Display errors
+
+```php
+Sbnc::print_errors();
+```
+
+Prints all errors in an unordered list. Use ```Sbnc::print_error();``` to print only one error.
