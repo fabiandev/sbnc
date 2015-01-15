@@ -484,11 +484,9 @@ class Core
         } else {
             if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
                 return $_POST[self::$options['prefix'][1]];
-            } else {
-                return self::$options['prefix'][0];
             }
         }
-        return '';
+        return self::$options['prefix'][0];
     }
 
     /**
