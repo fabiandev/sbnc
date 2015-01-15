@@ -47,8 +47,7 @@ header redirects!
 Create a form and let sbnc pre-fill input fields if errors occurred with ```Sbnc::print_value('name');```
 Don't forget to add the required sbnc fields ```Sbnc::print_fields();```
 
-Also make sure the form method is POST and the action points to the same file as the request comes from.
-
+Also make sure the form method is POST and the action points to the same file as the request comes from. 
 The action may point to another page if you do not load the Referrer module.
 
 #### Add JavaScript
