@@ -37,6 +37,9 @@ class LogMessages extends Util implements UtilInterface
 
     public function log($type, $data)
     {
+        if (!file_exists($this->options['file'])) {
+            fclose(fopen($this->options['file'], 'w'));
+        }
         if (!is_writeable($this->options['file'])) return;
 
         $content = '';
