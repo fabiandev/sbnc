@@ -77,4 +77,4 @@ By default sbnc uses flash messages and redirects, so reloading the page won't r
 Sbnc::printErrors();
 ```
 
-Prints all errors in an unordered list. Use ```Sbnc::printError();``` to print only one error.
+Prints all errors in an unordered list. Use ```Sbnc::printError();``` to print only one error as single string.
