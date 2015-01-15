@@ -23,24 +23,19 @@ details.
 
 #### Include the class
 
-Be sure to include and start sbnc before any other output has been done as it makes use of sessions and
-header redirects!
-
 ```php
 require 'Sbnc.php';
 use sbnc\Sbnc;
 
-sbnc\Sbnc::start();
+Sbnc::start();
 ```
+
+Be sure to include and start sbnc before any other output has been done as it makes use of sessions and
+header redirects!
 
 #### Create a form
 
-Create a form and let sbc pre-fill input fields if errors occurred with ```Sbnc::print_value('name');```
-Don't forget to add fields required by sbnc with ```Sbnc::print_fields();```
-Also make sure the form method is POST and the action points to the same file as the request comes from.
-The action may point to another page if you adjust the settings.
-
-```html
+```php
 <form action="form.php" method="post">
     <input type="text" id="name" name="name" value="<?php Sbnc::print_value('name'); ?>">
     // add any input fields you want
@@ -49,18 +44,20 @@ The action may point to another page if you adjust the settings.
 </form>
 ```
 
-#### Add JavaScript
+Create a form and let sbc pre-fill input fields if errors occurred with ```Sbnc::print_value('name');```
+Don't forget to add fields required by sbnc with ```Sbnc::print_fields();```
+Also make sure the form method is POST and the action points to the same file as the request comes from.
+The action may point to another page if you adjust the settings.
 
-Add JavaScript after the html form.
+#### Add JavaScript
 
 ```php
 Sbnc::print_js();
 ```
 
-#### Check if submit was valid
+Add JavaScript after the html form.
 
-Use this checks to know, if the form has been submitted in the previous request and if it's been valid.
-By default sbnc uses flash messages and redirects, so reloading the page won't result in another submit.
+#### Check if submit was valid
 
 ```php
 if (Sbnc::is_valid()) {
@@ -70,3 +67,6 @@ if (Sbnc::is_valid()) {
 }
 ?>
 ```
+
+Use this checks to know, if the form has been submitted in the previous request and if it's been valid.
+By default sbnc uses flash messages and redirects, so reloading the page won't result in another submit.
