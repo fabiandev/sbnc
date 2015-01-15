@@ -35,10 +35,10 @@ header redirects!
 
 #### Create a form
 
-```php
+```html
 <form action="form.php" method="post">
     <input type="text" id="name" name="name" value="<?php Sbnc::print_value('name'); ?>">
-    // add any input fields you want
+    <!-- add any input fields you want -->
     <?php Sbnc::print_fields(); ?>
     <input type="submit" id="submit" value="Submit">
 </form>
