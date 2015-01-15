@@ -65,7 +65,6 @@ if (Sbnc::is_valid()) {
 } elseif (Sbnc::is_invalid()) {
     // form was submitted, but errors occurred
 }
-?>
 ```
 
 Use this checks to know, if the form has been submitted in the previous request and if it's been valid.
