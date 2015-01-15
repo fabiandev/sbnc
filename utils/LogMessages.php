@@ -20,11 +20,9 @@ class LogMessages extends Util implements UtilInterface
     /**
      * Log file
      *
-     * @var array Options
+     * @var string File
      */
-    private $options = [
-        'file' => './sbnc.log'
-    ];
+    private $log_file = './sbnc.log';
 
     #######################################################################################
     #######################################################################################
@@ -37,10 +35,10 @@ class LogMessages extends Util implements UtilInterface
 
     public function log($type, $data)
     {
-        if (!file_exists($this->options['file'])) {
-            fclose(fopen($this->options['file'], 'w'));
+        if (!file_exists($this->log_file)) {
+            fclose(fopen($this->log_file, 'w'));
         }
-        if (!is_writeable($this->options['file'])) return;
+        if (!is_writeable($this->log_file)) return;
 
         $content = '';
         $content .= strtoupper($type);
@@ -60,7 +58,7 @@ class LogMessages extends Util implements UtilInterface
 
         $content .= "\r\n";
 
-        file_put_contents($this->options['file'], $content, FILE_APPEND);
+        file_put_contents($this->log_file, $content, FILE_APPEND);
     }
 
     protected function getIp()

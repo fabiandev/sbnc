@@ -447,8 +447,7 @@ class Core
      */
     public function getAddon($addon)
     {
-        if ($this->addonExists($addon)) return self::$components['addons'][$addon];
-        return null;
+        return self::$components['addons'][$addon];
     }
 
     /**
@@ -459,8 +458,7 @@ class Core
      */
     public function getModule($module)
     {
-        if ($this->moduleExists($module)) return self::$components['modules'][$module];
-        return null;
+        return self::$components['modules'][$module];
     }
 
     /**
@@ -471,8 +469,7 @@ class Core
      */
     public function getUtil($util)
     {
-        if ($this->utilExists($util)) return self::$components['utils'][$util];
-        return null;
+        return self::$components['utils'][$util];
     }
 
     /**
@@ -480,8 +477,16 @@ class Core
      */
     public function getPrefix()
     {
-        if (isset(self::$options['prefix'][0])) {
-            return self::$options['prefix'][0];
+        if ($this->addonExists('Flasher')) {
+            if ($this->getAddon('Flasher')->wasSubmitted()) {
+                return self::$options['prefix'][1];
+            }
+        } else {
+            if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
+                return $_POST[self::$options['prefix'][1]];
+            } else {
+                return self::$options['prefix'][0];
+            }
         }
         return '';
     }

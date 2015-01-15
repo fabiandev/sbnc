@@ -20,11 +20,9 @@ class FlashMessages extends Util implements UtilInterface
     /**
      * Default namespace
      *
-     * @var array Options
+     * @var string Default namespace
      */
-    protected $options = [
-        'session_name' => 'sbnc_flash'
-    ];
+    private $session_name = 'sbnc_flash';
 
     ######################################################################################
     ######################################################################################
@@ -37,7 +35,7 @@ class FlashMessages extends Util implements UtilInterface
      */
     public function setNamespace($session_name)
     {
-        $this->options['session_name'] = $session_name;
+        $this->session_name = $session_name;
     }
 
     public $cache = [];
@@ -54,13 +52,13 @@ class FlashMessages extends Util implements UtilInterface
         if (isset($nosess) && $nosess == true) {
             throw new \Exception('Session could not be created. Be sure you started sbnc before any other output');
         }
-        unset($_SESSION[$this->options['session_name']]['_CACHE_']);
+        unset($_SESSION[$this->session_name]['_CACHE_']);
     }
 
     public function before()
     {
-        if (isset($_SESSION[$this->options['session_name']])) {
-            $this->cache = $_SESSION[$this->options['session_name']];
+        if (isset($_SESSION[$this->session_name])) {
+            $this->cache = $_SESSION[$this->session_name];
         }
     }
 
@@ -69,12 +67,12 @@ class FlashMessages extends Util implements UtilInterface
         if (!$this->enabled) return false;
         if ($key === null) {
             if (is_array($value)) {
-                $_SESSION[$this->options['session_name']][$type] = $value;
+                $_SESSION[$this->session_name][$type] = $value;
             } else {
-                $_SESSION[$this->options['session_name']][$type][] = $value;
+                $_SESSION[$this->session_name][$type][] = $value;
             }
         } else {
-            $_SESSION[$this->options['session_name']][$type][$key] = $value;
+            $_SESSION[$this->session_name][$type][$key] = $value;
         }
         return true;
     }
@@ -83,9 +81,9 @@ class FlashMessages extends Util implements UtilInterface
     {
         if (!$this->enabled) return false;
         if ($key === null) {
-            if (isset($_SESSION[$this->options['session_name']][$type])) {
-                $flash = $_SESSION[$this->options['session_name']][$type];
-                unset($_SESSION[$this->options['session_name']][$type]);
+            if (isset($_SESSION[$this->session_name][$type])) {
+                $flash = $_SESSION[$this->session_name][$type];
+                unset($_SESSION[$this->session_name][$type]);
                 return $flash;
             } elseif (isset($this->cache[$type])) {
                 return $this->cache[$type];
@@ -93,9 +91,9 @@ class FlashMessages extends Util implements UtilInterface
                 return [];
             }
         } else {
-            if (isset($_SESSION[$this->options['session_name']][$type][$key])) {
-                $flash = $_SESSION[$this->options['session_name']][$type][$key];
-                unset($_SESSION[$this->options['session_name']][$type][$key]);
+            if (isset($_SESSION[$this->session_name][$type][$key])) {
+                $flash = $_SESSION[$this->session_name][$type][$key];
+                unset($_SESSION[$this->session_name][$type][$key]);
                 return $flash;
             } elseif (isset($this->cache[$type][$key])) {
                 return $this->cache[$type][$key];
@@ -109,17 +107,17 @@ class FlashMessages extends Util implements UtilInterface
     {
         if (!$this->enabled) return false;
         if ($key === null) {
-            if (isset($_SESSION[$this->options['session_name']][$type])) {
-                $flash = $_SESSION[$this->options['session_name']][$type];
-                unset($_SESSION[$this->options['session_name']][$type]);
+            if (isset($_SESSION[$this->session_name][$type])) {
+                $flash = $_SESSION[$this->session_name][$type];
+                unset($_SESSION[$this->session_name][$type]);
                 return $flash;
             } else {
                 return [];
             }
         } else {
-            if (isset($_SESSION[$this->options['session_name']][$type][$key])) {
-                $flash = $_SESSION[$this->options['session_name']][$type][$key];
-                unset($_SESSION[$this->options['session_name']][$type][$key]);
+            if (isset($_SESSION[$this->session_name][$type][$key])) {
+                $flash = $_SESSION[$this->session_name][$type][$key];
+                unset($_SESSION[$this->session_name][$type][$key]);
                 return $flash;
             } else {
                 return '';
@@ -131,15 +129,15 @@ class FlashMessages extends Util implements UtilInterface
     {
         if (!$this->enabled) return false;
         if ($key === null) {
-            if (isset($_SESSION[$this->options['session_name']][$type])) {
-                $flash = $_SESSION[$this->options['session_name']][$type];
+            if (isset($_SESSION[$this->session_name][$type])) {
+                $flash = $_SESSION[$this->session_name][$type];
                 return $flash;
             } else {
                 return [];
             }
         } else {
-            if (isset($_SESSION[$this->options['session_name']][$type][$key])) {
-                $flash = $_SESSION[$this->options['session_name']][$type][$key];
+            if (isset($_SESSION[$this->session_name][$type][$key])) {
+                $flash = $_SESSION[$this->session_name][$type][$key];
                 return $flash;
             } else {
                 return '';
@@ -171,13 +169,13 @@ class FlashMessages extends Util implements UtilInterface
     {
         if (!$this->enabled) return false;
         if ($key === null) {
-            if (isset($_SESSION[$this->options['session_name']][$type]) || isset($this->cache[$type])) {
+            if (isset($_SESSION[$this->session_name][$type]) || isset($this->cache[$type])) {
                 return true;
             } else {
                 return false;
             }
         } else {
-            if (isset($_SESSION[$this->options['session_name']][$type][$key]) || isset($this->cache[$type][$key])) {
+            if (isset($_SESSION[$this->session_name][$type][$key]) || isset($this->cache[$type][$key])) {
                 return true;
             } else {
                 return false;
@@ -189,13 +187,13 @@ class FlashMessages extends Util implements UtilInterface
     {
         if (!$this->enabled) return false;
         if ($key === null) {
-            if (isset($_SESSION[$this->options['session_name']][$type])) {
+            if (isset($_SESSION[$this->session_name][$type])) {
                 return true;
             } else {
                 return false;
             }
         } else {
-            if (isset($_SESSION[$this->options['session_name']][$type][$key])) {
+            if (isset($_SESSION[$this->session_name][$type][$key])) {
                 return true;
             } else {
                 return false;
@@ -207,15 +205,15 @@ class FlashMessages extends Util implements UtilInterface
     {
         if (!$this->enabled) return false;
         if ($key === null) {
-            if (isset($_SESSION[$this->options['session_name']][$type])) {
-                unset($_SESSION[$this->options['session_name']][$type]);
+            if (isset($_SESSION[$this->session_name][$type])) {
+                unset($_SESSION[$this->session_name][$type]);
                 return true;
             } else {
                 return false;
             }
         } else {
-            if (isset($_SESSION[$this->options['session_name']][$type][$key])) {
-                unset($_SESSION[$this->options['session_name']][$type][$key]);
+            if (isset($_SESSION[$this->session_name][$type][$key])) {
+                unset($_SESSION[$this->session_name][$type][$key]);
                 return true;
             } else {
                 return false;
@@ -251,16 +249,16 @@ class FlashMessages extends Util implements UtilInterface
 
     public function flush()
     {
-        unset($_SESSION[$this->options['session_name']]);
+        unset($_SESSION[$this->session_name]);
     }
 
     public function count($type)
     {
         if (!$this->enabled) return false;
-        if (isset($_SESSION[$this->options['session_name']][$type]) &&
-            is_array($_SESSION[$this->options['session_name']][$type])
+        if (isset($_SESSION[$this->session_name][$type]) &&
+            is_array($_SESSION[$this->session_name][$type])
         ) {
-            return count($_SESSION[$this->options['session_name']][$type]);
+            return count($_SESSION[$this->session_name][$type]);
         } elseif (isset($this->cache[$type]) && is_array($this->cache[$type])) {
             return count($this->cache[$type]);
         } else {
