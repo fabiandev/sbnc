@@ -6,9 +6,9 @@ Interface AddonInterface
 
     public function __construct();
 
-    public function is_enabled();
+    public function isEnabled();
 
-    public function is_disabled();
+    public function isDisabled();
 
     public function before();
 

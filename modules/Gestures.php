@@ -49,10 +49,10 @@ class Gestures extends Module implements ModuleInterface
     protected function init()
     {
         $this->enabled = true;
-        Sbnc::add_field('mouse', null);
-        Sbnc::add_field('keyboard', null);
-        Sbnc::add_field('js', null);
-        Sbnc::add_javascript($this->get_js());
+        Sbnc::addField('mouse', null);
+        Sbnc::addField('keyboard', null);
+        Sbnc::addField('js', null);
+        Sbnc::addJavascript($this->get_js());
     }
 
     public function check()
@@ -60,7 +60,7 @@ class Gestures extends Module implements ModuleInterface
         if (in_array('js', $this->options['mode'])) {
             $js_value = Sbnc::request('js');
             if (empty($js_value) || strcmp($js_value, 'true') !== 0) {
-                Sbnc::add_error($this->errors['js']);
+                Sbnc::addError($this->errors['js']);
                 Sbnc::util('LogMessages')->log('spam-gestures', 'JavaScript not enabled');
                 return;
             }
@@ -69,7 +69,7 @@ class Gestures extends Module implements ModuleInterface
         if (in_array('keyboard', $this->options['mode'])) {
             $key_value = Sbnc::request('keyboard');
             if (empty($key_value) || strcmp($key_value, 'true') !== 0) {
-                Sbnc::add_error($this->errors['keyboard']);
+                Sbnc::addError($this->errors['keyboard']);
                 Sbnc::util('LogMessages')->log('spam-gestures', 'Keyboard not used');
             }
         }
@@ -77,7 +77,7 @@ class Gestures extends Module implements ModuleInterface
         if (in_array('mouse', $this->options['mode'])) {
             $mouse_value = Sbnc::request('mouse');
             if (empty($mouse_value) || strcmp($mouse_value, 'true') !== 0) {
-                Sbnc::add_error($this->errors['mouse']);
+                Sbnc::addError($this->errors['mouse']);
                 Sbnc::util('LogMessages')->log('spam-gestures', 'Mouse not used');
             }
         }

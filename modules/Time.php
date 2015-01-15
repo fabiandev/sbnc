@@ -44,7 +44,7 @@ class Time extends Module implements ModuleInterface
     protected function init()
     {
         $this->enabled = true;
-        Sbnc::add_field('time', time());
+        Sbnc::addField('time', time());
     }
 
     public function check()
@@ -54,10 +54,10 @@ class Time extends Module implements ModuleInterface
         $diff = $now - $time;
 
         if ($diff < $this->options['min']) {
-            Sbnc::add_error($this->errors['min']);
+            Sbnc::addError($this->errors['min']);
             Sbnc::util('LogMessages')->log('spam-fast-submit', 'Submit too fast: < ' . $this->options['min']);
         } elseif ($diff > $this->options['max']) {
-            Sbnc::add_error($this->errors['max']);
+            Sbnc::addError($this->errors['max']);
             Sbnc::util('LogMessages')->log('spam-slow-submit', 'Submit too slow: > ' . $this->options['max']);
         }
     }

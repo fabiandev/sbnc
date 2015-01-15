@@ -34,7 +34,7 @@ class Hidden extends Module implements ModuleInterface
     protected function init()
     {
         $this->enabled = true;
-        Sbnc::add_field('check', null);
+        Sbnc::addField('check', null);
     }
 
     public function check()
@@ -42,7 +42,7 @@ class Hidden extends Module implements ModuleInterface
         $hidden_value = Sbnc::request('check');
         if ($hidden_value === null || strlen(trim($hidden_value)) != 0) {
             $err = str_replace('%field%', 'check', $this->errors['error']);
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             Sbnc::util('LogMessages')->log('spam-hidden', 'Hidden field was not empty or has been modified/removed: ' . $hidden_value);
         }
     }

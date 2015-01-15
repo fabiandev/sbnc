@@ -111,7 +111,7 @@ class Core
      *   - one parameter (string)
      *         return specific component instance by name
      *
-     * - Other calls e.g. Sbnc::add_error('Custom error')
+     * - Other calls e.g. Sbnc::addError('Custom error')
      *   - no parameter
      *         calls a public method of core with no parameters if possible
      *   - 1 - 4 parameters
@@ -232,17 +232,17 @@ class Core
      */
     public function init()
     {
-        $this->init_javascript();
-        $this->init_fields();
-        $this->init_component('utils');
-        $this->init_component('modules');
-        $this->init_component('addons');
+        $this->initJavascript();
+        $this->initFields();
+        $this->initComponents('utils');
+        $this->initComponents('modules');
+        $this->initComponents('addons');
     }
 
     /**
      * Initializes form fields and adds required ones
      */
-    private function init_fields()
+    private function initFields()
     {
         if (strcmp(self::$options['prefix'][0], 'random') === 0) {
             self::$options['prefix'][0] = chr(rand(97, 122)) . substr(md5(microtime()), rand(0, 26), 4);
@@ -260,7 +260,7 @@ class Core
      *
      * @param string $name Initializes modules, utils or addons
      */
-    private function init_component($name)
+    private function initComponents($name)
     {
         self::$components[$name] = array_fill_keys(self::$components[$name], null);
         foreach (self::$components[$name] as $key => $value) {
@@ -268,7 +268,7 @@ class Core
             try {
                 self::$components[$name][$key] = new $class();
             } catch (\Exception $e) {
-                Sbnc::print_exception($e);
+                Sbnc::printException($e);
             }
 
         }
@@ -277,7 +277,7 @@ class Core
     /**
      * Adds default JavaScript
      */
-    private function init_javascript()
+    private function initJavascript()
     {
         $lang = !self::$options['html5'] ? ' language="javascript" type="text/javascript"' : '';
         self::$javascript['_before_'] = '<script' . $lang . '>var sbnc = sbnc || {};';
@@ -305,10 +305,10 @@ class Core
             return false;
         }
 
-        $this->manipulate_request();
+        $this->manipulateRequest();
 
         foreach (self::$components['modules'] as $module) {
-            if ($module->is_enabled()) $module->check();
+            if ($module->isEnabled()) $module->check();
         }
 
         if (is_callable($action)) {
@@ -342,7 +342,7 @@ class Core
     /**
      * Manipulates request to make it accessible in sbnc
      */
-    private function manipulate_request()
+    private function manipulateRequest()
     {
         $prefix = self::$options['prefix'][1];
         $random_prefix = isset($_POST[$prefix]) ? $_POST[$prefix] : '';
@@ -363,11 +363,11 @@ class Core
      *
      * @return bool True if valid, false otherwise
      */
-    public function is_valid()
+    public function isValid()
     {
-        if ($this->addon_exists('Flasher')) {
-            $num_errors = $this->get_addon('Flasher')->count_errors();
-            return $this->get_addon('Flasher')->was_submitted() && !($num_errors > 0);
+        if ($this->addonExists('Flasher')) {
+            $num_errors = $this->getAddon('Flasher')->countErrors();
+            return $this->getAddon('Flasher')->wasSubmitted() && !($num_errors > 0);
         }
         return !(count(self::$errors) > 0) && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
     }
@@ -377,12 +377,20 @@ class Core
      *
      * @return bool True if invalid, false otherwise
      */
-    public function is_invalid()
+    public function isInvalid()
     {
-        if ($this->addon_exists('Flasher')) {
-            return !$this->is_valid() && $this->get_addon('Flasher')->was_submitted();
+        if ($this->addonExists('Flasher')) {
+            return !$this->isValid() && $this->getAddon('Flasher')->wasSubmitted();
         } else {
-            return !$this->is_valid() && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+            return !$this->isValid() && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+        }
+    }
+
+    public function submitted() {
+        if ($this->addonExists('Flasher')) {
+            return $this->getAddon('Flasher')->wasSubmitted();
+        } else {
+            return strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
         }
     }
 
@@ -392,9 +400,9 @@ class Core
      * @param string $addon Addon name
      * @return bool True if addon exists
      */
-    protected function addon_exists($addon)
+    protected function addonExists($addon)
     {
-        return array_key_exists($addon, self::$components['addons']) && self::$components['addons'][$addon]->is_enabled() ? true : false;
+        return array_key_exists($addon, self::$components['addons']) && self::$components['addons'][$addon]->isEnabled() ? true : false;
     }
 
     /**
@@ -403,9 +411,9 @@ class Core
      * @param string $module Module name
      * @return bool True if module exists
      */
-    protected function module_exists($module)
+    protected function moduleExists($module)
     {
-        return array_key_exists($module, self::$components['modules']) && self::$components['modules'][$module]->is_enabled() ? true : false;
+        return array_key_exists($module, self::$components['modules']) && self::$components['modules'][$module]->isEnabled() ? true : false;
     }
 
     /**
@@ -414,21 +422,21 @@ class Core
      * @param string $util Util name
      * @return bool True if util exists
      */
-    protected function util_exists($util)
+    protected function utilExists($util)
     {
-        return array_key_exists($util, self::$components['utils']) && self::$components['utils'][$util]->is_enabled() ? true : false;
+        return array_key_exists($util, self::$components['utils']) && self::$components['utils'][$util]->isEnabled() ? true : false;
     }
 
     /**
-     * Like util_exists but checks for any component
+     * Like utilExists but checks for any component
      *
      * @param string $component Component name
      * @return bool True if module, addon or util with this name exists
      */
-    protected function component_exists($component)
+    protected function componentExists($component)
     {
-        return $this->addon_exists($component) || $this->module_exists($component) ? true : false ||
-        $this->util_exists($component) ? true : false;
+        return $this->addonExists($component) || $this->moduleExists($component) ? true : false ||
+        $this->utilExists($component) ? true : false;
     }
 
     /**
@@ -437,9 +445,9 @@ class Core
      * @param string $addon Addon name
      * @return mixed Addon instance or null
      */
-    public function get_addon($addon)
+    public function getAddon($addon)
     {
-        if ($this->addon_exists($addon)) return self::$components['addons'][$addon];
+        if ($this->addonExists($addon)) return self::$components['addons'][$addon];
         return null;
     }
 
@@ -449,9 +457,9 @@ class Core
      * @param string $module Module name
      * @return mixed Module instance or null
      */
-    public function get_module($module)
+    public function getModule($module)
     {
-        if ($this->module_exists($module)) return self::$components['modules'][$module];
+        if ($this->moduleExists($module)) return self::$components['modules'][$module];
         return null;
     }
 
@@ -461,9 +469,9 @@ class Core
      * @param string $util Util name
      * @return mixed Util instance or null
      */
-    public function get_util($util)
+    public function getUtil($util)
     {
-        if ($this->util_exists($util)) return self::$components['utils'][$util];
+        if ($this->utilExists($util)) return self::$components['utils'][$util];
         return null;
     }
 
@@ -473,12 +481,12 @@ class Core
      * @param string $key Input field name
      * @return string Value of sent input field
      */
-    public function get_request($key)
+    public function getRequest($key)
     {
-        if ($this->addon_exists('Flasher')) {
-            return $this->get_addon('Flasher')->get_request($key);
+        if ($this->addonExists('Flasher')) {
+            return $this->getAddon('Flasher')->getRequest($key);
         }
-        return isset(self::$request[$key]) && !$this->is_valid() ? self::$request[$key] : '';
+        return isset(self::$request[$key]) && !$this->isValid() ? self::$request[$key] : '';
     }
 
     /**
@@ -486,10 +494,10 @@ class Core
      *
      * @return array Errors
      */
-    public function get_errors()
+    public function getErrors()
     {
-        if ($this->addon_exists('Flasher')) {
-            return $this->get_addon('Flasher')->get_errors();
+        if ($this->addonExists('Flasher')) {
+            return $this->getAddon('Flasher')->getErrors();
         }
         return self::$errors;
     }
@@ -499,16 +507,16 @@ class Core
      *
      * @return string Error
      */
-    public function get_error()
+    public function getError()
     {
-        if ($this->addon_exists('Flasher')) {
-            $errors = $this->get_addon('Flasher')->get_errors();
+        if ($this->addonExists('Flasher')) {
+            $errors = $this->getAddon('Flasher')->getErrors();
             return reset($errors);
         }
         return reset(self::$errors);
     }
 
-    public function get_value($name, $nl2br = false, $safe = false)
+    public function getValue($name, $nl2br = false, $safe = false)
     {
         return $this->filter($name, $nl2br, $safe);
     }
@@ -518,7 +526,7 @@ class Core
      *
      * @return string HTML of input fields
      */
-    public function get_fields()
+    public function getFields()
     {
         $html = '';
         $tag_end = (self::$options['html5']) ? '' : '/';
@@ -537,7 +545,7 @@ class Core
      *
      * @return string JavaScript code
      */
-    public function get_js()
+    public function getJavascript()
     {
         $js = '';
         $js .= self::$javascript['_before_'];
@@ -554,7 +562,7 @@ class Core
      * @param string $name Name (key) for data
      * @param string $value Value
      */
-    public function add_data($namespace, $name, $value)
+    public function addData($namespace, $name, $value)
     {
         self::$data[$namespace][$name] = $value;
     }
@@ -565,7 +573,7 @@ class Core
      * @param string $name Name of input field
      * @param string $value Default value
      */
-    public function add_field($name, $value)
+    public function addField($name, $value)
     {
         self::$fields[$name] = $value;
     }
@@ -575,7 +583,7 @@ class Core
      *
      * @param string $code Adds JavaScript
      */
-    public function add_javascript($code)
+    public function addJavascript($code)
     {
         array_push(self::$javascript['_modules_'], $code);
     }
@@ -586,7 +594,7 @@ class Core
      * @param string $error Error message
      * @return bool True if has been added
      */
-    public function add_error($error)
+    public function addError($error)
     {
         if (is_string($error)) {
             array_push(self::$errors, $error);
@@ -600,10 +608,10 @@ class Core
      *
      * @return int Number of errors
      */
-    public function num_errors()
+    public function numErrors()
     {
-        if ($this->addon_exists('Flasher')) {
-            return $this->get_addon('Flasher')->count_errors();
+        if ($this->addonExists('Flasher')) {
+            return $this->getAddon('Flasher')->countErrors();
         }
         return count(self::$errors);
     }
@@ -613,10 +621,10 @@ class Core
      *
      * @param string $class Class for HTML unordered list
      */
-    public function print_errors($class = '')
+    public function printErrors($class = '')
     {
         echo empty($class) ? '<ul>' : '<ul class="' . $class . '>';
-        foreach ($this->get_errors() as $key => $error) {
+        foreach ($this->getErrors() as $key => $error) {
             echo '<li>' . $error . '</li>';
         }
         echo '</ul>';
@@ -625,9 +633,9 @@ class Core
     /**
      * Prints a single error
      */
-    public function print_error()
+    public function printError()
     {
-        echo $this->get_error();
+        echo $this->getError();
     }
 
     /**
@@ -637,25 +645,25 @@ class Core
      * @param string $name Name of input field
      * @param bool $nl2br Convert line breaks to HTML <br>
      */
-    public function print_value($name, $nl2br = false)
+    public function printValue($name, $nl2br = false)
     {
-        echo $this->get_value($name, $nl2br);
+        echo $this->getValue($name, $nl2br);
     }
 
     /**
      * Prints html code of all fields
      */
-    public function print_fields()
+    public function printFields()
     {
-        echo $this->get_fields();
+        echo $this->getFields();
     }
 
     /**
      * Prints JavaScript code
      */
-    public function print_js()
+    public function printJavascript()
     {
-        echo $this->get_js();
+        echo $this->getJavascript();
     }
 
     /**
@@ -664,7 +672,7 @@ class Core
      * @param string $value Value to check
      * @return bool True if value is empty
      */
-    protected function is_empty($value)
+    protected function isEmpty($value)
     {
         return (strlen(trim($value)) == 0);
     }
@@ -679,11 +687,11 @@ class Core
      */
     protected function filter($key, $nl2br = false)
     {
-        $value = $this->get_request($key);
+        $value = $this->getRequest($key);
         if ($nl2br) {
-            return !$this->is_empty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
+            return !$this->isEmpty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
         } else {
-            return !$this->is_empty($value) ? htmlspecialchars($value, ENT_QUOTES) : '';
+            return !$this->isEmpty($value) ? htmlspecialchars($value, ENT_QUOTES) : '';
         }
     }
 

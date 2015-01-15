@@ -35,7 +35,7 @@ class FlashMessages extends Util implements UtilInterface
      *
      * @param $session_name
      */
-    public function set_namespace($session_name)
+    public function setNamespace($session_name)
     {
         $this->options['session_name'] = $session_name;
     }
@@ -49,7 +49,7 @@ class FlashMessages extends Util implements UtilInterface
         if (session_status() == PHP_SESSION_ACTIVE || session_start()) {
             $this->enabled = true;
         } else {
-            Sbnc::print_exception(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
+            Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
         }
         if (isset($nosess) && $nosess == true) {
             throw new \Exception('Session could not be created. Be sure you started sbnc before any other output');
@@ -105,7 +105,7 @@ class FlashMessages extends Util implements UtilInterface
         }
     }
 
-    public function get_once($type, $key = null)
+    public function getOnce($type, $key = null)
     {
         if (!$this->enabled) return false;
         if ($key === null) {
@@ -127,7 +127,7 @@ class FlashMessages extends Util implements UtilInterface
         }
     }
 
-    public function get_safe($type, $key = null)
+    public function getSafe($type, $key = null)
     {
         if (!$this->enabled) return false;
         if ($key === null) {
@@ -147,7 +147,7 @@ class FlashMessages extends Util implements UtilInterface
         }
     }
 
-    public function get_cache($type, $key = null)
+    public function getCached($type, $key = null)
     {
         if (!$this->enabled) return false;
         if ($key === null) {
@@ -167,7 +167,7 @@ class FlashMessages extends Util implements UtilInterface
         }
     }
 
-    public function is_set($type, $key = null)
+    public function exists($type, $key = null)
     {
         if (!$this->enabled) return false;
         if ($key === null) {
@@ -185,7 +185,7 @@ class FlashMessages extends Util implements UtilInterface
         }
     }
 
-    public function in_session($type, $key = null)
+    public function inSession($type, $key = null)
     {
         if (!$this->enabled) return false;
         if ($key === null) {
@@ -223,7 +223,7 @@ class FlashMessages extends Util implements UtilInterface
         }
     }
 
-    public function remove_cached($type, $key = null)
+    public function removeCached($type, $key = null)
     {
         if (!$this->enabled) return false;
         if ($key === null) {
@@ -243,10 +243,10 @@ class FlashMessages extends Util implements UtilInterface
         }
     }
 
-    public function remove_all($type, $key = null)
+    public function removeAll($type, $key = null)
     {
         $this->remove($type, $key);
-        $this->remove_cached($type, $key);
+        $this->removeCached($type, $key);
     }
 
     public function flush()

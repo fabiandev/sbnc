@@ -6,14 +6,14 @@ abstract class Util
 
     protected $enabled = false;
 
-    public function is_enabled()
+    public function isEnabled()
     {
         return $this->enabled;
     }
 
-    public function is_disabled()
+    public function isDisabled()
     {
-        return !$this->is_enabled();
+        return !$this->isEnabled();
     }
 
     public function __construct()

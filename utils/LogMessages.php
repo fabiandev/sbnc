@@ -53,7 +53,7 @@ class LogMessages extends Util implements UtilInterface
             $content .= '|' . $data;
         }
 
-        $content .= '|' . $this->get_ip();
+        $content .= '|' . $this->getIp();
         $content .= '|' . $_SERVER['HTTP_USER_AGENT'];
 
         $content .= '|' . http_build_query(Sbnc::request());
@@ -63,7 +63,7 @@ class LogMessages extends Util implements UtilInterface
         file_put_contents($this->options['file'], $content, FILE_APPEND);
     }
 
-    protected function get_ip()
+    protected function getIp()
     {
         $client = @$_SERVER['HTTP_CLIENT_IP'];
         $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];

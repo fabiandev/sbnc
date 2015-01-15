@@ -73,19 +73,19 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         if (!empty($this->api_key)) $this->enabled = true;
         if (empty($this->ip)) $this->ip = $this->get_ip();
         $this->flash = new FlashMessages();
-        $this->flash->set_namespace('sbnc_honeypot');
+        $this->flash->setNamespace('sbnc_honeypot');
     }
 
     public function check()
     {
         if (!filter_var($this->ip, FILTER_VALIDATE_IP)) {
             $err = $this->errors['error'];
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return;
         }
 
-        if ($this->flash->is_set($this->ip)) {
-            $flash_data = $this->flash->get_safe($this->ip);
+        if ($this->flash->exists($this->ip)) {
+            $flash_data = $this->flash->getSafe($this->ip);
             if ($flash_data['spam'] === 1) $this->parse($flash_data);
             return;
         }
@@ -147,7 +147,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         }
 
         $err = str_replace(['%days%', '%num%', '%type%'], [$days, number_format($num, 0, '.', ','), $type], $this->errors['spammer']);
-        Sbnc::add_error($err);
+        Sbnc::addError($err);
 
         $this->flash->flash($this->ip, $data);
         Sbnc::util('LogMessages')->log('spam-http-blacklist', ['active ' . $days . ' day(s) ago', $num . ' messages/day', $type]);

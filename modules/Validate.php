@@ -30,9 +30,9 @@ class Validate extends Module implements ModuleInterface
      */
     private $options = [
         // used by example.php
-        'email' => ['email', 'required', 'notags'],
-        'name' => ['required', 'notags', 'min:4', 'max:30'],
-        'message' => ['required', 'notags', 'min:10', 'max:1000'],
+        'email' => ['email', 'required', 'no_tags'],
+        'name' => ['required', 'no_tags', 'min:4', 'max:30'],
+        'message' => ['required', 'no_tags', 'min:10', 'max:1000'],
 
         // other examples
         'mail' => ['email', 'required'],
@@ -63,7 +63,7 @@ class Validate extends Module implements ModuleInterface
             'required' => 'Please write something :-)',
             'min' => 'The message is too short. %min% characters minimum!',
             'max' => 'The message is too long. %max% characters maximum!',
-            'notags' => 'Tags are not allowed in the message!'
+            'no_tags' => 'Tags are not allowed in the message!'
         ]
     ];
 
@@ -74,15 +74,15 @@ class Validate extends Module implements ModuleInterface
      * @var array Default errors
      */
     private $default_errors = [
-        'notags' => '%field% does not allow tags',
+        'no_tags' => '%field% does not allow tags',
         'email' => '%field% is not valid',
         'url' => '%field% is not valid',
         'required' => '%field% is required',
         'min' => '%field% must have a minimum of %min% characters',
         'max' => '%field% must not have more than %max% characters',
-        'alphanum' => '%field% only allows alphanumeric characters',
+        'alpha_num' => '%field% only allows alphanumeric characters',
         'latin' => '%field% only allows latin characters',
-        'latindigits' => '%field% only allows latin characters and digits',
+        'latin_digits' => '%field% only allows latin characters and digits',
         'alpha' => '%field% only allows alpha characters',
         'digit' => '%field% may only contain digits',
         'numeric' => '%field% may only contain numeric values',
@@ -115,7 +115,7 @@ class Validate extends Module implements ModuleInterface
         }
     }
 
-    protected function validate_notags($value, $name, $options)
+    protected function validate_no_tags($value, $name, $options)
     {
         if ($value != strip_tags($value)) {
             if (isset($this->errors[$name]['notags'])) {
@@ -123,7 +123,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['notags']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -137,7 +137,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['required']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -151,7 +151,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['email']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -165,7 +165,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['ip']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -179,7 +179,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['url']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -193,7 +193,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace(['%field%', '%min%'], [$name, $options[0]], $this->default_errors['min']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -207,13 +207,13 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace(['%field%', '%max%'], [$name, $options[0]], $this->default_errors['max']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
     }
 
-    protected function validate_alphanum($value, $name, $options)
+    protected function validate_alpha_num($value, $name, $options)
     {
         if (!ctype_alnum($value)) {
             if (isset($this->errors[$name]['alphanum'])) {
@@ -221,7 +221,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['alphanum']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -235,13 +235,13 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['latin']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
     }
 
-    protected function validate_latindigits($value, $name, $options)
+    protected function validate_latin_digits($value, $name, $options)
     {
         if (!preg_match('/^[\p{Latin}[0-9]+$/', $value)) {
             if (isset($this->errors[$name]['latin'])) {
@@ -249,7 +249,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['latindigits']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -263,7 +263,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['alpha']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -277,7 +277,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['digit']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -292,7 +292,7 @@ class Validate extends Module implements ModuleInterface
                 $err = str_replace('%field%', $name, $this->default_errors['numeric']);
             }
 
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;
@@ -308,7 +308,7 @@ class Validate extends Module implements ModuleInterface
             } else {
                 $err = str_replace('%field%', $name, $this->default_errors['regex']);
             }
-            Sbnc::add_error($err);
+            Sbnc::addError($err);
             return false;
         }
         return true;

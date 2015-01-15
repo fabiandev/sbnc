@@ -11,7 +11,7 @@ $my_action = function () {
     //
     // you can use any public sbnc method at this point!
     //
-    // it's also a good place to use Sbnc::add_error('My error message');
+    // it's also a good place to use Sbnc::addError('My error message');
     // if you add some logic on your own
 };
 Sbnc::start($my_action); // or simply call Sbnc::start();
@@ -27,10 +27,10 @@ Sbnc::start($my_action); // or simply call Sbnc::start();
 
 <p>
     <?php
-    if (Sbnc::is_valid()) {
+    if (Sbnc::isValid()) {
         echo '<h4 style="color:green">The form is valid.</h4>';
         // you may send an email here if the form was submitted without errors
-    } elseif (Sbnc::is_invalid()) {
+    } elseif (Sbnc::isInvalid()) {
         echo '<h4 style="color:red">Errors occured</h4>';
     }
     ?>
@@ -38,35 +38,35 @@ Sbnc::start($my_action); // or simply call Sbnc::start();
 
 <p>
     Display All Errors:
-    <?php Sbnc::print_errors(); ?>
-    <?php if (Sbnc::num_errors() < 1) echo 'No errors'; ?>
+    <?php Sbnc::printErrors(); ?>
+    <?php if (Sbnc::numErrors() < 1) echo 'No errors'; ?>
 
 </p>
 
 <p>
     Display Single Error:
     <br><br>
-    <?php Sbnc::print_error(); ?>
-    <?php if (Sbnc::num_errors() < 1) echo 'No errors'; ?>
+    <?php Sbnc::printError(); ?>
+    <?php if (Sbnc::numErrors() < 1) echo 'No errors'; ?>
 </p>
 
 <form action="example.php" method="post">
     <fieldset>
         <legend>Data:</legend>
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="<?php Sbnc::print_value('name'); ?>" required><br>
+        <input type="text" id="name" name="name" value="<?php Sbnc::printValue('name'); ?>" required><br>
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<?php Sbnc::print_value('email'); ?>" required><br>
+        <input type="email" id="email" name="email" value="<?php Sbnc::printValue('email'); ?>" required><br>
     </fieldset>
     <fieldset>
         <legend>Message:</legend>
-        <textarea id="message" name="message" required><?php Sbnc::print_value('message'); ?></textarea><br>
+        <textarea id="message" name="message" required><?php Sbnc::printValue('message'); ?></textarea><br>
     </fieldset>
-    <?php Sbnc::print_fields(); ?>
+    <?php Sbnc::printFields(); ?>
     <input type="submit" id="submit" value="Submit">
 </form>
 
-<?php Sbnc::print_js(); ?>
+<?php Sbnc::printJavascript(); ?>
 
 <pre>
 <?php

@@ -126,7 +126,7 @@ class Sbnc
         try {
             return self::$core->call($name, $params);
         } catch (\Exception $e) {
-            self::print_exception($e);
+            self::printException($e);
         }
     }
 
@@ -138,7 +138,7 @@ class Sbnc
     public static function core()
     {
         if (!is_object(self::$core)) {
-            self::throw_exception('Core is not initialized');
+            self::throwException('Core is not initialized');
         }
         return self::$core;
     }
@@ -177,9 +177,9 @@ class Sbnc
      *
      * @param $message String for Exception
      */
-    public static function throw_exception($message)
+    public static function throwException($message)
     {
-        self::print_exception(new \Exception($message));
+        self::printException(new \Exception($message));
     }
 
     /**
@@ -187,7 +187,7 @@ class Sbnc
      *
      * @param \Exception $e
      */
-    public static function print_exception(\Exception $e)
+    public static function printException(\Exception $e)
     {
         if(ob_get_level() > 0) ob_clean();
         $err = '<h3>Sorry, there was an error (sbnc)!</h3>';

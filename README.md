@@ -37,15 +37,15 @@ header redirects!
 
 ```html
 <form action="form.php" method="post">
-    <input type="text" id="name" name="name" value="<?php Sbnc::print_value('name'); ?>">
+    <input type="text" id="name" name="name" value="<?php Sbnc::printValue('name'); ?>">
     <!-- add any input fields you want -->
-    <?php Sbnc::print_fields(); ?>
+    <?php Sbnc::printFields(); ?>
     <input type="submit" id="submit" value="Submit">
 </form>
 ```
 
-Create a form and let sbnc pre-fill input fields if errors occurred with ```Sbnc::print_value('name');```
-Don't forget to add the required sbnc fields ```Sbnc::print_fields();```
+Create a form and let sbnc pre-fill input fields if errors occurred with ```Sbnc::printValue('name');```
+Don't forget to add the required sbnc fields ```Sbnc::printFields();```
 
 Also make sure the form method is POST and the action points to the same file as the request comes from. 
 The action may point to another page if you do not load the Referrer module.
@@ -53,7 +53,7 @@ The action may point to another page if you do not load the Referrer module.
 #### Add JavaScript
 
 ```php
-Sbnc::print_js();
+Sbnc::printJavascript();
 ```
 
 Add JavaScript after the html form. A good place would be just before ```</body>```
@@ -61,9 +61,9 @@ Add JavaScript after the html form. A good place would be just before ```</body>
 #### Check if submit was valid
 
 ```php
-if (Sbnc::is_valid()) {
+if (Sbnc::isValid()) {
     // form was submitted and there were no errors
-} elseif (Sbnc::is_invalid()) {
+} elseif (Sbnc::isInvalid()) {
     // form was submitted, but errors occurred
 }
 ```
@@ -74,7 +74,7 @@ By default sbnc uses flash messages and redirects, so reloading the page won't r
 #### Display errors
 
 ```php
-Sbnc::print_errors();
+Sbnc::printErrors();
 ```
 
-Prints all errors in an unordered list. Use ```Sbnc::print_error();``` to print only one error.
+Prints all errors in an unordered list. Use ```Sbnc::printError();``` to print only one error.

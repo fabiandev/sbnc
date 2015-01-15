@@ -38,8 +38,8 @@ class Flasher extends Addon implements AddonInterface
 
     protected function init()
     {
-        if (Sbnc::util_exists('FlashMessages')) {
-            $this->enabled = Sbnc::util('FlashMessages')->is_enabled();
+        if (Sbnc::utilExists('FlashMessages')) {
+            $this->enabled = Sbnc::util('FlashMessages')->isEnabled();
         }
     }
 
@@ -63,7 +63,7 @@ class Flasher extends Addon implements AddonInterface
                         exit;
                     } else {
                         $flash->flush();
-                        Sbnc::print_exception(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
+                        Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
 
                 } else {
@@ -73,7 +73,7 @@ class Flasher extends Addon implements AddonInterface
                         exit;
                     } else {
                         $flash->flush();
-                        Sbnc::print_exception(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
+                        Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
                 }
             } elseif (empty($errors) && $this->options['redirect:success'][0] === true) {
@@ -84,7 +84,7 @@ class Flasher extends Addon implements AddonInterface
                         exit;
                     } else {
                         $flash->flush();
-                        Sbnc::print_exception(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
+                        Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
                 } else {
                     $flash->flash('_sbnc', ['redirected' => true]);
@@ -93,7 +93,7 @@ class Flasher extends Addon implements AddonInterface
                         exit;
                     } else {
                         $flash->flush();
-                        Sbnc::print_exception(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
+                        Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
 
                     exit;
@@ -109,29 +109,29 @@ class Flasher extends Addon implements AddonInterface
      *
      * @return mixed
      */
-    public function get_errors()
+    public function getErrors()
     {
         if (!$this->enabled) return Sbnc::errors();
         $response = Sbnc::util('FlashMessages')->get('errors');
-        return !empty($response) ? $response : Sbnc::util('FlashMessages')->get_cache('errors');
+        return !empty($response) ? $response : Sbnc::util('FlashMessages')->getCached('errors');
     }
 
-    public function count_errors()
+    public function countErrors()
     {
         if (!$this->enabled) return count(Sbnc::errors());
         return Sbnc::util('FlashMessages')->count('errors');
     }
 
-    public function get_request($key)
+    public function getRequest($key)
     {
         if (!$this->enabled) return Sbnc::request($key) !== null ? Sbnc::request($key) : '';
         $response = Sbnc::util('FlashMessages')->get('request', $key);
-        return !empty($response) ? $response : Sbnc::util('FlashMessages')->get_cache('request', $key);
+        return !empty($response) ? $response : Sbnc::util('FlashMessages')->getCached('request', $key);
     }
 
-    public function was_submitted()
+    public function wasSubmitted()
     {
-        if (Sbnc::util('FlashMessages')->is_set('_sbnc', 'redirected')) {
+        if (Sbnc::util('FlashMessages')->exists('_sbnc', 'redirected')) {
             return true;
         }
         return false;
