@@ -18,17 +18,6 @@ class Gestures extends Module implements ModuleInterface
     #########################           CONFIGURATION            #########################
     ######################################################################################
 
-    /**
-     * Define your custom error messages
-     *
-     * @var array Error messages
-     */
-    private $errors = [
-        'mouse' => 'Mouse not used',
-        'keyboard' => 'Keyboard not used',
-        'js' => 'JavaScript must be activated'
-    ];
-
     /*
      * Options for checking keyboard and mouse usage.
      *
@@ -38,8 +27,17 @@ class Gestures extends Module implements ModuleInterface
      *
      * @var array Options
      */
-    private $options = [
-        'mode' => ['mouse', 'js']
+    private $use = ['mouse', 'js'];
+
+    /**
+     * Define your custom error messages
+     *
+     * @var array Error messages
+     */
+    private $errors = [
+        'mouse' => 'Mouse not used',
+        'keyboard' => 'Keyboard not used',
+        'js' => 'JavaScript must be activated'
     ];
 
     ######################################################################################
@@ -57,7 +55,7 @@ class Gestures extends Module implements ModuleInterface
 
     public function check()
     {
-        if (in_array('js', $this->options['mode'])) {
+        if (in_array('js', $this->use)) {
             $js_value = Sbnc::request('js');
             if (empty($js_value) || strcmp($js_value, 'true') !== 0) {
                 Sbnc::addError($this->errors['js']);
@@ -66,7 +64,7 @@ class Gestures extends Module implements ModuleInterface
             }
         }
 
-        if (in_array('keyboard', $this->options['mode'])) {
+        if (in_array('keyboard', $this->use)) {
             $key_value = Sbnc::request('keyboard');
             if (empty($key_value) || strcmp($key_value, 'true') !== 0) {
                 Sbnc::addError($this->errors['keyboard']);
@@ -74,7 +72,7 @@ class Gestures extends Module implements ModuleInterface
             }
         }
 
-        if (in_array('mouse', $this->options['mode'])) {
+        if (in_array('mouse', $this->use)) {
             $mouse_value = Sbnc::request('mouse');
             if (empty($mouse_value) || strcmp($mouse_value, 'true') !== 0) {
                 Sbnc::addError($this->errors['mouse']);
@@ -85,7 +83,7 @@ class Gestures extends Module implements ModuleInterface
 
     protected function get_js()
     {
-        $prefix = Sbnc::options('prefix')[0];
+        $prefix = Sbnc::getPrefix();
         $keyboard_field = $prefix . 'keyboard';
         $mouse_field = $prefix . 'mouse';
         $js_field = $prefix . 'js';

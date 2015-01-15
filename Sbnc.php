@@ -65,8 +65,6 @@ class Sbnc
      *
      * - prefix
      *      set to random to generate a form field prefix on every request.
-     *      second parameter is the field name, that holds the generated random value
-     *      change this value and begin it with a letter!
      *
      * - javascript
      *      set to false if you don't want to use any javascript
@@ -77,10 +75,20 @@ class Sbnc
      * @var array Options
      */
     private static $options = [
-        'prefix' => ['random', 'a86jg5'],
+        'prefix' => 'random',
         'javascript' => true,
         'html5' => true
     ];
+
+    /**
+     * CHANGE THIS VALUE AND BEGIN IT WITH A LETTER!
+     *
+     * Set the field name at $prefix_field_name, for the input field,
+     * that holds the random value
+     *
+     * @var string
+     */
+    private static $prefix_field_name = 'a86jg5';
 
     ######################################################################################
     ######################### DO NOT CHANGE CODE BELOW THIS LINE #########################
@@ -160,6 +168,11 @@ class Sbnc
     private static function init()
     {
         if (!self::$initialized) {
+            $prefix_type = self::$options['prefix'];
+            $prefix_field = self::$prefix_field_name;
+
+            self::$options['prefix'] = [$prefix_type, $prefix_field];
+
             self::$initialized = true;
             require_once __DIR__ . '/loader.php';
             self::$core = new Core([

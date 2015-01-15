@@ -18,6 +18,13 @@ class Time extends Module implements ModuleInterface
     ######################################################################################
 
     /**
+     * Define which checks to use
+     *
+     * @var array
+     */
+    private $use = ['min', 'max'];
+
+    /**
      * Set the minimum and maximum time a submit has to take.
      * Time in seconds.
      *
@@ -41,6 +48,7 @@ class Time extends Module implements ModuleInterface
     ######################################################################################
     ######################################################################################
 
+
     protected function init()
     {
         $this->enabled = true;
@@ -53,10 +61,10 @@ class Time extends Module implements ModuleInterface
         $time = Sbnc::request('time');
         $diff = $now - $time;
 
-        if ($diff < $this->options['min']) {
+        if (in_array('min', $this->use) && $diff < $this->options['min']) {
             Sbnc::addError($this->errors['min']);
             Sbnc::util('LogMessages')->log('spam-fast-submit', 'Submit too fast: < ' . $this->options['min']);
-        } elseif ($diff > $this->options['max']) {
+        } elseif (in_array('max', $this->use) && $diff > $this->options['max']) {
             Sbnc::addError($this->errors['max']);
             Sbnc::util('LogMessages')->log('spam-slow-submit', 'Submit too slow: > ' . $this->options['max']);
         }

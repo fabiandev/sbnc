@@ -21,14 +21,14 @@ class Validate extends Module implements ModuleInterface
      * formatted email address, is required and does not allow tags.
      *
      * - The form field with name "message" is required and
-     * must have a minimum of 10 and no more than 1000 chracters.
+     * must have a minimum of 10 and no more than 1000 characters.
      * It also does not allow tags.
      *
      * - and so on...
      *
      * @var array Options
      */
-    private $options = [
+    private $validations = [
         // used by example.php
         'email' => ['email', 'required', 'no_tags'],
         'name' => ['required', 'no_tags', 'min:4', 'max:30'],
@@ -100,7 +100,7 @@ class Validate extends Module implements ModuleInterface
 
     public function check()
     {
-        foreach ($this->options as $key => $value) {
+        foreach ($this->validations as $key => $value) {
             foreach ($value as $validator) {
                 $val = Sbnc::request($key);
                 if ($val !== null) {

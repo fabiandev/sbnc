@@ -476,6 +476,17 @@ class Core
     }
 
     /**
+     * @return string Prefix from previous request
+     */
+    public function getPrefix()
+    {
+        if (isset(self::$options['prefix'][0])) {
+            return self::$options['prefix'][0];
+        }
+        return '';
+    }
+
+    /**
      * Retrieves a request (e.g. value of email field) by name from session or class
      *
      * @param string $key Input field name
