@@ -14,7 +14,6 @@ $my_action = function () {
     // it's also a good place to use Sbnc::add_error('My error message');
     // if you add some logic on your own
 };
-
 Sbnc::start($my_action); // or simply call Sbnc::start();
 ?>
 <!doctype html>

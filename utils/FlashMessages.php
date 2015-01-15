@@ -46,7 +46,11 @@ class FlashMessages extends Util implements UtilInterface
     {
         if (session_status() == PHP_SESSION_DISABLED) $nosess = true;
         if (session_status() == PHP_SESSION_NONE && headers_sent()) $nosess = true;
-        if (session_status() == PHP_SESSION_ACTIVE || session_start()) $this->enabled = true;
+        if (session_status() == PHP_SESSION_ACTIVE || session_start()) {
+            $this->enabled = true;
+        } else {
+            Sbnc::print_exception(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
+        }
         if (isset($nosess) && $nosess == true) {
             throw new \Exception('Session could not be created. Be sure you started sbnc before any other output');
         }

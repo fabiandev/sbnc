@@ -67,6 +67,11 @@ class Core
         self::$options = $data['options'];
     }
 
+    public function __destruct()
+    {
+        if(ob_get_level() > 0) ob_flush();
+    }
+
     /**
      * Handles static class calls to the Sbnc class:
      *

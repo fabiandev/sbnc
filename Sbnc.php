@@ -1,6 +1,12 @@
 <?php
 namespace sbnc;
 
+// Can handle sessions if output has started before starting
+// sbnc. Class must be included before headers have been sent.
+//
+// Simply remove the line below to disable buffering.
+ob_start();
+
 /**
  * Class Sbnc
  *
@@ -13,7 +19,6 @@ namespace sbnc;
  * @version    0.2
  * @link       https://github.com/fabianweb/sbnc
  */
-
 class Sbnc
 {
 
@@ -184,7 +189,8 @@ class Sbnc
      */
     public static function print_exception(\Exception $e)
     {
-        $err = '<h3>Sorry, there was an error!</h3>';
+        if(ob_get_level() > 0) ob_clean();
+        $err = '<h3>Sorry, there was an error (sbnc)!</h3>';
         $err .= '<pre>';
         $err .= '<span style="font-weight:600">' . $e->getMessage() . '</span>';
         $err .= ' in ' . $e->getFile() . ' on line ' . $e->getLine() . ':';
@@ -192,6 +198,7 @@ class Sbnc
         $err .= $e->getTraceAsString();
         $err .= '</pre>';
         echo $err;
+        if(ob_get_level() > 0) ob_end_flush();
         exit;
     }
 
