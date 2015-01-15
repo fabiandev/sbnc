@@ -26,13 +26,11 @@ details.
 Be sure to include and start sbnc before any other output has been done as it makes use of sessions and
 header redirects!
 
-```
-<?
+```php
 require 'Sbnc.php';
 use sbnc\Sbnc;
 
 sbnc\Sbnc::start();
-?>
 ```
 
 #### Create a form
@@ -42,7 +40,7 @@ Don't forget to add fields required by sbnc with ```Sbnc::print_fields();```
 Also make sure the form method is POST and the action points to the same file as the request comes from.
 The action may point to another page if you adjust the settings.
 
-```
+```html
 <form action="form.php" method="post">
     <input type="text" id="name" name="name" value="<?php Sbnc::print_value('name'); ?>">
     // add any input fields you want
@@ -55,10 +53,8 @@ The action may point to another page if you adjust the settings.
 
 Add JavaScript after the html form.
 
-```
-<?php
+```php
 Sbnc::print_js();
-?>
 ```
 
 #### Check if submit was valid
@@ -66,12 +62,11 @@ Sbnc::print_js();
 Use this checks to know, if the form has been submitted in the previous request and if it's been valid.
 By default sbnc uses flash messages and redirects, so reloading the page won't result in another submit.
 
-```
-<?php
-    if (Sbnc::is_valid()) {
-        // form was submitted and there were no errors
-    } elseif (Sbnc::is_invalid()) {
-        // form was submitted, but errors occurred
-    }
-   ?>
+```php
+if (Sbnc::is_valid()) {
+    // form was submitted and there were no errors
+} elseif (Sbnc::is_invalid()) {
+    // form was submitted, but errors occurred
+}
+?>
 ```
