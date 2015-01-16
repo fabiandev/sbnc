@@ -18,6 +18,13 @@ class Hidden extends Module implements ModuleInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * Define your custom error message.
      * %field% will be replaced by the field name
      *
@@ -33,12 +40,15 @@ class Hidden extends Module implements ModuleInterface
 
     protected function init()
     {
-        $this->enabled = true;
+        if (!$this->isEnabled()) return;
+
         Sbnc::addField('check', null);
     }
 
     public function check()
     {
+        if (!$this->isEnabled()) return;
+
         $hidden_value = Sbnc::request('check');
         if ($hidden_value === null || strlen(trim($hidden_value)) != 0) {
             $err = str_replace('%field%', 'check', $this->errors['error']);

@@ -18,6 +18,13 @@ class Gestures extends Module implements ModuleInterface
     #########################           CONFIGURATION            #########################
     ######################################################################################
 
+    /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
     /*
      * Options for checking keyboard and mouse usage.
      *
@@ -46,7 +53,7 @@ class Gestures extends Module implements ModuleInterface
 
     protected function init()
     {
-        $this->enabled = true;
+        if (!$this->enabled) return;
         Sbnc::addField('mouse', null);
         Sbnc::addField('keyboard', null);
         Sbnc::addField('js', null);
@@ -55,6 +62,8 @@ class Gestures extends Module implements ModuleInterface
 
     public function check()
     {
+        if (!$this->isEnabled()) return;
+
         if (in_array('js', $this->use)) {
             $js_value = Sbnc::request('js');
             if (empty($js_value) || strcmp($js_value, 'true') !== 0) {

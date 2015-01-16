@@ -21,6 +21,13 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * Sign up for a free account at http://www.projecthoneypot.org and
      * and create an API key for http:BL
      *
@@ -67,6 +74,8 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
 
     protected function init()
     {
+        if (!$this->isEnabled()) return;
+
         if (empty($this->api_key) && !empty($this->api_key_file)) {
             if (!is_readable($this->api_key_file)) return;
             $this->api_key = file_get_contents($this->api_key_file);
@@ -85,6 +94,8 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
 
     public function check()
     {
+        if (!$this->isEnabled()) return;
+
         if (!filter_var($this->ip, FILTER_VALIDATE_IP)) {
             $err = $this->errors['error'];
             Sbnc::addError($err);

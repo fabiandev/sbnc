@@ -19,6 +19,13 @@ class Referrer extends Module implements ModuleInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * Set your custom error message
      *
      * @var array Error messages
@@ -33,12 +40,14 @@ class Referrer extends Module implements ModuleInterface
 
     protected function init()
     {
-        $this->enabled = true;
+
     }
 
 
     public function check()
     {
+        if (!$this->isEnabled()) return;
+
         if ((isset($_SERVER['HTTP_REFERER']) && !stristr($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']))) {
             Sbnc::addError($this->errors['error']);
             Sbnc::log('spam-referrer', 'HTTP Referrer was different from Host: ' . $_SERVER['HTTP_REFERER']);

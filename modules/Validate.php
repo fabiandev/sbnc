@@ -11,6 +11,13 @@ class Validate extends Module implements ModuleInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * Module options
      *
      * The array-value holds the form-field(s) name(s) for the
@@ -95,11 +102,13 @@ class Validate extends Module implements ModuleInterface
 
     protected function init()
     {
-        $this->enabled = true;
+
     }
 
     public function check()
     {
+        if (!$this->isEnabled()) return;
+
         foreach ($this->validations as $key => $value) {
             foreach ($value as $validator) {
                 $val = Sbnc::request($key);

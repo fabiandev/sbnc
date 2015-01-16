@@ -18,6 +18,13 @@ class Time extends Module implements ModuleInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * Define which checks to use
      *
      * @var array
@@ -51,12 +58,15 @@ class Time extends Module implements ModuleInterface
 
     protected function init()
     {
-        $this->enabled = true;
+        if (!$this->isEnabled()) return;
+
         Sbnc::addField('time', time());
     }
 
     public function check()
     {
+        if (!$this->isEnabled()) return;
+
         $now = time();
         $time = Sbnc::request('time');
         $diff = $now - $time;

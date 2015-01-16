@@ -18,6 +18,13 @@ class Flasher extends Addon implements AddonInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * set if there should be a redirect on error/success
      * add a url to be redirected at the second value like this:
      *
@@ -43,6 +50,8 @@ class Flasher extends Addon implements AddonInterface
 
     protected function init()
     {
+        if (!$this->isEnabled()) return;
+
         if (Sbnc::utilExists('FlashMessages')) {
             $this->enabled = Sbnc::util('FlashMessages')->isEnabled();
             $this->flash = Sbnc::util('FlashMessages');
@@ -51,6 +60,8 @@ class Flasher extends Addon implements AddonInterface
 
     public function __destruct()
     {
+        if (!$this->isEnabled()) return;
+
         $errors = Sbnc::errors();
         if ((!empty($errors) && $this->options['redirect:error'] === false) ||
             (empty($errors) && $this->options['redirect:success'] === false)
@@ -61,7 +72,7 @@ class Flasher extends Addon implements AddonInterface
 
     public function after()
     {
-        if (!$this->enabled) return;
+        if (!$this->isEnabled()) return;
 
         $errors = Sbnc::errors();
 
@@ -128,7 +139,7 @@ class Flasher extends Addon implements AddonInterface
      */
     public function getErrors()
     {
-        if (!$this->enabled) return Sbnc::errors();
+        if (!$this->isEnabled()) return Sbnc::errors();
         $response = $this->flash->get('flasher', 'errors');
         if (!empty($response)) {
             return $response;
@@ -149,7 +160,7 @@ class Flasher extends Addon implements AddonInterface
 
     public function getRequest($key)
     {
-        if (!$this->enabled) return Sbnc::request($key) !== null ? Sbnc::request($key) : '';
+        if (!$this->isEnabled()) return Sbnc::request($key) !== null ? Sbnc::request($key) : '';
         $request = $this->flash->get('flasher', 'request');
         if (isset($request[$key])) {
             $response = $request[$key];
@@ -166,7 +177,7 @@ class Flasher extends Addon implements AddonInterface
 
     public function wasSubmitted()
     {
-        if (!$this->enabled) return strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+        if (!$this->isEnabled()) return strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
         if ($this->flash->exists('flasher', 'submitted')) {
             return true;
         }

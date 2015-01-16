@@ -18,6 +18,13 @@ class Content extends Module implements ModuleInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * Module options
      *
      * - maxlinks
@@ -97,13 +104,18 @@ class Content extends Module implements ModuleInterface
 
     protected function init()
     {
-        $this->enabled = true;
-        $this->options['max_links']['max']++; // count up because request includes form url
+        if (!$this->isEnabled()) return;
+
+        if (isset($this->options['max_links']['max'])) {
+            $this->options['max_links']['max']++;
+        }
     }
 
 
     public function check()
     {
+        if (!$this->isEnabled()) return;
+
         $request = implode(Sbnc::request());
 
         if (in_array('max_links', $this->use)) {

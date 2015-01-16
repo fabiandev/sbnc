@@ -18,6 +18,13 @@ class LogMessages extends Util implements UtilInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * Log file
      *
      * @var string File
@@ -30,11 +37,13 @@ class LogMessages extends Util implements UtilInterface
 
     protected function init()
     {
-        $this->enabled = true;
+
     }
 
     public function log($type, $data)
     {
+        if (!$this->isEnabled()) return;
+
         if (!file_exists($this->log_file)) {
             fclose(fopen($this->log_file, 'w'));
         }

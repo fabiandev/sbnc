@@ -18,6 +18,13 @@ class FlashMessages extends Util implements UtilInterface
     ######################################################################################
 
     /**
+     * Module may be disabled if an inconsistency occurs
+     *
+     * @var bool Enable or disable module
+     */
+    protected $enabled = true;
+
+    /**
      * Default namespace
      *
      * @var string Default namespace
@@ -31,11 +38,11 @@ class FlashMessages extends Util implements UtilInterface
 
     protected function init()
     {
+        if (!$this->isEnabled()) return;
         if (session_status() == PHP_SESSION_DISABLED) $nosess = true;
         if (session_status() == PHP_SESSION_NONE && headers_sent()) $nosess = true;
-        if (session_status() == PHP_SESSION_ACTIVE || session_start()) {
-            $this->enabled = true;
-        } else {
+        if (session_status() != PHP_SESSION_ACTIVE && !session_start()) {
+            $this->enabled = false;
             Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
         }
         if (isset($nosess) && $nosess == true) {
@@ -46,6 +53,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function before()
     {
+        if (!$this->isEnabled()) return;
         if (isset($_SESSION[$this->namespace])) {
             $this->cache = $_SESSION[$this->namespace];
         }
@@ -53,14 +61,14 @@ class FlashMessages extends Util implements UtilInterface
 
     public function flash($type, $name, $value)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
         $_SESSION[$this->namespace][$type][$name] = $value;
         return true;
     }
 
     public function push($type, $name, $value)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
         if (isset($_SESSION[$this->namespace][$type][$name])) {
             $data = $_SESSION[$this->namespace][$type][$name];
             if (is_array($data)) {
@@ -74,7 +82,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function get($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
 
         if ($name == null) {
             if (isset($_SESSION[$this->namespace][$type])) {
@@ -98,7 +106,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function getOnce($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
         if ($name == null) {
             if (isset($_SESSION[$this->namespace][$type])) {
                 $flash = $_SESSION[$this->namespace][$type];
@@ -117,7 +125,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function getSafe($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
 
         if ($name == null) {
             if (isset($_SESSION[$this->namespace][$type])) {
@@ -139,7 +147,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function getCached($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
 
         if ($name == null) {
             if (isset($this->cache[$type])) {
@@ -155,7 +163,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function exists($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
 
         if ($name == null) {
             if (isset($_SESSION[$this->namespace][$type]) || isset($this->cache[$type])) {
@@ -171,7 +179,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function inSession($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
         if ($name == null) {
             if (isset($_SESSION[$this->namespace][$type])) {
                 return true;
@@ -186,7 +194,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function remove($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
         if ($name == null) {
             if (isset($_SESSION[$this->namespace][$type])) {
                 unset($_SESSION[$this->namespace][$type]);
@@ -203,7 +211,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function removeCached($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
         if ($name == null) {
             if (isset($this->cache[$type])) {
                 unset($this->cache[$type]);
@@ -220,12 +228,14 @@ class FlashMessages extends Util implements UtilInterface
 
     public function removeAll($type, $name = null)
     {
+        if (!$this->isEnabled()) return;
         $this->remove($type, $name);
         $this->removeCached($type, $name);
     }
 
     public function flush($type = null)
     {
+        if (!$this->isEnabled()) return;
         if ($type == null) {
             if (isset($_SESSION[$this->namespace])) {
                 unset($_SESSION[$this->namespace]);
@@ -239,7 +249,7 @@ class FlashMessages extends Util implements UtilInterface
 
     public function count($type, $name = null)
     {
-        if (!$this->enabled) return false;
+        if (!$this->isEnabled()) return false;
         if ($name == null) {
             if (isset($_SESSION[$this->namespace][$type])) {
                 $data = $_SESSION[$this->namespace][$type];
