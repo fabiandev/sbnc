@@ -398,11 +398,15 @@ class Core
      */
     public function isValid()
     {
-        if ($this->addonExists('Flasher')) {
-            $num_errors = $this->getAddon('Flasher')->countErrors();
-            return $this->getAddon('Flasher')->wasSubmitted() && !($num_errors > 0);
+        if ($this->submitted()) {
+            if ($this->addonExists('Flasher')) {
+                $flasher = $this->getAddon('Flasher');
+                $num_errors = $flasher->countErrors();
+                return !($num_errors > 0);
+            }
+            return !(count(self::$errors) > 0);
         }
-        return !(count(self::$errors) > 0) && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+        return false;
     }
 
     /**
@@ -412,20 +416,31 @@ class Core
      */
     public function isInvalid()
     {
-        if ($this->addonExists('Flasher')) {
-            return !$this->isValid() && $this->getAddon('Flasher')->wasSubmitted();
-        } else {
-            return !$this->isValid() && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+        if ($this->submitted()) {
+            return !$this->isValid();
         }
+        return false;
     }
 
-    public function submitted()
+    /*public function submitted()
     {
         if ($this->addonExists('Flasher')) {
             return $this->getAddon('Flasher')->wasSubmitted();
         } else {
             return strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
         }
+    }*/
+
+    protected function submitted()
+    {
+        if ($this->utilExists('FlashMessages')) {
+            $flash = $this->getUtil('FlashMessages');
+            if ($flash->get('core', 'req_type_prev') == 'post') {
+                return true;
+            }
+            return false;
+        }
+        return strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
     }
 
     /**
