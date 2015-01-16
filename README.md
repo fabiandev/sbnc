@@ -63,7 +63,9 @@ Add JavaScript after the html form. A good place would be just before ```</body>
 ```php
 if (Sbnc::isValid()) {
     // form was submitted and there were no errors
-} elseif (Sbnc::isInvalid()) {
+}
+
+if (Sbnc::isInvalid()) {
     // form was submitted, but errors occurred
 }
 ```
