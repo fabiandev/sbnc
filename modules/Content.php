@@ -64,7 +64,7 @@ class Content extends Module implements ModuleInterface
      * @var array Error messages
      */
     private $errors = [
-        'max_links' => 'A maximum of %max% links (http://) are allowed on the entire form.',
+        'max_links' => 'A maximum of %max% urls (http://, &lt;a&gt;, &#91;url&#93;) are allowed on the entire form.',
         'mail_words' => 'Mail injection detected. Do not use these words: bcc:, cc:, multipart, [url, Content-Type',
         'spam_words' => 'A maximum of %max% blacklisted matches are allowed, %matches% used: %words%'
     ];
@@ -75,7 +75,7 @@ class Content extends Module implements ModuleInterface
      * @var array Collection of spam words
      */
     private $spam_words = [
-        'д', 'и', 'ж', 'Ч', 'Б', '\. ,', '\? ,', '\[url=', '\[/url\]',
+        'д', 'и', 'ж', 'Ч', 'Б', '\. ,', '\? ,',
         '-online', '4u', 'aceteminophen', 'adderall', 'adipex', 'advicer', 'ambien', 'anime', 'ass', 'augmentation',
         'baccarat', 'baccarrat', 'bdsm', 'bitch', 'blackjack', 'bllogspot', 'booker', 'breast', 'byob',
         'car-rental-e-site', 'car-rentals-e-site', 'carisoprodol', 'casino', 'casinos', 'cephalaxin', 'chatroom',
@@ -119,9 +119,9 @@ class Content extends Module implements ModuleInterface
         $request = implode(Sbnc::request());
 
         if (in_array('max_links', $this->use)) {
-            if (preg_match_all("/<a|http:/i", $request, $out) > $this->options['max_links']['max']) {
-                $err = str_replace('%max%', $this->options['max_links'], $this->errors['max_links']);
-                Sbnc::add_error($err);
+            if (preg_match_all("#<a|http:|\[url=|\[/url\]#i", $request, $out) > $this->options['max_links']['max']) {
+                $err = str_replace('%max%', $this->options['max_links']['max'], $this->errors['max_links']);
+                Sbnc::addError($err);
 
                 $log = 'Maximum of ' . $this->options['max_links']['max'] . ' links reached' . $_SERVER['HTTP_REFERER'];
                 Sbnc::log('spam-content', $log);
@@ -129,9 +129,9 @@ class Content extends Module implements ModuleInterface
         }
 
         if (in_array('mail_words', $this->use)) {
-            if (preg_match("/bcc:|cc:|multipart|\[url|Content-Type:/i", $request)) {
-                $err = $this->errors['mailwords'];
-                Sbnc::add_error($err);
+            if (preg_match("/bcc:|cc:|multipart|Content-Type:/i", $request)) {
+                $err = $this->errors['mail_words'];
+                Sbnc::addError($err);
                 Sbnc::log('spam-content', 'Mail injection detected');
             }
         }

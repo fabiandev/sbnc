@@ -127,10 +127,10 @@ class Validate extends Module implements ModuleInterface
     protected function validate_no_tags($value, $name, $options)
     {
         if ($value != strip_tags($value)) {
-            if (isset($this->errors[$name]['notags'])) {
-                $err = str_replace('%field%', $name, $this->errors[$name]['notags']);
+            if (isset($this->errors[$name]['no_tags'])) {
+                $err = str_replace('%field%', $name, $this->errors[$name]['no_tags']);
             } else {
-                $err = str_replace('%field%', $name, $this->default_errors['notags']);
+                $err = str_replace('%field%', $name, $this->default_errors['no_tags']);
             }
             Sbnc::addError($err);
             return false;
@@ -225,10 +225,10 @@ class Validate extends Module implements ModuleInterface
     protected function validate_alpha_num($value, $name, $options)
     {
         if (!ctype_alnum($value)) {
-            if (isset($this->errors[$name]['alphanum'])) {
-                $err = str_replace('%field%', $name, $this->errors[$name]['alphanum']);
+            if (isset($this->errors[$name]['alpha_num'])) {
+                $err = str_replace('%field%', $name, $this->errors[$name]['alpha_anum']);
             } else {
-                $err = str_replace('%field%', $name, $this->default_errors['alphanum']);
+                $err = str_replace('%field%', $name, $this->default_errors['alpha_num']);
             }
             Sbnc::addError($err);
             return false;
@@ -253,10 +253,10 @@ class Validate extends Module implements ModuleInterface
     protected function validate_latin_digits($value, $name, $options)
     {
         if (!preg_match('/^[\p{Latin}[0-9]+$/', $value)) {
-            if (isset($this->errors[$name]['latin'])) {
-                $err = str_replace('%field%', $name, $this->errors[$name]['latindigits']);
+            if (isset($this->errors[$name]['latin_digits'])) {
+                $err = str_replace('%field%', $name, $this->errors[$name]['latin_digits']);
             } else {
-                $err = str_replace('%field%', $name, $this->default_errors['latindigits']);
+                $err = str_replace('%field%', $name, $this->default_errors['latin_digits']);
             }
             Sbnc::addError($err);
             return false;
