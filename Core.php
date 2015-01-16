@@ -430,15 +430,6 @@ class Core
         return $this->isInvalid();
     }
 
-    /*public function submitted()
-    {
-        if ($this->addonExists('Flasher')) {
-            return $this->getAddon('Flasher')->wasSubmitted();
-        } else {
-            return strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
-        }
-    }*/
-
     protected function submitted()
     {
         if ($this->utilExists('FlashMessages')) {
