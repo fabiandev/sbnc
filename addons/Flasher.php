@@ -55,6 +55,8 @@ class Flasher extends Addon implements AddonInterface
         if (Sbnc::utilExists('FlashMessages')) {
             $this->enabled = Sbnc::util('FlashMessages')->isEnabled();
             $this->flash = Sbnc::util('FlashMessages');
+        } else {
+            $this->enabled = false;
         }
     }
 
