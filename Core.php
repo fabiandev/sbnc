@@ -422,6 +422,14 @@ class Core
         return false;
     }
 
+    public function passed() {
+        return $this->isValid();
+    }
+
+    public function failed() {
+        return $this->isInvalid();
+    }
+
     /*public function submitted()
     {
         if ($this->addonExists('Flasher')) {

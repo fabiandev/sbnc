@@ -61,11 +61,11 @@ Add JavaScript after the html form. A good place would be just before ```</body>
 #### Check if submit was valid
 
 ```php
-if (Sbnc::isValid()) {
+if (Sbnc::passed()) {
     // form was submitted and there were no errors
 }
 
-if (Sbnc::isInvalid()) {
+if (Sbnc::failed()) {
     // form was submitted, but errors occurred
 }
 ```
