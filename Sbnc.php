@@ -81,10 +81,9 @@ class Sbnc
     ];
 
     /**
-     * CHANGE THIS VALUE AND BEGIN IT WITH A LETTER!
-     *
-     * Set the field name at $prefix_field_name, for the input field,
-     * that holds the random value
+     * Set the fallback field name for the input field,
+     * that holds the random value, if util FlashMessages is
+     * not used. Begin it with a letter!
      *
      * @var string
      */
