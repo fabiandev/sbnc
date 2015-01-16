@@ -18,7 +18,7 @@ class Content extends Module implements ModuleInterface
     ######################################################################################
 
     /**
-     * Module may be disabled if an inconsistency occurs
+     * May be disabled if any inconsistencies occur
      *
      * @var bool Enable or disable module
      */
@@ -66,7 +66,7 @@ class Content extends Module implements ModuleInterface
     private $errors = [
         'max_links' => 'A maximum of %max% links (http://) are allowed on the entire form.',
         'mail_words' => 'Mail injection detected. Do not use these words: bcc:, cc:, multipart, [url, Content-Type',
-        'spam_words' => 'A maximum of %max% blacklisted matches are allowed. Matches: %words%'
+        'spam_words' => 'A maximum of %max% blacklisted matches are allowed, %matches% used: %words%'
     ];
 
     /**
@@ -147,9 +147,15 @@ class Content extends Module implements ModuleInterface
                 $matches = isset($all_matches[0]) ? $all_matches[0] : [];
             }
 
-            if (count($matches) > $this->options['spam_words']['max']) {
+            $num_matches = count($matches);
+
+            if ($num_matches > $this->options['spam_words']['max']) {
                 $words = implode(', ', $matches);
-                $err = str_replace(['%max%', '%words%'], [$this->options['spam_words']['max'], $words], $this->errors['spam_words']);
+                $err = str_replace(
+                    ['%max%', '%words%', '%matches%'],
+                    [$this->options['spam_words']['max'], $words, $num_matches],
+                    $this->errors['spam_words']
+                );
                 Sbnc::addError($err);
                 $log = 'More than ' . $this->options['spam_words']['max'] . ' spam_words found: ' . $words;
                 Sbnc::log('spam-content', $log);

@@ -21,7 +21,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
     ######################################################################################
 
     /**
-     * Module may be disabled if an inconsistency occurs
+     * May be disabled if any inconsistencies occur
      *
      * @var bool Enable or disable module
      */
