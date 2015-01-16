@@ -59,7 +59,7 @@ class Gestures extends Module implements ModuleInterface
             $js_value = Sbnc::request('js');
             if (empty($js_value) || strcmp($js_value, 'true') !== 0) {
                 Sbnc::addError($this->errors['js']);
-                Sbnc::util('LogMessages')->log('spam-gestures', 'JavaScript not enabled');
+                Sbnc::log('spam-gestures', 'JavaScript not enabled');
                 return;
             }
         }
@@ -68,7 +68,7 @@ class Gestures extends Module implements ModuleInterface
             $key_value = Sbnc::request('keyboard');
             if (empty($key_value) || strcmp($key_value, 'true') !== 0) {
                 Sbnc::addError($this->errors['keyboard']);
-                Sbnc::util('LogMessages')->log('spam-gestures', 'Keyboard not used');
+                Sbnc::log('spam-gestures', 'Keyboard not used');
             }
         }
 
@@ -76,14 +76,14 @@ class Gestures extends Module implements ModuleInterface
             $mouse_value = Sbnc::request('mouse');
             if (empty($mouse_value) || strcmp($mouse_value, 'true') !== 0) {
                 Sbnc::addError($this->errors['mouse']);
-                Sbnc::util('LogMessages')->log('spam-gestures', 'Mouse not used');
+                Sbnc::log('spam-gestures', 'Mouse not used');
             }
         }
     }
 
     protected function get_js()
     {
-        $prefix = Sbnc::getPrefix();
+        $prefix = Sbnc::getCurrentPrefix();
         $keyboard_field = $prefix . 'keyboard';
         $mouse_field = $prefix . 'mouse';
         $js_field = $prefix . 'js';

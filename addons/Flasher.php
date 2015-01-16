@@ -49,12 +49,13 @@ class Flasher extends Addon implements AddonInterface
         }
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         $errors = Sbnc::errors();
         if ((!empty($errors) && $this->options['redirect:error'] === false) ||
-            (empty($errors) && $this->options['redirect:success'] === false))
-        {
-            $this->flash->flush();
+            (empty($errors) && $this->options['redirect:success'] === false)
+        ) {
+            $this->flash->flush('flasher');
         }
     }
 
@@ -66,58 +67,58 @@ class Flasher extends Addon implements AddonInterface
 
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
             if (count(Sbnc::errors()) > 0) {
-                $this->flash->flash('request', Sbnc::request());
-                $this->flash->flash('errors', $errors);
+                $this->flash->flash('flasher', 'request', Sbnc::request());
+                $this->flash->flash('flasher', 'errors', $errors);
             }
             if (!empty($errors) && $this->options['redirect:error'] !== false) {
                 if (empty($this->options['redirect:error'])) {
-                    if(!headers_sent()) {
-                        $this->flash->flash('_sbnc', ['submitted' => true]);
+                    if (!headers_sent()) {
+                        $this->flash->flash('flasher', 'submitted', true);
                         header('Location: ' . Sbnc::request('url'));
                         exit;
                     } else {
-                        $this->flash->flush();
+                        $this->flash->flush('flasher');
                         Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
 
                 } else {
-                    $this->flash->flash('_sbnc', ['submitted' => true]);
-                    if(!headers_sent()) {
+                    $this->flash->flash('flasher', 'submitted', true);
+                    if (!headers_sent()) {
                         header('Location: ' . $this->options['redirect:error']);
                         exit;
                     } else {
-                        $this->flash->flush();
+                        $this->flash->flush('flasher');
                         Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
                 }
             } elseif (empty($errors) && $this->options['redirect:success'] !== false) {
                 if (empty($this->options['redirect:success'])) {
-                    if(!headers_sent()) {
-                        $this->flash->flash('_sbnc', ['submitted' => true]);
+                    if (!headers_sent()) {
+                        $this->flash->flash('flasher', 'submitted', true);
                         header('Location: ' . Sbnc::request('url'));
                         exit;
                     } else {
-                        $this->flash->flush();
+                        $this->flash->flush('flasher');
                         Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
                 } else {
-                    if(!headers_sent()) {
-                        $this->flash->flash('_sbnc', ['submitted' => true]);
+                    if (!headers_sent()) {
+                        $this->flash->flash('flasher', 'submitted', true);
                         header('Location: ' . $this->options['redirect:success']);
                         exit;
                     } else {
-                        $this->flash->flush();
+                        $this->flash->flush('flasher');
                         Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
                     exit;
                 }
             } else {
-                $this->flash->flash('_sbnc', ['submitted' => true]);
+                $this->flash->flash('flasher', 'submitted', true);
                 return;
             }
         }
         // remove messages from session, retrieved from cache
-        $this->flash->flush();
+        $this->flash->flush('flasher');
     }
 
     /**
@@ -128,27 +129,45 @@ class Flasher extends Addon implements AddonInterface
     public function getErrors()
     {
         if (!$this->enabled) return Sbnc::errors();
-        $response = $this->flash->get('errors');
-        return !empty($response) ? $response : Sbnc::util('FlashMessages')->getCached('errors');
+        $response = $this->flash->get('flasher', 'errors');
+        if (!empty($response)) {
+            return $response;
+        } else {
+            $cached = Sbnc::util('FlashMessages')->getCached('flasher', 'errors');
+            if ($cached != null) {
+                return $cached;
+            }
+        }
+        return [];
     }
 
     public function countErrors()
     {
         if (!$this->enabled) return count(Sbnc::errors());
-        return $this->flash->count('errors');
+        return $this->flash->count('flasher', 'errors');
     }
 
     public function getRequest($key)
     {
         if (!$this->enabled) return Sbnc::request($key) !== null ? Sbnc::request($key) : '';
-        $response = $this->flash->get('request', $key);
-        return !empty($response) ? $response : $this->flash->getCached('request', $key);
+        $request = $this->flash->get('flasher', 'request');
+        if (isset($request[$key])) {
+            $response = $request[$key];
+        } else {
+            $request = $this->flash->getCached('flasher', 'request');
+            if (isset($request[$key])) {
+                $response = $request[$key];
+            } else {
+                $response = '';
+            }
+        }
+        return $response;
     }
 
     public function wasSubmitted()
     {
         if (!$this->enabled) return strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
-        if ($this->flash->exists('_sbnc', 'submitted')) {
+        if ($this->flash->exists('flasher', 'submitted')) {
             return true;
         }
         return false;

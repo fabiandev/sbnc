@@ -63,10 +63,10 @@ class Time extends Module implements ModuleInterface
 
         if (in_array('min', $this->use) && $diff < $this->options['min']) {
             Sbnc::addError($this->errors['min']);
-            Sbnc::util('LogMessages')->log('spam-fast-submit', 'Submit too fast: < ' . $this->options['min']);
+            Sbnc::log('spam-fast-submit', 'Submit too fast: < ' . $this->options['min']);
         } elseif (in_array('max', $this->use) && $diff > $this->options['max']) {
             Sbnc::addError($this->errors['max']);
-            Sbnc::util('LogMessages')->log('spam-slow-submit', 'Submit too slow: > ' . $this->options['max']);
+            Sbnc::log('spam-slow-submit', 'Submit too slow: > ' . $this->options['max']);
         }
     }
 

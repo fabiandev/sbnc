@@ -22,21 +22,10 @@ class FlashMessages extends Util implements UtilInterface
      *
      * @var string Default namespace
      */
-    private $session_name = 'sbnc_flash';
+    private $namespace = 'sbnc';
 
     ######################################################################################
     ######################################################################################
-
-
-    /**
-     * Changes the namespace (but does not copy existing entries!)
-     *
-     * @param $session_name
-     */
-    public function setNamespace($session_name)
-    {
-        $this->session_name = $session_name;
-    }
 
     public $cache = [];
 
@@ -52,218 +41,231 @@ class FlashMessages extends Util implements UtilInterface
         if (isset($nosess) && $nosess == true) {
             throw new \Exception('Session could not be created. Be sure you started sbnc before any other output');
         }
-        unset($_SESSION[$this->session_name]['_CACHE_']);
+        unset($_SESSION[$this->namespace]['_CACHE_']);
     }
 
     public function before()
     {
-        if (isset($_SESSION[$this->session_name])) {
-            $this->cache = $_SESSION[$this->session_name];
+        if (isset($_SESSION[$this->namespace])) {
+            $this->cache = $_SESSION[$this->namespace];
         }
     }
 
-    public function flash($type, $value, $key = null)
+    public function flash($type, $name, $value)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
-            if (is_array($value)) {
-                $_SESSION[$this->session_name][$type] = $value;
+        $_SESSION[$this->namespace][$type][$name] = $value;
+        return true;
+    }
+
+    public function push($type, $name, $value)
+    {
+        if (!$this->enabled) return false;
+        if (isset($_SESSION[$this->namespace][$type][$name])) {
+            $data = $_SESSION[$this->namespace][$type][$name];
+            if (is_array($data)) {
+                array_push($_SESSION[$this->namespace][$type][$name], $value);
             } else {
-                $_SESSION[$this->session_name][$type][] = $value;
+                return false;
             }
-        } else {
-            $_SESSION[$this->session_name][$type][$key] = $value;
         }
         return true;
     }
 
-    public function get($type, $key = null)
+    public function get($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
-            if (isset($_SESSION[$this->session_name][$type])) {
-                $flash = $_SESSION[$this->session_name][$type];
-                unset($_SESSION[$this->session_name][$type]);
+
+        if ($name == null) {
+            if (isset($_SESSION[$this->namespace][$type])) {
+                $flash = $_SESSION[$this->namespace][$type];
+                unset($_SESSION[$this->namespace][$type]);
                 return $flash;
             } elseif (isset($this->cache[$type])) {
                 return $this->cache[$type];
-            } else {
-                return [];
             }
         } else {
-            if (isset($_SESSION[$this->session_name][$type][$key])) {
-                $flash = $_SESSION[$this->session_name][$type][$key];
-                unset($_SESSION[$this->session_name][$type][$key]);
+            if (isset($_SESSION[$this->namespace][$type][$name])) {
+                $flash = $_SESSION[$this->namespace][$type][$name];
+                unset($_SESSION[$this->namespace][$type][$name]);
                 return $flash;
-            } elseif (isset($this->cache[$type][$key])) {
-                return $this->cache[$type][$key];
-            } else {
-                return '';
+            } elseif (isset($this->cache[$type][$name])) {
+                return $this->cache[$type][$name];
             }
         }
+        return null;
     }
 
-    public function getOnce($type, $key = null)
+    public function getOnce($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
-            if (isset($_SESSION[$this->session_name][$type])) {
-                $flash = $_SESSION[$this->session_name][$type];
-                unset($_SESSION[$this->session_name][$type]);
+        if ($name == null) {
+            if (isset($_SESSION[$this->namespace][$type])) {
+                $flash = $_SESSION[$this->namespace][$type];
+                unset($_SESSION[$this->namespace][$type]);
                 return $flash;
-            } else {
-                return [];
             }
         } else {
-            if (isset($_SESSION[$this->session_name][$type][$key])) {
-                $flash = $_SESSION[$this->session_name][$type][$key];
-                unset($_SESSION[$this->session_name][$type][$key]);
+            if (isset($_SESSION[$this->namespace][$type][$name])) {
+                $flash = $_SESSION[$this->namespace][$type][$name];
+                unset($_SESSION[$this->namespace][$type][$name]);
                 return $flash;
-            } else {
-                return '';
             }
         }
+        return null;
     }
 
-    public function getSafe($type, $key = null)
+    public function getSafe($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
-            if (isset($_SESSION[$this->session_name][$type])) {
-                $flash = $_SESSION[$this->session_name][$type];
+
+        if ($name == null) {
+            if (isset($_SESSION[$this->namespace][$type])) {
+                $flash = $_SESSION[$this->namespace][$type];
                 return $flash;
-            } else {
-                return [];
+            } elseif (isset($this->cache[$type])) {
+                return $this->cache[$type];
             }
         } else {
-            if (isset($_SESSION[$this->session_name][$type][$key])) {
-                $flash = $_SESSION[$this->session_name][$type][$key];
+            if (isset($_SESSION[$this->namespace][$type][$name])) {
+                $flash = $_SESSION[$this->namespace][$type][$name];
                 return $flash;
-            } else {
-                return '';
+            } elseif (isset($this->cache[$type][$name])) {
+                return $this->cache[$type][$name];
             }
         }
+        return null;
     }
 
-    public function getCached($type, $key = null)
+    public function getCached($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
+
+        if ($name == null) {
             if (isset($this->cache[$type])) {
-                $cache = $this->cache[$type];
-                return $cache;
-            } else {
-                return [];
+                return $this->cache[$type];
             }
         } else {
-            if (isset($this->cache[$type][$key])) {
-                $cache = $this->cache[$type][$key];
-                return $cache;
-            } else {
-                return '';
+            if (isset($this->cache[$type][$name])) {
+                return $this->cache[$type][$name];
             }
         }
+        return null;
     }
 
-    public function exists($type, $key = null)
+    public function exists($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
-            if (isset($_SESSION[$this->session_name][$type]) || isset($this->cache[$type])) {
+
+        if ($name == null) {
+            if (isset($_SESSION[$this->namespace][$type]) || isset($this->cache[$type])) {
                 return true;
-            } else {
-                return false;
             }
         } else {
-            if (isset($_SESSION[$this->session_name][$type][$key]) || isset($this->cache[$type][$key])) {
+            if (isset($_SESSION[$this->namespace][$type][$name]) || isset($this->cache[$type][$name])) {
                 return true;
-            } else {
-                return false;
             }
         }
+        return false;
     }
 
-    public function inSession($type, $key = null)
+    public function inSession($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
-            if (isset($_SESSION[$this->session_name][$type])) {
+        if ($name == null) {
+            if (isset($_SESSION[$this->namespace][$type])) {
                 return true;
-            } else {
-                return false;
             }
         } else {
-            if (isset($_SESSION[$this->session_name][$type][$key])) {
+            if (isset($_SESSION[$this->namespace][$type][$name])) {
                 return true;
-            } else {
-                return false;
             }
         }
+        return false;
     }
 
-    public function remove($type, $key = null)
+    public function remove($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
-            if (isset($_SESSION[$this->session_name][$type])) {
-                unset($_SESSION[$this->session_name][$type]);
+        if ($name == null) {
+            if (isset($_SESSION[$this->namespace][$type])) {
+                unset($_SESSION[$this->namespace][$type]);
                 return true;
-            } else {
-                return false;
             }
         } else {
-            if (isset($_SESSION[$this->session_name][$type][$key])) {
-                unset($_SESSION[$this->session_name][$type][$key]);
+            if (isset($_SESSION[$this->namespace][$type][$name])) {
+                unset($_SESSION[$this->namespace][$type][$name]);
                 return true;
-            } else {
-                return false;
             }
         }
+        return false;
     }
 
-    public function removeCached($type, $key = null)
+    public function removeCached($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if ($key === null) {
+        if ($name == null) {
             if (isset($this->cache[$type])) {
                 unset($this->cache[$type]);
                 return true;
-            } else {
-                return false;
             }
         } else {
-            if (isset($this->cache[$type][$key])) {
-                unset($this->cache[$type][$key]);
+            if (isset($this->cache[$type][$name])) {
+                unset($this->cache[$type][$name]);
                 return true;
-            } else {
-                return false;
+            }
+        }
+        return false;
+    }
+
+    public function removeAll($type, $name = null)
+    {
+        $this->remove($type, $name);
+        $this->removeCached($type, $name);
+    }
+
+    public function flush($type = null)
+    {
+        if ($type == null) {
+            if (isset($_SESSION[$this->namespace])) {
+                unset($_SESSION[$this->namespace]);
+            }
+        } else {
+            if (isset($_SESSION[$this->namespace][$type])) {
+                unset($_SESSION[$this->namespace][$type]);
             }
         }
     }
 
-    public function removeAll($type, $key = null)
-    {
-        $this->remove($type, $key);
-        $this->removeCached($type, $key);
-    }
-
-    public function flush()
-    {
-        unset($_SESSION[$this->session_name]);
-    }
-
-    public function count($type)
+    public function count($type, $name = null)
     {
         if (!$this->enabled) return false;
-        if (isset($_SESSION[$this->session_name][$type]) &&
-            is_array($_SESSION[$this->session_name][$type])
-        ) {
-            return count($_SESSION[$this->session_name][$type]);
-        } elseif (isset($this->cache[$type]) && is_array($this->cache[$type])) {
-            return count($this->cache[$type]);
+        if ($name == null) {
+            if (isset($_SESSION[$this->namespace][$type])) {
+                $data = $_SESSION[$this->namespace][$type];
+                if (is_array($data)) {
+                    return count($data);
+                }
+            } elseif (isset($this->cache[$type])) {
+                $data = $this->cache[$type];
+                if (is_array($data)) {
+                    return count($data);
+                }
+            }
         } else {
-            return false;
+            if (isset($_SESSION[$this->namespace][$type][$name])) {
+                $data = $_SESSION[$this->namespace][$type][$name];
+                if (is_array($data)) {
+                    return count($data);
+                }
+            } elseif (isset($this->cache[$type][$name])) {
+                $data = $this->cache[$type][$name];
+                if (is_array($data)) {
+                    return count($data);
+                }
+            }
         }
+        return 0;
     }
 
 } 

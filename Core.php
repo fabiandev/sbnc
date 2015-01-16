@@ -69,7 +69,7 @@ class Core
 
     public function __destruct()
     {
-        if(ob_get_level() > 0) ob_flush();
+        if (ob_get_level() > 0) ob_flush();
     }
 
     /**
@@ -227,16 +227,46 @@ class Core
         }
     }
 
+    public function log($type, $msg)
+    {
+        if ($this->utilExists('LogMessages')) {
+            $this->getUtil('LogMessages')->log($type, $msg);
+        }
+    }
+
     /**
      * Initializes in correct order
      */
     public function init()
     {
+        $this->initComponents('utils');
+
+        if (strcmp(self::$options['prefix'][0], 'random') === 0) {
+            self::$options['prefix'][0] = chr(rand(97, 122)) . substr(md5(microtime()), rand(0, 26), 4);
+        }
+
+        $flash_enabled = $this->utilExists('FlashMessages');
+        if ($flash_enabled) {
+            $flash = $this->getUtil('FlashMessages');
+
+            $flash->flash('core', 'prefix_fallback', $flash->getSafe('core', 'prefix_current'));
+            $flash->flash('core', 'prefix_current', self::$options['prefix'][0]);
+            $flash->flash('core', 'req_type_prev', $flash->getSafe('core', 'req_type'));
+
+            if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
+                $flash->flash('core', 'prefix', self::$options['prefix'][0]);
+                $flash->flash('core', 'req_type', 'get');
+            } else {
+                $flash->flash('core', 'req_type', 'post');
+            }
+        }
+
         $this->initJavascript();
         $this->initFields();
-        $this->initComponents('utils');
         $this->initComponents('modules');
         $this->initComponents('addons');
+
+        if ($flash_enabled && isset(self::$fields['prefix'])) unset(self::$fields['prefix']);
     }
 
     /**
@@ -244,10 +274,6 @@ class Core
      */
     private function initFields()
     {
-        if (strcmp(self::$options['prefix'][0], 'random') === 0) {
-            self::$options['prefix'][0] = chr(rand(97, 122)) . substr(md5(microtime()), rand(0, 26), 4);
-        }
-
         self::$fields = [
             'prefix' => &self::$options['prefix'][0],
             'url' => 'http' . (($_SERVER['SERVER_PORT'] == 443) ? 's://' : '://') .
@@ -344,11 +370,18 @@ class Core
      */
     private function manipulateRequest()
     {
+        if ($this->utilExists('FlashMessages')) {
+            $flashed = true;
+        }
+
         $prefix = self::$options['prefix'][1];
-        $random_prefix = isset($_POST[$prefix]) ? $_POST[$prefix] : '';
+
+        $random_prefix = $this->getPrefix();
+
         $random_prefix_length = strlen($random_prefix);
+
         foreach ($_POST as $key => $value) {
-            if (strcmp($key, $prefix) == 0) {
+            if (!isset($flashed) && strcmp($key, $prefix) == 0) {
                 self::$fields['prefix'] = $value;
             } elseif (strcmp(substr($key, 0, $random_prefix_length), $random_prefix) == 0) {
                 self::$request[substr($key, $random_prefix_length)] = $value;
@@ -386,7 +419,8 @@ class Core
         }
     }
 
-    public function submitted() {
+    public function submitted()
+    {
         if ($this->addonExists('Flasher')) {
             return $this->getAddon('Flasher')->wasSubmitted();
         } else {
@@ -400,9 +434,19 @@ class Core
      * @param string $addon Addon name
      * @return bool True if addon exists
      */
-    protected function addonExists($addon)
+    protected function addonExists($addon, $check_enabled = true)
     {
-        return array_key_exists($addon, self::$components['addons']) && self::$components['addons'][$addon]->isEnabled() ? true : false;
+        if (array_key_exists($addon, self::$components['addons'])) {
+            if ($check_enabled) {
+                if (self::$components['addons'][$addon]->isEnabled()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -411,9 +455,19 @@ class Core
      * @param string $module Module name
      * @return bool True if module exists
      */
-    protected function moduleExists($module)
+    protected function moduleExists($module, $check_enabled = true)
     {
-        return array_key_exists($module, self::$components['modules']) && self::$components['modules'][$module]->isEnabled() ? true : false;
+        if (array_key_exists($module, self::$components['modules'])) {
+            if ($check_enabled) {
+                if (self::$components['modules'][$module]->isEnabled()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -422,21 +476,19 @@ class Core
      * @param string $util Util name
      * @return bool True if util exists
      */
-    protected function utilExists($util)
+    protected function utilExists($util, $check_enabled = true)
     {
-        return array_key_exists($util, self::$components['utils']) && self::$components['utils'][$util]->isEnabled() ? true : false;
-    }
-
-    /**
-     * Like utilExists but checks for any component
-     *
-     * @param string $component Component name
-     * @return bool True if module, addon or util with this name exists
-     */
-    protected function componentExists($component)
-    {
-        return $this->addonExists($component) || $this->moduleExists($component) ? true : false ||
-        $this->utilExists($component) ? true : false;
+        if (array_key_exists($util, self::$components['utils'])) {
+            if ($check_enabled) {
+                if (self::$components['utils'][$util]->isEnabled()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -447,6 +499,9 @@ class Core
      */
     public function getAddon($addon)
     {
+        if (!isset(self::$components['addons'][$addon])) {
+            Sbnc::throwException('Addon "' . $addon . '" does not exist');
+        }
         return self::$components['addons'][$addon];
     }
 
@@ -458,6 +513,9 @@ class Core
      */
     public function getModule($module)
     {
+        if (!isset(self::$components['modules'][$module])) {
+            Sbnc::throwException('Module "' . $module . '" does not exist');
+        }
         return self::$components['modules'][$module];
     }
 
@@ -469,18 +527,57 @@ class Core
      */
     public function getUtil($util)
     {
+        if (!isset(self::$components['utils'][$util])) {
+            Sbnc::throwException('Util "' . $util . '" does not exist');
+        }
         return self::$components['utils'][$util];
     }
 
     /**
-     * @return string Prefix from previous request
+     * @return string Return correct prefix to use to access forms
      */
     public function getPrefix()
     {
-        if ($this->addonExists('Flasher')) {
-            if ($this->getAddon('Flasher')->wasSubmitted()) {
-                return self::$options['prefix'][1];
+        if ($this->utilExists('FlashMessages')) {
+            $flash = $this->getUtil('FlashMessages');
+
+            $req_type = $flash->getSafe('core', 'req_type');
+            $req_type_prev = $flash->getSafe('core', 'req_type_prev');
+
+            if ($req_type == 'post' && ($req_type == $req_type_prev)) {
+                return $flash->getSafe('core', 'prefix_fallback');
+            } else {
+                return $this->getSecretPrefix();
             }
+        }
+        return $this->getSecretPrefix();
+    }
+
+
+    /**
+     * @return string Prefix from previous request
+     */
+    public function getSecretPrefix()
+    {
+        if ($this->utilExists('FlashMessages')) {
+            $prefix = $this->getUtil('FlashMessages')->getSafe('core', 'prefix');
+            return $prefix;
+        } else {
+            if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
+                return $_POST[self::$options['prefix'][1]];
+            }
+        }
+        return self::$options['prefix'][0];
+    }
+
+    /**
+     * @return string Get current prefix
+     */
+    public function getCurrentPrefix()
+    {
+        if ($this->utilExists('FlashMessages')) {
+            $prefix = $this->getUtil('FlashMessages')->getSafe('core', 'prefix_current');
+            return $prefix;
         } else {
             if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
                 return $_POST[self::$options['prefix'][1]];
@@ -511,7 +608,12 @@ class Core
     public function getErrors()
     {
         if ($this->addonExists('Flasher')) {
-            return $this->getAddon('Flasher')->getErrors();
+            $errors = $this->getAddon('Flasher')->getErrors();
+            if (is_array($errors)) {
+                return $errors;
+            } else {
+                return [];
+            }
         }
         return self::$errors;
     }
@@ -523,11 +625,8 @@ class Core
      */
     public function getError()
     {
-        if ($this->addonExists('Flasher')) {
-            $errors = $this->getAddon('Flasher')->getErrors();
-            return reset($errors);
-        }
-        return reset(self::$errors);
+        $errors = $this->getErrors();
+        return reset($errors);
     }
 
     public function getValue($name, $nl2br = false, $safe = false)
@@ -625,7 +724,7 @@ class Core
     public function numErrors()
     {
         if ($this->addonExists('Flasher')) {
-            return $this->getAddon('Flasher')->countErrors();
+            return count($this->getAddon('Flasher')->getErrors());
         }
         return count(self::$errors);
     }

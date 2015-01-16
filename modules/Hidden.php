@@ -43,7 +43,7 @@ class Hidden extends Module implements ModuleInterface
         if ($hidden_value === null || strlen(trim($hidden_value)) != 0) {
             $err = str_replace('%field%', 'check', $this->errors['error']);
             Sbnc::addError($err);
-            Sbnc::util('LogMessages')->log('spam-hidden', 'Hidden field was not empty or has been modified/removed: ' . $hidden_value);
+            Sbnc::log('spam-hidden', 'Hidden field was not empty or has been modified/removed: ' . $hidden_value);
         }
     }
 

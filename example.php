@@ -71,7 +71,7 @@ Sbnc::start($my_action); // or simply call Sbnc::start();
 <pre>
 <?php
 print_r($_SESSION);
-//unset($_SESSION['sbnc_honeypot']);
+//unset($_SESSION['sbnc']);
 ?>
 </pre>
 </body>

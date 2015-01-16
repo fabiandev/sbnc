@@ -63,6 +63,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
 
     private $ip; // 195.211.155.157
     private $flash;
+    private $cached = false;
 
     protected function init()
     {
@@ -72,8 +73,14 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         }
         if (!empty($this->api_key)) $this->enabled = true;
         if (empty($this->ip)) $this->ip = $this->get_ip();
-        $this->flash = new FlashMessages();
-        $this->flash->setNamespace('sbnc_honeypot');
+
+        if (Sbnc::utilExists('FlashMessages')) {
+            $flash = Sbnc::getUtil('FlashMessages');
+            if ($flash->isEnabled()) {
+                $this->flash = $flash;
+                $this->cached = true;
+            }
+        }
     }
 
     public function check()
@@ -84,9 +91,11 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
             return;
         }
 
-        if ($this->flash->exists($this->ip)) {
-            $flash_data = $this->flash->getSafe($this->ip);
-            if ($flash_data['spam'] === 1) $this->parse($flash_data);
+        if ($this->cached && $this->flash->exists('httpBL', $this->ip)) {
+            $flash_data = $this->flash->getSafe('httpBL', $this->ip);
+            if ($flash_data['spam'] === 1) {
+                $this->parse($flash_data);
+            }
             return;
         }
 
@@ -111,7 +120,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
             }
 
         } else {
-            $this->flash->flash($this->ip, ['spam' => 0]);
+            if ($this->cached) $this->flash->flash('httpBL', $this->ip, ['spam' => 0]);
         }
 
     }
@@ -149,7 +158,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         $err = str_replace(['%days%', '%num%', '%type%'], [$days, number_format($num, 0, '.', ','), $type], $this->errors['spammer']);
         Sbnc::addError($err);
 
-        $this->flash->flash($this->ip, $data);
+        if ($this->cached) $this->flash->flash('httpBL', $this->ip, $data);
         Sbnc::util('LogMessages')->log('spam-http-blacklist', ['active ' . $days . ' day(s) ago', $num . ' messages/day', $type]);
     }
 

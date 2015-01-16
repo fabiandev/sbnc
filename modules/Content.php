@@ -112,7 +112,7 @@ class Content extends Module implements ModuleInterface
                 Sbnc::add_error($err);
 
                 $log = 'Maximum of ' . $this->options['max_links']['max'] . ' links reached' . $_SERVER['HTTP_REFERER'];
-                Sbnc::util('LogMessages')->log('spam-content', $log);
+                Sbnc::log('spam-content', $log);
             }
         }
 
@@ -120,13 +120,13 @@ class Content extends Module implements ModuleInterface
             if (preg_match("/bcc:|cc:|multipart|\[url|Content-Type:/i", $request)) {
                 $err = $this->errors['mailwords'];
                 Sbnc::add_error($err);
-                Sbnc::util('LogMessages')->log('spam-content', 'Mail injection detected');
+                Sbnc::log('spam-content', 'Mail injection detected');
             }
         }
         if (in_array('spam_words', $this->use)) {
 
             $names = implode('|', $this->spam_words);
-            $regex = '#[-+]?(' .  $names . ')#';
+            $regex = '#[-+]?(' . $names . ')#';
             preg_match_all($regex, $request, $all_matches);
 
             if (!$this->options['spam_words']['count_duplicates']) {
@@ -140,7 +140,7 @@ class Content extends Module implements ModuleInterface
                 $err = str_replace(['%max%', '%words%'], [$this->options['spam_words']['max'], $words], $this->errors['spam_words']);
                 Sbnc::addError($err);
                 $log = 'More than ' . $this->options['spam_words']['max'] . ' spam_words found: ' . $words;
-                Sbnc::util('LogMessages')->log('spam-content', $log);
+                Sbnc::log('spam-content', $log);
             }
         }
     }
