@@ -227,11 +227,29 @@ class Core
         }
     }
 
+    /**
+     * Logs something to the log file
+     *
+     * @param string $type Title
+     * @param mixed $msg Log message (string or array)
+     */
     public function log($type, $msg)
     {
         if ($this->utilExists('LogMessages')) {
             $this->getUtil('LogMessages')->log($type, $msg);
         }
+    }
+
+    /**
+     * Get an array of all log messages
+     *
+     * @return mixed false or array with log messages
+     */
+    public function getLog($reverse = true) {
+        if ($this->utilExists('LogMessages')) {
+            return $this->getUtil('LogMessages')->getLog($reverse);
+        }
+        return false;
     }
 
     /**

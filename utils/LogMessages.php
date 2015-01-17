@@ -43,22 +43,12 @@ class LogMessages extends Util implements UtilInterface
     public function log($type, $data)
     {
         if (!$this->isEnabled()) return;
-
-        if (!file_exists($this->log_file)) {
-            fclose(fopen($this->log_file, 'w'));
-        }
-        if (!is_writeable($this->log_file)) return;
+        if (!$this->checkFile()) return;
 
         $content = '';
         $content .= strtoupper($type);
         $content .= '|' . date('d-m-Y G:i:s', time());
-        if (is_array($data)) {
-            foreach ($data as $value) {
-                $content .= '|' . $value;
-            }
-        } else {
-            $content .= '|' . $data;
-        }
+        $content .= '|' . $data;
 
         $content .= '|' . $this->getIp();
         $content .= '|' . $_SERVER['HTTP_USER_AGENT'];
@@ -68,6 +58,39 @@ class LogMessages extends Util implements UtilInterface
         $content .= "\r\n";
 
         file_put_contents($this->log_file, $content, FILE_APPEND);
+    }
+
+    public function getLog($reverse = true)
+    {
+        if (!$this->checkFile()) return false;
+
+        $str = file_get_contents($this->log_file);
+        $arr = explode("\n", $str);
+        for ($i = 0; $i < count($arr); $i++) {
+            $arr[$i] = explode('|', $arr[$i]);
+            if (isset($arr[$i][5])) {
+                parse_str($arr[$i][5], $arr[$i][5]);
+            }
+
+            $keys = ['type', 'time', 'message', 'ip', 'client', 'request'];
+            $values = array_values($arr[$i]);
+
+            if (count($keys) != count($values)) continue;
+
+            $arr[$i] = array_combine($keys, $values);
+        }
+        array_pop($arr);
+        return $reverse ? array_reverse($arr): $arr;
+    }
+
+    private function checkFile() {
+        if (!file_exists($this->log_file)) {
+            fclose(fopen($this->log_file, 'w'));
+        }
+        if (!is_writeable($this->log_file)) {
+            return false;
+        }
+        return true;
     }
 
     protected function getIp()

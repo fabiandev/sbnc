@@ -123,7 +123,7 @@ class Content extends Module implements ModuleInterface
                 $err = str_replace('%max%', $this->options['max_links']['max'], $this->errors['max_links']);
                 Sbnc::addError($err);
 
-                $log = 'Maximum of ' . $this->options['max_links']['max'] . ' links reached' . $_SERVER['HTTP_REFERER'];
+                $log = 'Maximum of ' . $this->options['max_links']['max'] . ' links reached.';
                 Sbnc::log('spam-content', $log);
             }
         }
@@ -157,7 +157,7 @@ class Content extends Module implements ModuleInterface
                     $this->errors['spam_words']
                 );
                 Sbnc::addError($err);
-                $log = 'More than ' . $this->options['spam_words']['max'] . ' spam_words found: ' . $words;
+                $log = 'More than ' . $this->options['spam_words']['max'] . ' spam words found: ' . $words;
                 Sbnc::log('spam-content', $log);
             }
         }

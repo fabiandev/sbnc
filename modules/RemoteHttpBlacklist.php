@@ -61,14 +61,14 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
      */
     private $errors = [
         'ip' => 'Your IP seems modified!',
-        'spammer' => 'Spammer detected, that was last seen %days% day(s) ago, with around %num% messages per day, of type: %type%'
+        'spammer' => '%type% detected, last seen %days% day(s) ago, with around %num% messages per day.'
     ];
 
     ######################################################################################
     ######################################################################################
 
 
-    private $ip; // 195.211.155.157
+    private $ip; // tests: http://www.projecthoneypot.org/httpbl_api.php e.g. 127.1.1.3
     private $flash;
     private $cached = false;
 
@@ -170,7 +170,7 @@ class RemoteHttpBlacklist extends Module implements ModuleInterface
         Sbnc::addError($err);
 
         if ($this->cached) $this->flash->flash('httpBL', $this->ip, $data);
-        Sbnc::util('LogMessages')->log('spam-http-blacklist', ['active ' . $days . ' day(s) ago', $num . ' messages/day', $type]);
+        Sbnc::log('spam-http-blacklist', $type . ', ' . 'active ' . $days . ' day(s) ago' . ', ' . $num . ' messages/day');
     }
 
     protected function get_ip()

@@ -2,7 +2,6 @@
 error_reporting(E_ALL); // remove this line in production
 ini_set('display_errors', 'On'); // remove this line in production
 
-
 require 'Sbnc.php';
 use sbnc\Sbnc;
 
@@ -74,6 +73,12 @@ Sbnc::start($my_action); // or simply call Sbnc::start();
 <?php
 print_r($_SESSION);
 //unset($_SESSION['sbnc']);
+?>
+</pre>
+<br><br>
+<pre>
+<?php
+print_r(Sbnc::getLog());
 ?>
 </pre>
 </body>
