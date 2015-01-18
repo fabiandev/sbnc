@@ -64,7 +64,7 @@ class Content extends Module implements ModuleInterface
      * @var array Error messages
      */
     private $errors = [
-        'max_links' => 'A maximum of %max% urls (http://, &lt;a&gt;, &#91;url&#93;) are allowed on the entire form.',
+        'max_links' => 'A maximum of %max% urls are allowed on the entire form.',
         'mail_words' => 'Mail injection detected. Do not use these words: bcc:, cc:, multipart, [url, Content-Type',
         'spam_words' => 'A maximum of %max% blacklisted matches are allowed, %matches% used: %words%'
     ];
@@ -119,7 +119,7 @@ class Content extends Module implements ModuleInterface
         $request = implode(Sbnc::request());
 
         if (in_array('max_links', $this->use)) {
-            if (preg_match_all("#<a|http:|\[url=|\[/url\]#i", $request, $out) > $this->options['max_links']['max']) {
+            if (preg_match_all("#http:#i", $request, $out) > $this->options['max_links']['max']) {
                 $err = str_replace('%max%', $this->options['max_links']['max'], $this->errors['max_links']);
                 Sbnc::addError($err);
 

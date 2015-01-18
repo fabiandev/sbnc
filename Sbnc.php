@@ -76,7 +76,6 @@ class Sbnc
      */
     private static $options = [
         'prefix' => 'random',
-        'javascript' => true,
         'html5' => true
     ];
 
