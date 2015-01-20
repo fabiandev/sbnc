@@ -2,7 +2,6 @@
 namespace sbnc\modules;
 
 use sbnc\Sbnc;
-use sbnc\utils\FlashMessages;
 
 /**
  * Class RemoteHttpBlacklist
