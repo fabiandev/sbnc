@@ -4,9 +4,9 @@ namespace sbnc\modules;
 use sbnc\Sbnc;
 
 /**
- * Class Time
+ * Class Csrf
  *
- * Checks for too fast or too late form submits
+ * Protects against Cross Site Request Forgery
  *
  * @package sbnc\modules
  */
@@ -23,8 +23,6 @@ class Csrf extends Module implements ModuleInterface
      * @var bool Enable or disable module
      */
     protected $enabled = true;
-
-
 
     /**
      * Set your custom error messages
@@ -52,7 +50,7 @@ class Csrf extends Module implements ModuleInterface
 
     public function check()
     {
-        if (!$this->flash->exists('csrf', 'token')) {
+        if (!$this->flash->exists('csrf', 'token') || !Sbnc::request('csrf')) {
             Sbnc::addError($this->errors['none']);
             Sbnc::log('spam-csrf', $this->errors['none']);
         } elseif (strcmp($this->flash->get('csrf', 'token'), Sbnc::request('csrf')) !== 0) {
