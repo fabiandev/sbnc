@@ -229,6 +229,24 @@ class Core
         }
     }
 
+    ############################################
+    #######    RESERVED METHOD NAMES!    #######
+    ############################################
+                                         #######
+    private function errors() {}         #######
+    private function request() {}        #######
+    private function field() {}          #######
+    private function fields() {}         #######
+    private function option() {}         #######
+    private function options() {}        #######
+    private function data() {}           #######
+    private function module() {}         #######
+    private function addon() {}          #######
+    private function util() {}           #######
+                                         #######
+    ############################################
+    ############################################
+
     /**
      * Logs something to the log file
      *
