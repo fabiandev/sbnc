@@ -1,10 +1,20 @@
 <?php
-namespace sbnc\modules;
+namespace sbnc\core;
 
-abstract class Module
+abstract class Component
 {
 
     protected $enabled = false;
+
+    public function enable()
+    {
+        $this->enabled = true;
+    }
+
+    public function disable()
+    {
+        $this->enabled = false;
+    }
 
     public function isEnabled()
     {

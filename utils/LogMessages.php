@@ -2,6 +2,7 @@
 namespace sbnc\utils;
 
 use sbnc\Sbnc;
+use sbnc\core\Util;
 
 /**
  * Class LogMessages

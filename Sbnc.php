@@ -174,7 +174,7 @@ class Sbnc
 
             self::$initialized = true;
             require_once __DIR__ . '/loader.php';
-            self::$core = new Core([
+            self::$core = new core\Core([
                 'modules' => self::$modules,
                 'addons' => self::$addons,
                 'utils' => self::$utils,

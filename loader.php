@@ -7,9 +7,9 @@ spl_autoload_register(function ($class) {
     $count = count($split);
     $path = '';
     for ($i = 0; $i < $count; $i++) {
-        if ($i == 0) continue;
+        if ($i == 0 && $split[$i] == 'sbnc') continue;
         $path .= $split[$i] . '/';
     }
     $path = trim($path, '/') . '.php';
-    require_once $path;
+    require_once __DIR__ . '/' . $path;
 });

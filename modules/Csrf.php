@@ -2,6 +2,7 @@
 namespace sbnc\modules;
 
 use sbnc\Sbnc;
+use sbnc\core\Module;
 
 /**
  * Class Csrf
@@ -44,7 +45,7 @@ class Csrf extends Module implements ModuleInterface
         if (Sbnc::utilExists('FlashMessages')) {
             $this->flash = Sbnc::getUtil('FlashMessages');
         } else {
-            $this->enabled = false;
+            $this->disable();
         }
     }
 

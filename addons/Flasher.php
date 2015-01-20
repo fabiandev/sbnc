@@ -2,6 +2,7 @@
 namespace sbnc\addons;
 
 use sbnc\Sbnc;
+use sbnc\core\Addon;
 
 /**
  * Class Flasher
@@ -54,7 +55,7 @@ class Flasher extends Addon implements AddonInterface
             $this->enabled = Sbnc::util('FlashMessages')->isEnabled();
             $this->flash = Sbnc::util('FlashMessages');
         } else {
-            $this->enabled = false;
+            $this->disable();
         }
     }
 

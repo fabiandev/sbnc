@@ -1,5 +1,7 @@
 <?php
-namespace sbnc;
+namespace sbnc\core;
+
+use sbnc\Sbnc;
 
 class Core
 {
@@ -308,7 +310,7 @@ class Core
     {
         self::$components[$name] = array_fill_keys(self::$components[$name], null);
         foreach (self::$components[$name] as $key => $value) {
-            $class = __NAMESPACE__ . '\\' . $name . '\\' . $key;
+            $class = 'sbnc\\' . $name . '\\' . $key;
             try {
                 self::$components[$name][$key] = new $class();
             } catch (\Exception $e) {

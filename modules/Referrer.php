@@ -2,6 +2,7 @@
 namespace sbnc\modules;
 
 use sbnc\Sbnc;
+use sbnc\core\Module;
 
 /**
  * Class Referrer
