@@ -46,8 +46,6 @@ class Referrer extends Module implements ModuleInterface
 
     public function check()
     {
-        if (!$this->isEnabled()) return;
-
         if ((isset($_SERVER['HTTP_REFERER']) && !stristr($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']))) {
             Sbnc::addError($this->errors['error']);
             Sbnc::log('spam-referrer', 'HTTP Referrer was different from Host: ' . $_SERVER['HTTP_REFERER']);

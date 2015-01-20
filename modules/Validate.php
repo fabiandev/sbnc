@@ -107,8 +107,6 @@ class Validate extends Module implements ModuleInterface
 
     public function check()
     {
-        if (!$this->isEnabled()) return;
-
         foreach ($this->validations as $key => $value) {
             foreach ($value as $validator) {
                 $val = Sbnc::request($key);

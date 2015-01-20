@@ -38,7 +38,8 @@ class Sbnc
         'Content',
         'Validate',
         'RemoteHttpBlacklist',
-        'Referrer'
+        'Referrer',
+        'Csrf'
     ];
 
     /**

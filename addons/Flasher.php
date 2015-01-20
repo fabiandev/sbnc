@@ -50,8 +50,6 @@ class Flasher extends Addon implements AddonInterface
 
     protected function init()
     {
-        if (!$this->isEnabled()) return;
-
         if (Sbnc::utilExists('FlashMessages')) {
             $this->enabled = Sbnc::util('FlashMessages')->isEnabled();
             $this->flash = Sbnc::util('FlashMessages');
@@ -62,8 +60,6 @@ class Flasher extends Addon implements AddonInterface
 
     public function __destruct()
     {
-        if (!$this->isEnabled()) return;
-
         $errors = Sbnc::errors();
         if ((!empty($errors) && $this->options['redirect:error'] === false) ||
             (empty($errors) && $this->options['redirect:success'] === false)
@@ -74,8 +70,6 @@ class Flasher extends Addon implements AddonInterface
 
     public function after()
     {
-        if (!$this->isEnabled()) return;
-
         $errors = Sbnc::errors();
 
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {

@@ -104,8 +104,6 @@ class Content extends Module implements ModuleInterface
 
     protected function init()
     {
-        if (!$this->isEnabled()) return;
-
         if (isset($this->options['max_links']['max'])) {
             $this->options['max_links']['max']++;
         }
@@ -114,8 +112,6 @@ class Content extends Module implements ModuleInterface
 
     public function check()
     {
-        if (!$this->isEnabled()) return;
-
         $request = implode(Sbnc::request());
 
         if (in_array('max_links', $this->use)) {

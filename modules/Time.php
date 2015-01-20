@@ -58,15 +58,11 @@ class Time extends Module implements ModuleInterface
 
     protected function init()
     {
-        if (!$this->isEnabled()) return;
-
         Sbnc::addField('time', time());
     }
 
     public function check()
     {
-        if (!$this->isEnabled()) return;
-
         $now = time();
         $time = Sbnc::request('time');
         $diff = $now - $time;

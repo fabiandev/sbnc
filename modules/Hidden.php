@@ -40,15 +40,11 @@ class Hidden extends Module implements ModuleInterface
 
     protected function init()
     {
-        if (!$this->isEnabled()) return;
-
         Sbnc::addField('check', null);
     }
 
     public function check()
     {
-        if (!$this->isEnabled()) return;
-
         $hidden_value = Sbnc::request('check');
         if ($hidden_value === null || strlen(trim($hidden_value)) != 0) {
             $err = str_replace('%field%', 'check', $this->errors['error']);

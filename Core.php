@@ -368,9 +368,9 @@ class Core
      */
     private function before()
     {
-        foreach (self::$components['utils'] as $util) $util->before();
-        foreach (self::$components['modules'] as $module) $module->before();
-        foreach (self::$components['addons'] as $addon) $addon->before();
+        foreach (self::$components['utils'] as $util) if ($util->isEnabled()) $util->before();
+        foreach (self::$components['modules'] as $module) if ($module->isEnabled()) $module->before();
+        foreach (self::$components['addons'] as $addon) if ($addon->isEnabled()) $addon->before();
     }
 
     /**
@@ -378,9 +378,9 @@ class Core
      */
     private function after()
     {
-        foreach (self::$components['utils'] as $util) $util->after();
-        foreach (self::$components['modules'] as $module) $module->after();
-        foreach (self::$components['addons'] as $addon) $addon->after();
+        foreach (self::$components['utils'] as $util) if ($util->isEnabled()) $util->after();
+        foreach (self::$components['modules'] as $module) if ($module->isEnabled()) $module->after();
+        foreach (self::$components['addons'] as $addon) if ($addon->isEnabled()) $addon->after();
     }
 
     /**
