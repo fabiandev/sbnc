@@ -82,17 +82,19 @@ class Sbnc
 
     /**
      * Set the fallback field name for the input field,
-     * that holds the random value, if util FlashMessages is
+     * that holds the random prefix value, if util FlashMessages is
      * not used. Begin it with a letter!
      *
      * @var string
      */
     private static $prefix_field_name = 'a86jg5';
 
+
     ######################################################################################
     ######################### DO NOT CHANGE CODE BELOW THIS LINE #########################
     #########################   UNLESS YOU KNOW WHAT YOU DO :)   #########################
     ######################################################################################
+
 
     /**
      * Instance of the sbnc core
@@ -109,17 +111,9 @@ class Sbnc
     private static $initialized = false;
 
     // do not allow to create an instance of sbnc
-    private function __construct()
-    {
-    }
-
-    private function __destruct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
+    private function __construct() {}
+    private function __destruct() {}
+    private function __clone() {}
 
     /*
      * Catch all static calls and let the core handle the request
