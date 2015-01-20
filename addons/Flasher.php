@@ -11,7 +11,7 @@ use sbnc\core\Addon;
  *
  * @package sbnc\addons
  */
-class Flasher extends Addon implements AddonInterface
+class Flasher extends Addon
 {
 
     ######################################################################################

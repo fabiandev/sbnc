@@ -12,7 +12,7 @@ use sbnc\core\Module;
  *
  * @package sbnc\modules
  */
-class Referrer extends Module implements ModuleInterface
+class Referrer extends Module
 {
 
     ######################################################################################

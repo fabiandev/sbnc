@@ -11,7 +11,7 @@ use sbnc\core\Module;
  *
  * @package sbnc\modules
  */
-class Content extends Module implements ModuleInterface
+class Content extends Module
 {
 
     ######################################################################################

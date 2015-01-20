@@ -11,7 +11,7 @@ use sbnc\core\Util;
  *
  * @package sbnc\utils
  */
-class LogMessages extends Util implements UtilInterface
+class LogMessages extends Util
 {
 
     ######################################################################################

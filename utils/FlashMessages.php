@@ -11,7 +11,7 @@ use sbnc\core\Util;
  *
  * @package sbnc\utils
  */
-class FlashMessages extends Util implements UtilInterface
+class FlashMessages extends Util
 {
 
     ######################################################################################

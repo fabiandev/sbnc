@@ -11,7 +11,7 @@ use sbnc\core\Module;
  *
  * @package sbnc\modules
  */
-class Hidden extends Module implements ModuleInterface
+class Hidden extends Module
 {
 
     ######################################################################################

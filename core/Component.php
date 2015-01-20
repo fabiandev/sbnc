@@ -1,7 +1,7 @@
 <?php
 namespace sbnc\core;
 
-abstract class Component
+abstract class Component implements ComponentInterface
 {
 
     protected $enabled = false;

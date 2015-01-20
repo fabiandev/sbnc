@@ -11,7 +11,7 @@ use sbnc\core\Module;
  *
  * @package sbnc\modules
  */
-class Csrf extends Module implements ModuleInterface
+class Csrf extends Module
 {
 
     ######################################################################################

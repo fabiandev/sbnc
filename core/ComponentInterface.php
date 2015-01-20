@@ -1,10 +1,14 @@
 <?php
-namespace sbnc\utils;
+namespace sbnc\core;
 
-Interface UtilInterface
+Interface ComponentInterface
 {
 
     public function __construct();
+
+    public function enable();
+
+    public function disable();
 
     public function isEnabled();
 

@@ -12,7 +12,7 @@ use sbnc\core\Module;
  *
  * @package sbnc\modules
  */
-class Gestures extends Module implements ModuleInterface
+class Gestures extends Module
 {
 
     ######################################################################################

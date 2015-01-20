@@ -11,7 +11,7 @@ use sbnc\core\Module;
  *
  * @package sbnc\modules
  */
-class Time extends Module implements ModuleInterface
+class Time extends Module
 {
 
     ######################################################################################

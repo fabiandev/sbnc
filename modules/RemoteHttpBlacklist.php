@@ -13,7 +13,7 @@ use sbnc\core\Module;
  *
  * @package sbnc\modules
  */
-class RemoteHttpBlacklist extends Module implements ModuleInterface
+class RemoteHttpBlacklist extends Module
 {
 
     ######################################################################################

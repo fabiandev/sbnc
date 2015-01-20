@@ -4,7 +4,7 @@ namespace sbnc\modules;
 use sbnc\Sbnc;
 use sbnc\core\Module;
 
-class Validate extends Module implements ModuleInterface
+class Validate extends Module
 {
 
     ######################################################################################
