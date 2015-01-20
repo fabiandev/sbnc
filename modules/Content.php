@@ -103,7 +103,7 @@ class Content extends Module
     ######################################################################################
 
 
-    protected function init()
+    public function init()
     {
         if (isset($this->options['max_links']['max'])) {
             $this->options['max_links']['max']++;

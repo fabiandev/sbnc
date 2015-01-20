@@ -14,6 +14,8 @@ Interface ComponentInterface
 
     public function isDisabled();
 
+    public function init();
+
     public function before();
 
     public function after();

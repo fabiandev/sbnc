@@ -72,7 +72,7 @@ class RemoteHttpBlacklist extends Module
     private $flash;
     private $cached = false;
 
-    protected function init()
+    public function init()
     {
         if (empty($this->api_key) && !empty($this->api_key_file)) {
             if (!is_readable($this->api_key_file)) return;

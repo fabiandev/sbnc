@@ -49,7 +49,7 @@ class Flasher extends Addon
 
     private $flash;
 
-    protected function init()
+    public function init()
     {
         if (Sbnc::utilExists('FlashMessages')) {
             $this->enabled = Sbnc::util('FlashMessages')->isEnabled();

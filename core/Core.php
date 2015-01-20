@@ -330,7 +330,8 @@ class Core
         foreach (self::$components[$name] as $key => $value) {
             $class = 'sbnc\\' . $name . '\\' . $key;
             try {
-                self::$components[$name][$key] = new $class();
+                $c = self::$components[$name][$key] = new $class();
+                $c->init();
             } catch (\Exception $e) {
                 Sbnc::printException($e);
             }
@@ -468,7 +469,7 @@ class Core
         return $this->isInvalid();
     }
 
-    protected function submitted()
+    public function submitted()
     {
         if ($this->utilExists('FlashMessages')) {
             $flash = $this->getUtil('FlashMessages');
@@ -486,7 +487,7 @@ class Core
      * @param string $addon Addon name
      * @return bool True if addon exists
      */
-    protected function addonExists($addon, $check_enabled = true)
+    public function addonExists($addon, $check_enabled = true)
     {
         if (array_key_exists($addon, self::$components['addons'])) {
             if ($check_enabled) {
@@ -507,7 +508,7 @@ class Core
      * @param string $module Module name
      * @return bool True if module exists
      */
-    protected function moduleExists($module, $check_enabled = true)
+    public function moduleExists($module, $check_enabled = true)
     {
         if (array_key_exists($module, self::$components['modules'])) {
             if ($check_enabled) {
@@ -528,7 +529,7 @@ class Core
      * @param string $util Util name
      * @return bool True if util exists
      */
-    protected function utilExists($util, $check_enabled = true)
+    public function utilExists($util, $check_enabled = true)
     {
         if (array_key_exists($util, self::$components['utils'])) {
             if ($check_enabled) {

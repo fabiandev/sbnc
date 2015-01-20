@@ -39,12 +39,6 @@ class Referrer extends Module
     ######################################################################################
 
 
-    protected function init()
-    {
-
-    }
-
-
     public function check()
     {
         if ((isset($_SERVER['HTTP_REFERER']) && !stristr($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']))) {

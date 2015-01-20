@@ -6,6 +6,11 @@ abstract class Component implements ComponentInterface
 
     protected $enabled = false;
 
+    public function __construct()
+    {
+
+    }
+
     public function enable()
     {
         $this->enabled = true;
@@ -26,9 +31,9 @@ abstract class Component implements ComponentInterface
         return !$this->isEnabled();
     }
 
-    public function __construct()
+    public function init()
     {
-        $this->init();
+
     }
 
     public function before()

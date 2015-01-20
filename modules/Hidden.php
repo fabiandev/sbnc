@@ -39,7 +39,7 @@ class Hidden extends Module
     ######################################################################################
 
 
-    protected function init()
+    public function init()
     {
         Sbnc::addField('check', null);
     }

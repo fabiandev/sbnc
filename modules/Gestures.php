@@ -52,7 +52,7 @@ class Gestures extends Module
     ######################################################################################
 
 
-    protected function init()
+    public function init()
     {
         Sbnc::addField('mouse', null);
         Sbnc::addField('keyboard', null);

@@ -36,11 +36,6 @@ class LogMessages extends Util
     #######################################################################################
 
 
-    protected function init()
-    {
-
-    }
-
     public function log($type, $data)
     {
         if (!$this->isEnabled()) return;

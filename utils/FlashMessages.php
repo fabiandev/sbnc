@@ -37,7 +37,7 @@ class FlashMessages extends Util
 
     public $cache = [];
 
-    protected function init()
+    public function init()
     {
         if (!$this->isEnabled()) return;
         if (session_status() == PHP_SESSION_DISABLED) $nosess = true;

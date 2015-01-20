@@ -57,7 +57,7 @@ class Time extends Module
     ######################################################################################
 
 
-    protected function init()
+    public function init()
     {
         Sbnc::addField('time', time());
     }

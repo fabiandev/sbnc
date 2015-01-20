@@ -40,7 +40,7 @@ class Csrf extends Module
 
     private $flash;
 
-    protected function init()
+    public function init()
     {
         if (Sbnc::utilExists('FlashMessages')) {
             $this->flash = Sbnc::getUtil('FlashMessages');

@@ -101,7 +101,7 @@ class Validate extends Module
     ######################################################################################
 
 
-    protected function init()
+    public function init()
     {
 
     }
