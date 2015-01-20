@@ -67,9 +67,6 @@ class Sbnc
      * - prefix
      *      set to random to generate a form field prefix on every request.
      *
-     * - javascript
-     *      set to false if you don't want to use any javascript
-     *
      * -html5
      *      set to false if you don't use the html5 doctype
      *
