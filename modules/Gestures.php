@@ -57,7 +57,7 @@ class Gestures extends Module
         Sbnc::addField('mouse', null);
         Sbnc::addField('keyboard', null);
         Sbnc::addField('js', null);
-        Sbnc::addJavascript($this->get_js());
+        Sbnc::addJavascript($this->getJs());
     }
 
     public function check()
@@ -88,7 +88,7 @@ class Gestures extends Module
         }
     }
 
-    protected function get_js()
+    protected function getJs()
     {
         $prefix = Sbnc::getCurrentPrefix();
         $keyboard_field = $prefix . 'keyboard';
