@@ -90,10 +90,9 @@ class Gestures extends Module
 
     protected function getJs()
     {
-        $prefix = Sbnc::getCurrentPrefix();
-        $keyboard_field = $prefix . 'keyboard';
-        $mouse_field = $prefix . 'mouse';
-        $js_field = $prefix . 'js';
+        $keyboard_field = Sbnc::getFieldName('keyboard');
+        $mouse_field = Sbnc::getFieldName('mouse');
+        $js_field = Sbnc::getFieldName('js');
 
         $js = 'sbnc.gestures = (function() { var init, usedKeyboard, usedMouse;';
         $js .= 'var keyboardField, mouseField, jsField;';

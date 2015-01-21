@@ -27,6 +27,14 @@ class Sbnc
     ######################################################################################
 
     /**
+     * CHANGE THIS VALUE ANF BEGIN IT WITH A LETTER!
+     *
+     * @var string
+     */
+    private static $prefix_field_name = 'kjb7A3f';
+
+
+    /**
      * Defined modules will be loaded
      *
      * @var array Modules
@@ -77,15 +85,6 @@ class Sbnc
         'html5' => true
     ];
 
-    /**
-     * Set the fallback field name for the input field,
-     * that holds the random prefix value, if util FlashMessages is
-     * not used. Begin it with a letter!
-     *
-     * @var string
-     */
-    private static $prefix_field_name = 'a86jg5';
-
 
     ######################################################################################
     ######################### DO NOT CHANGE CODE BELOW THIS LINE #########################
@@ -106,6 +105,7 @@ class Sbnc
      * @var bool Initialization status
      */
     private static $initialized = false;
+
 
     // do not allow to create an instance of sbnc
     private function __construct() {}
@@ -158,12 +158,17 @@ class Sbnc
     private static function init()
     {
         if (!self::$initialized) {
+
             $prefix_type = self::$options['prefix'];
             $prefix_field = self::$prefix_field_name;
 
-            self::$options['prefix'] = [$prefix_type, $prefix_field];
+            self::$options['prefix'] = [
+                'value' => $prefix_type,
+                'key' => $prefix_field
+            ];
 
             self::$initialized = true;
+
             require_once __DIR__ . '/loader.php';
             self::$core = new core\Core([
                 'modules' => self::$modules,

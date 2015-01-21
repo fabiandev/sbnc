@@ -81,47 +81,39 @@ class Flasher extends Addon
             if (!empty($errors) && $this->options['redirect:error'] !== false) {
                 if (empty($this->options['redirect:error'])) {
                     if (!headers_sent()) {
-                        $this->flash->flash('flasher', 'submitted', true);
-                        header('Location: ' . Sbnc::request('url'));
+                        Sbnc::redirect(Sbnc::request('url'));
                         exit;
                     } else {
                         $this->flash->flush('flasher');
-                        Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
 
                 } else {
-                    $this->flash->flash('flasher', 'submitted', true);
+                    $this->flash->flash('core', 'redirected', true);
                     if (!headers_sent()) {
-                        header('Location: ' . $this->options['redirect:error']);
+                        Sbnc::redirect($this->options['redirect:error']);
                         exit;
                     } else {
                         $this->flash->flush('flasher');
-                        Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
                 }
             } elseif (empty($errors) && $this->options['redirect:success'] !== false) {
                 if (empty($this->options['redirect:success'])) {
                     if (!headers_sent()) {
-                        $this->flash->flash('flasher', 'submitted', true);
-                        header('Location: ' . Sbnc::request('url'));
+                        Sbnc::redirect(Sbnc::request('url'));
                         exit;
                     } else {
                         $this->flash->flush('flasher');
-                        Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
                 } else {
                     if (!headers_sent()) {
-                        $this->flash->flash('flasher', 'submitted', true);
-                        header('Location: ' . $this->options['redirect:success']);
+                        Sbnc::redirect($this->options['redirect:success']);
                         exit;
                     } else {
                         $this->flash->flush('flasher');
-                        Sbnc::printException(new \Exception('Headers have already been sent. Make sure to include sbnc before any other output'));
                     }
                     exit;
                 }
             } else {
-                $this->flash->flash('flasher', 'submitted', true);
                 return;
             }
         }

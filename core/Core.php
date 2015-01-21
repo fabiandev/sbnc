@@ -2,6 +2,7 @@
 namespace sbnc\core;
 
 use sbnc\Sbnc;
+use sbnc\helpers\Helpers;
 
 class Core
 {
@@ -279,32 +280,21 @@ class Core
     {
         $this->initComponents('utils');
 
-        if (strcmp(self::$options['prefix'][0], 'random') === 0) {
-            self::$options['prefix'][0] = chr(rand(97, 122)) . substr(md5(microtime()), rand(0, 26), 4);
+        if (strcmp(self::$options['prefix']['value'], 'random') === 0) {
+            self::$options['prefix']['value'] = Helpers::randomKey(3, 6);
         }
 
-        $flash_enabled = $this->utilExists('FlashMessages');
-        if ($flash_enabled) {
+        if ($this->utilExists('FlashMessages')) {
             $flash = $this->getUtil('FlashMessages');
 
-            $flash->flash('core', 'prefix_fallback', $flash->getSafe('core', 'prefix_current'));
-            $flash->flash('core', 'prefix_current', self::$options['prefix'][0]);
             $flash->flash('core', 'req_type_prev', $flash->getSafe('core', 'req_type'));
-
-            if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
-                $flash->flash('core', 'prefix', self::$options['prefix'][0]);
-                $flash->flash('core', 'req_type', 'get');
-            } else {
-                $flash->flash('core', 'req_type', 'post');
-            }
+            $flash->flash('core', 'req_type', Helpers::requestMethod(true));
         }
 
         $this->initJavascript();
         $this->initFields();
         $this->initComponents('modules');
         $this->initComponents('addons');
-
-        if ($flash_enabled && isset(self::$fields['prefix'])) unset(self::$fields['prefix']);
     }
 
     /**
@@ -312,11 +302,8 @@ class Core
      */
     private function initFields()
     {
-        self::$fields = [
-            'prefix' => &self::$options['prefix'][0],
-            'url' => 'http' . (($_SERVER['SERVER_PORT'] == 443) ? 's://' : '://') .
-                $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
-        ];
+        $this->addField(self::$options['prefix']['key'], self::$options['prefix']['value'], false);
+        $this->addField('url', Helpers::getUrl());
     }
 
     /**
@@ -365,7 +352,7 @@ class Core
     {
         $this->before();
 
-        if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
+        if (!Helpers::isPost()) {
             $this->after();
             return false;
         }
@@ -402,6 +389,10 @@ class Core
         foreach (self::$components['utils'] as $util) if ($util->isEnabled()) $util->after();
         foreach (self::$components['modules'] as $module) if ($module->isEnabled()) $module->after();
         foreach (self::$components['addons'] as $addon) if ($addon->isEnabled()) $addon->after();
+
+        if ($this->utilExists('FlashMessages') && strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
+            $this->getUtil('FlashMessages')->remove('core', 'redirected');
+        }
     }
 
     /**
@@ -413,17 +404,16 @@ class Core
             $flashed = true;
         }
 
-        $prefix = self::$options['prefix'][1];
-
-        $random_prefix = $this->getPrefix();
-
+        $prefix_field = self::$options['prefix']['key'];
+        $random_prefix = $this->getSecretPrefix();
         $random_prefix_length = strlen($random_prefix);
 
         foreach ($_POST as $key => $value) {
-            if (!isset($flashed) && strcmp($key, $prefix) == 0) {
-                self::$fields['prefix'] = $value;
+            $decoded_key = str_rot13($key);
+            if (!isset($flashed) && strcmp($decoded_key, $prefix_field) == 0) {
+                self::$options['prefix']['secret'] = $value;
             } elseif (strcmp(substr($key, 0, $random_prefix_length), $random_prefix) == 0) {
-                self::$request[substr($key, $random_prefix_length)] = $value;
+                self::$request[substr($decoded_key, $random_prefix_length)] = $value;
             } else {
                 self::$request[$key] = $value;
             }
@@ -473,12 +463,52 @@ class Core
     {
         if ($this->utilExists('FlashMessages')) {
             $flash = $this->getUtil('FlashMessages');
-            if ($flash->get('core', 'req_type_prev') == 'post') {
+
+            $prev = $flash->getSafe('core', 'req_type_prev');
+            $curr = $flash->getSafe('core', 'req_type');
+            $re = $flash->get('core', 'redirected');
+
+            if (($prev == 'post' && $re) || $curr == 'post') {
                 return true;
             }
             return false;
         }
-        return strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0;
+        return Helpers::isPost();
+    }
+
+    public function redirect()
+    {
+        if (!headers_sent()) {
+            if ($this->utilExists('FlashMessages')) {
+                $this->getUtil('FlashMessages')->flash('core', 'redirected', true);
+            }
+            header('Location: ' . Sbnc::request('url'));
+            exit;
+        } else {
+            $msg = 'Headers have already been sent. Make sure to include sbnc before any other output';
+            Sbnc::printException(new \Exception($msg));
+        }
+    }
+
+    /**
+     * Checks if a component has been loaded and is enabled
+     *
+     * @param string $component Component name
+     * @return bool True if addon exists
+     */
+    public function componentExists($type, $component, $check_enabled = true)
+    {
+        if (array_key_exists($component, self::$components[$type])) {
+            if ($check_enabled) {
+                if (self::$components[$type][$component]->isEnabled()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -489,17 +519,7 @@ class Core
      */
     public function addonExists($addon, $check_enabled = true)
     {
-        if (array_key_exists($addon, self::$components['addons'])) {
-            if ($check_enabled) {
-                if (self::$components['addons'][$addon]->isEnabled()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+        return $this->componentExists('addons', $addon, $check_enabled);
     }
 
     /**
@@ -510,17 +530,7 @@ class Core
      */
     public function moduleExists($module, $check_enabled = true)
     {
-        if (array_key_exists($module, self::$components['modules'])) {
-            if ($check_enabled) {
-                if (self::$components['modules'][$module]->isEnabled()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+        return $this->componentExists('modules', $module, $check_enabled);
     }
 
     /**
@@ -531,17 +541,21 @@ class Core
      */
     public function utilExists($util, $check_enabled = true)
     {
-        if (array_key_exists($util, self::$components['utils'])) {
-            if ($check_enabled) {
-                if (self::$components['utils'][$util]->isEnabled()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return true;
+        return $this->componentExists('utils', $util, $check_enabled);
+    }
+
+    /**
+     * Returns loaded component instance by name and type
+     *
+     * @param string $addon Component name
+     * @return mixed Component instance or null
+     */
+    public function getComponent($type, $component)
+    {
+        if (!isset(self::$components[$type][$component])) {
+            Sbnc::throwException(ucfirst(rtrim($type, 's')) . '"' . $component . '" does not exist');
         }
-        return false;
+        return self::$components[$type][$component];
     }
 
     /**
@@ -552,10 +566,7 @@ class Core
      */
     public function getAddon($addon)
     {
-        if (!isset(self::$components['addons'][$addon])) {
-            Sbnc::throwException('Addon "' . $addon . '" does not exist');
-        }
-        return self::$components['addons'][$addon];
+        return $this->getComponent('addons', $addon);
     }
 
     /**
@@ -566,10 +577,7 @@ class Core
      */
     public function getModule($module)
     {
-        if (!isset(self::$components['modules'][$module])) {
-            Sbnc::throwException('Module "' . $module . '" does not exist');
-        }
-        return self::$components['modules'][$module];
+        return $this->getComponent('modules', $module);
     }
 
     /**
@@ -580,47 +588,30 @@ class Core
      */
     public function getUtil($util)
     {
-        if (!isset(self::$components['utils'][$util])) {
-            Sbnc::throwException('Util "' . $util . '" does not exist');
-        }
-        return self::$components['utils'][$util];
+        return $this->getComponent('utils', $util);
     }
 
     /**
-     * @return string Return correct prefix to use to access forms
+     * Generates field name from string that would be
+     * used in the form by adding it via addField()
+     *
+     * @return string Used field name
      */
-    public function getPrefix()
+    public function getFieldName($name)
     {
-        if ($this->utilExists('FlashMessages')) {
-            $flash = $this->getUtil('FlashMessages');
-
-            $req_type = $flash->getSafe('core', 'req_type');
-            $req_type_prev = $flash->getSafe('core', 'req_type_prev');
-
-            if ($req_type == 'post' && ($req_type == $req_type_prev)) {
-                return $flash->getSafe('core', 'prefix_fallback');
-            } else {
-                return $this->getSecretPrefix();
-            }
-        }
-        return $this->getSecretPrefix();
+        return $this->getCurrentPrefix() . str_rot13($name);
     }
-
 
     /**
      * @return string Prefix from previous request
      */
     public function getSecretPrefix()
     {
-        if ($this->utilExists('FlashMessages')) {
-            $prefix = $this->getUtil('FlashMessages')->getSafe('core', 'prefix');
-            return $prefix;
-        } else {
-            if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
-                return $_POST[self::$options['prefix'][1]];
-            }
+        if (Helpers::isPost()) {
+            return $_POST[str_rot13(self::$options['prefix']['key'])];
         }
-        return self::$options['prefix'][0];
+
+        return null;
     }
 
     /**
@@ -628,15 +619,15 @@ class Core
      */
     public function getCurrentPrefix()
     {
-        if ($this->utilExists('FlashMessages')) {
-            $prefix = $this->getUtil('FlashMessages')->getSafe('core', 'prefix_current');
-            return $prefix;
-        } else {
-            if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') === 0) {
-                return $_POST[self::$options['prefix'][1]];
-            }
-        }
-        return self::$options['prefix'][0];
+        return self::$options['prefix']['value'];
+    }
+
+    /**
+     * @return string Return correct prefix to use to access forms
+     */
+    public function getCurrentPrefixKey()
+    {
+        return self::$options['prefix']['key'];
     }
 
     /**
@@ -682,9 +673,10 @@ class Core
         return reset($errors);
     }
 
-    public function getValue($name, $nl2br = false, $safe = false)
+    public function getValue($name, $nl2br = false)
     {
-        return $this->filter($name, $nl2br, $safe);
+        $value = $this->getRequest($name);
+        return Helpers::filter($value, $nl2br);
     }
 
     /**
@@ -699,8 +691,12 @@ class Core
 
         foreach (self::$fields as $key => $value) {
             $val = $value !== null ? $value : '';
-            $id = strcmp($key, 'prefix') !== 0 ? self::$options['prefix'][0] . $key : self::$options['prefix'][1];
-            $html .= '<input type="text" id="' . $id . '" name="' . $id . '" value="' . $val . '" style="display:none" ' . $tag_end . '>' . "\n";
+            $id = $key;
+
+            $html .= '<input type="text" id="' . $id;
+            $html .= '" name="' . $id . '" value="';
+            $html .= $val . '" style="display:none" ';
+            $html .= $tag_end . '>' . "\n";
         }
 
         return $html;
@@ -739,9 +735,11 @@ class Core
      * @param string $name Name of input field
      * @param string $value Default value
      */
-    public function addField($name, $value)
+    public function addField($name, $value, $prefix = true)
     {
-        self::$fields[$name] = $value;
+        $val = str_rot13($name);
+        $key = $prefix ? $this->getCurrentPrefix() . $val : $val;
+        self::$fields[$key] = $value;
     }
 
     /**
@@ -830,35 +828,6 @@ class Core
     public function printJavascript()
     {
         echo $this->getJavascript();
-    }
-
-    /**
-     * Checks if value is empty
-     *
-     * @param string $value Value to check
-     * @return bool True if value is empty
-     */
-    protected function isEmpty($value)
-    {
-        return (strlen(trim($value)) == 0);
-    }
-
-    /**
-     * Filters a request by name so it's safe to print it in a html page.
-     * Optionally converts line breaks to <br>
-     *
-     * @param string $key Request field name
-     * @param bool $nl2br Convert line breaks to HTML <br>
-     * @return string Filtered value
-     */
-    protected function filter($key, $nl2br = false)
-    {
-        $value = $this->getRequest($key);
-        if ($nl2br) {
-            return !$this->isEmpty($value) ? nl2br(htmlspecialchars($value, ENT_QUOTES)) : '';
-        } else {
-            return !$this->isEmpty($value) ? htmlspecialchars($value, ENT_QUOTES) : '';
-        }
     }
 
 }
