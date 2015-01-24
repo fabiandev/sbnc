@@ -51,7 +51,7 @@ Sbnc::start($my_action); // or simply call Sbnc::start();
     <?php if (Sbnc::numErrors() < 1) echo 'No errors'; ?>
 </p>
 
-<form action="example.php" method="post">
+<form action="example.php" method="post" novalidate>
     <fieldset>
         <legend>Data:</legend>
         <label for="name">Name:</label>
