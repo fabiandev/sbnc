@@ -72,7 +72,7 @@ class Core
 
     public function __destruct()
     {
-        if (ob_get_level() > 0) ob_flush();
+        // if (ob_get_level() > 0) ob_flush();
     }
 
     /**
