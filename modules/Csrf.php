@@ -54,7 +54,7 @@ class Csrf extends Module
         if (!$this->flash->exists('csrf', 'token') || !Sbnc::request('csrf')) {
             Sbnc::addError($this->errors['none']);
             Sbnc::log('spam-csrf', $this->errors['none']);
-        } elseif (strcmp($this->flash->get('csrf', 'token'), Sbnc::request('csrf')) !== 0) {
+        } elseif ($this->flash->get('csrf', 'token') !== Sbnc::request('csrf')) {
             Sbnc::addError($this->errors['invalid']);
             Sbnc::log('spam-csrf', $this->errors['invalid']);
         }
