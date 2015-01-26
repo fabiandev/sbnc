@@ -199,8 +199,11 @@ class Core
                 }
                 return null;
             case 'module':
+            case 'modules':
             case 'addon':
+            case 'addons':
             case 'util':
+            case 'utils':
                 if (empty($params)) {
                     if (isset(self::$components[$name . 's'])) {
                         return self::$components[$name . 's'];
