@@ -34,7 +34,7 @@ class Helpers
 
     public static function isEmpty($value)
     {
-        return (strlen(trim($value)) == 0);
+        return $value === null || (strlen(trim($value)) == 0);
     }
 
     public static function filter($value, $nl2br = false)
