@@ -1,8 +1,6 @@
 <?php
 namespace sbnc\helpers;
 
-use sbnc\Sbnc;
-
 /**
  * Class Helpers
  *
