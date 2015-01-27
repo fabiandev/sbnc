@@ -3,6 +3,7 @@ namespace sbnc\modules;
 
 use sbnc\Sbnc;
 use sbnc\core\Module;
+use sbnc\helpers\Helpers;
 
 /**
  * Class Hidden
@@ -47,7 +48,7 @@ class Hidden extends Module
     public function check()
     {
         $hidden_value = Sbnc::request('check');
-        if (Helpers::isEmpty($hidden_value)) {
+        if (!Helpers::isEmpty($hidden_value)) {
             $err = str_replace('%field%', 'check', $this->errors['error']);
             Sbnc::addError($err);
             Sbnc::log('spam-hidden', $err);
