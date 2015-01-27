@@ -553,10 +553,11 @@ class Core
      * @param string $addon Component name
      * @return mixed Component instance or null
      */
-    public function getComponent($type, $component)
+    public function getComponent($type, $component, $check_enabled = true)
     {
-        if (!isset(self::$components[$type][$component])) {
-            Sbnc::throwException(ucfirst(rtrim($type, 's')) . '"' . $component . '" does not exist');
+        if (!$this->componentExists($type, $component, $check_enabled)) {
+            return null;
+            // Sbnc::throwException(ucfirst(rtrim($type, 's')) . '"' . $component . '" does not exist');
         }
         return self::$components[$type][$component];
     }
@@ -567,9 +568,9 @@ class Core
      * @param string $addon Addon name
      * @return mixed Addon instance or null
      */
-    public function getAddon($addon)
+    public function getAddon($addon, $check_enabled = true)
     {
-        return $this->getComponent('addons', $addon);
+        return $this->getComponent('addons', $addon, $check_enabled);
     }
 
     /**
@@ -578,9 +579,9 @@ class Core
      * @param string $module Module name
      * @return mixed Module instance or null
      */
-    public function getModule($module)
+    public function getModule($module, $check_enabled = true)
     {
-        return $this->getComponent('modules', $module);
+        return $this->getComponent('modules', $module, $check_enabled);
     }
 
     /**
@@ -589,9 +590,9 @@ class Core
      * @param string $util Util name
      * @return mixed Util instance or null
      */
-    public function getUtil($util)
+    public function getUtil($util, $check_enabled = true)
     {
-        return $this->getComponent('utils', $util);
+        return $this->getComponent('utils', $util, $check_enabled);
     }
 
     /**

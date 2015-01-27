@@ -60,7 +60,8 @@ class Validate extends Module
     private $errors = [
         'email' => [
             'email' => 'Check your Email Address!',
-            'required' => 'No Email Address given.'
+            'required' => 'No Email Address given.',
+            'no_tags' => 'Tags are not allowed in your email.'
         ],
         'name' => [
             'required' => 'What\'s your name?',

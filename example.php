@@ -26,12 +26,12 @@ Sbnc::start($my_action); // or simply call Sbnc::start();
 
 <p>
     <?php
-    if (Sbnc::isValid()) {
+    if (Sbnc::passed()) {
         echo '<h4 style="color:green">The form is valid.</h4>';
         // you may send an email here if the form was submitted without errors
     }
 
-    if (Sbnc::isInvalid()) {
+    if (Sbnc::failed()) {
         echo '<h4 style="color:red">Errors occured</h4>';
     }
     ?>
