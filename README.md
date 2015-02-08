@@ -3,124 +3,81 @@
 SBNC (Spam Block No Captcha) does what the name already tells you. It blocks spam with no need for captchas.
 [http://fabianweb.net/sbnc](http://fabianweb.net/sbnc)
 
-## How does it work?
+## What's new
 
-	1. Check for mouse movement
-	2. Check for keyboard usage
-	3. Hidden field check
-	4. Check for field manipulation
-	5. Too fast form submit
-	6. Too slow form submit
-	7. HTML-Tags in inputs
-	8. Optional email field check
-	9. HTML5 compatible
-	10. No-JavaScript mode available
+Everything. This version is not compatible with 0.1.x!
 
-## Quick start
+## Requirements
 
-#### Include SBNC class and create object
-This will use the standard options of sbnc.
+PHP 5 >= 5.4.0
+
+## Progress
+
+Nearly finished for a first developer release. v0.2 will replace the master soon and you will find v0.1 in a branch.
+
+## Quickstart
+
+Please note, that the quick start only covers the very basics of sbnc. There is much more to
+know and a lot of settings you may change. This readme will be updated within the next weeks with more
+details.
+
+#### Include the class
+
 ```php
-require 'sbnc.class.php';
-$sbnc = new sbnc();
+require 'Sbnc.php';
+use sbnc\Sbnc;
+
+Sbnc::start();
 ```
 
-#### Fetch form data if submitted
-To make error handling easier you can add your errors to the sbnc error list.
-Form fields with the name "mail" or "email" will be checked for a valid email address.
-```php
-if( $sbnc->checkRequest() ) {
-    // here comes your own validation and you can process your form
-    // you can add errors from your own validation: $sbnc->addError('custom error');
-}
-```
+Be sure to include and start sbnc before any other output has started, as it makes use of sessions and
+header redirects!
 
-#### Add JavaScript
-```php
-<head>
-<?php $sbnc->printHead(); ?>
-</head>
-```
+#### Create a form
 
-#### Add stuff to your form
-This adds sbnc form fields. The novalidate call is not required if you call ```$sbnc->printFields(false);``` (if no html5 doctype you may also remove ```$sbnc->novalidate();```)
-```php
-<form action="index.php" method="post"<?php $sbnc->novalidate(); ?>>
-    // your form fields
-    <?php $sbnc->printFields(); ?>
+```html
+<form action="form.php" method="post">
+    <input type="text" id="name" name="name" value="<?php Sbnc::printValue('name'); ?>">
+    <!-- add any input fields you want -->
+    <?php Sbnc::printFields(); ?>
+    <input type="submit" id="submit" value="Submit">
 </form>
 ```
 
-#### Error Handling
-This fetches every error that occurred. Also errors you added with ```$sbnc->addError('custom error');```
+Create a form and let sbnc pre-fill input fields if errors occurred with ```Sbnc::printValue('name');```
+Don't forget to add the required sbnc fields ```Sbnc::printFields();```
+
+Also make sure the form method is POST and the action points to the same file as the request comes from. 
+The action may point to another page if you do not load the Referrer module.
+
+#### Add JavaScript
+
 ```php
-if( $sbnc->submit() && !empty( $sbnc->errors ) ) {
-    foreach( $sbnc->getErrorMessages() as $error ) {
-        // $error holds the error message
-    }
+Sbnc::printJavascript();
+```
+
+Add JavaScript after the html form. A good place would be just before ```</body>```
+
+#### Check if submit was valid
+
+```php
+if (Sbnc::passed()) {
+    // form was submitted and there were no errors
+}
+
+if (Sbnc::failed()) {
+    // form was submitted, but errors occurred
 }
 ```
 
-#### One more thing...
-Add this default value to your form fields, to refill them if errors occurred.
+Use this checks to know, if the form has been submitted in the previous request and if it's been valid.
+By default sbnc uses flash messages and redirects, so reloading the page won't result in another submit.
+
+#### Display errors
+
 ```php
-<input type="text" name="name" value="<?php echo $sbnc->filter('name'); ?>">
+Sbnc::printErrors();
 ```
 
-
-## Options
-
-You can set every option by calling ```$sbnc->option_<option_name> = $value;```
-
-	- strict
-		true = strict mode; javascript must be enabled (recommended)
-
-	- html5
-		false = not using html5 doctype
-
-	- min
-		integer = minimum seconds to wait until form can be submitted
-
-	- max
-		integer = maximum seconds after form can be submitted
-
-	- gestmode (available with javascript mode enabled)
-		"mouse" = only check for mouse movement (default)
-		"keyboard" = only check for keyboard usage
-		"both" = check for both
-
-	- nojs
-		false = don't use and don't include javascript (not recommended)
-
-	- checkmail
-		true, true   = check for valid email (fields with name "email" or "mail")
-		true, false  = check fields with name "email" or "mail" if not empty
-		false, true  = don't check email
-		false, false = don't check email
-
-## Public Functions:
-
-	- printHead()
-		prints javascript
-	
-	- printFields()
-		adds form fields for sbnc checks
-		
-	- novalidate()
-		disables browser auto-validation when using html5 (required!)
-	
-	- submit()
-		checks if the request method is POST (form submitted)
-		
-	- getError($code)
-		returns message (string) from error code
-		
-	- param($key[, $nl2br])
-		refill form field after errors occurred
-
-## Public Variables:
-
-	- errors (array)
-		error codes that occured during bot check; empty array if no errors
-		
-		
+Prints all errors in an unordered list. Use ```Sbnc::printError();``` to print only one error as single string or
+use getErrors() to get an array with all error messages.

@@ -6,3 +6,6 @@ pids
 .grunt
 .env
 .DS_Store
+*.key.txt
+*.key
+test.php

@@ -1,49 +1,85 @@
 <?php
-require 'sbnc.class.php';
-$sbnc = new sbnc();
+error_reporting(E_ALL); // remove this line in production
+ini_set('display_errors', 'On'); // remove this line in production
 
-if($sbnc->checkRequest()) {
-    // form submitted and no bot spam detected!
-    // here comes your own validation and you can process your form
-    // you can add errors from your own validation like this: $sbnc->addError('custom error');
-}
+require 'Sbnc.php';
+use sbnc\Sbnc;
 
+$my_action = function () {
+    // add your own actions here
+    //
+    // you can use any public sbnc method at this point!
+    //
+    // it's also a good place to use Sbnc::addError('My error message');
+    // if you add some logic on your own
+};
+Sbnc::start($my_action); // or simply call Sbnc::start();
 ?>
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<?php
-    $sbnc->printHead();
-?>
-<title>sbnc - Spam Block No Captcha</title>
+    <title>sbnc example</title>
 </head>
 <body>
-<?php
-if($sbnc->submit() && !empty($sbnc->errors)) {
-    echo '<ul>';
-    foreach($sbnc->getErrorMessages() as $error) {
-        echo "<li>$error</li>";
+
+<h3><a href="http://fabianweb.net/sbnc">sbnc v0.2</a> [<a href="https://github.com/fabianweb/sbnc">github</a>]</h3>
+
+<p>
+    <?php
+    if (Sbnc::passed()) {
+        echo '<h4 style="color:green">The form is valid.</h4>';
+        // you may send an email here if the form was submitted without errors
     }
-    echo '</ul>';
-}
-?>
-<form action="example.php" method="post"<?php $sbnc->novalidate(); ?>>
+
+    if (Sbnc::failed()) {
+        echo '<h4 style="color:red">Errors occured</h4>';
+    }
+    ?>
+</p>
+
+<p>
+    Display All Errors:
+    <?php Sbnc::printErrors(); ?>
+    <?php if (Sbnc::numErrors() < 1) echo 'No errors'; ?>
+
+</p>
+
+<p>
+    Display Single Error:
+    <br><br>
+    <?php Sbnc::printError(); ?>
+    <?php if (Sbnc::numErrors() < 1) echo 'No errors'; ?>
+</p>
+
+<form action="example.php" method="post" novalidate>
     <fieldset>
         <legend>Data:</legend>
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="<?php echo $sbnc->filter('name'); ?>" required><br>
+        <input type="text" id="name" name="name" value="<?php Sbnc::printValue('name'); ?>" required><br>
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<?php echo $sbnc->filter('email'); ?>" required><br>
+        <input type="email" id="email" name="email" value="<?php Sbnc::printValue('email'); ?>" required><br>
     </fieldset>
     <fieldset>
         <legend>Message:</legend>
-        <textarea id="message" name="message" required><?php echo $sbnc->filter('message'); ?></textarea><br>
+        <textarea id="message" name="message" required><?php Sbnc::printValue('message'); ?></textarea><br>
     </fieldset>
-    <?php
-        $sbnc->printFields();
-    ?>
-    <input type="submit" id="send" value="Submit">
+    <?php Sbnc::printFields(); ?>
+    <input type="submit" id="submit" value="Submit">
 </form>
+
+<?php Sbnc::printJavascript(); ?>
+
+<pre>
+<?php
+print_r($_SESSION);
+//unset($_SESSION['sbnc']);
+?>
+</pre>
+<br><br>
+<pre>
+<?php
+print_r(Sbnc::getLog());
+?>
+</pre>
 </body>
 </html>
