@@ -139,7 +139,7 @@ class Core
         }
 
         switch ($name) {
-            case 'errors';
+            case 'errors':
                 if (empty($params)) {
                     if (isset(self::$errors)) {
                         return self::$errors;
@@ -148,12 +148,19 @@ class Core
                     return self::$errors[$first];
                 }
                 return null;
-            case 'request';
+            case 'request':
                 if (empty($params)) {
                     if (isset(self::$request)) {
                         return self::$request;
                     }
-                } elseif (isset(self::$request[$first])) {
+                } elseif (isset(self::$request['_sbnc_'.$first])) {
+                    return self::$request['_sbnc_'.$first];
+                } elseif(isset(self::$request[$first])) {
+                    return self::$request[$first];
+                }
+                return null;
+            case 'requestData':
+                if (isset(self::$request[$first])) {
                     return self::$request[$first];
                 }
                 return null;
@@ -306,7 +313,7 @@ class Core
     private function initFields()
     {
         $this->addField(self::$options['prefix']['key'], self::$options['prefix']['value'], false);
-        $this->addField('url', Helpers::getUrl());
+        $this->addField('redirectUrl', base64_encode(Helpers::getUrl()));
     }
 
     /**
@@ -416,7 +423,7 @@ class Core
             if (!isset($flashed) && strcmp($decoded_key, $prefix_field) == 0) {
                 self::$options['prefix']['secret'] = $value;
             } elseif (strcmp(substr($key, 0, $random_prefix_length), $random_prefix) == 0) {
-                self::$request[substr($decoded_key, $random_prefix_length)] = $value;
+                self::$request['_sbnc_' . substr($decoded_key, $random_prefix_length)] = $value;
             } else {
                 self::$request[$key] = $value;
             }
@@ -485,7 +492,7 @@ class Core
             if ($this->utilExists('FlashMessages')) {
                 $this->getUtil('FlashMessages')->flash('core', 'redirected', true);
             }
-            header('Location: ' . Sbnc::request('url'));
+            header('Location: ' . base64_decode(Sbnc::request('redirectUrl')));
             exit;
         } else {
             $msg = 'Headers have already been sent. Make sure to include sbnc before any other output';

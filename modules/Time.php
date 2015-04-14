@@ -59,13 +59,13 @@ class Time extends Module
 
     public function init()
     {
-        Sbnc::addField('time', time());
+        Sbnc::addField('time', base64_encode(time()));
     }
 
     public function check()
     {
         $now = time();
-        $time = Sbnc::request('time');
+        $time = base64_decode(Sbnc::request('time'));
         $diff = $now - $time;
 
         if (in_array('min', $this->use) && $diff < $this->options['min']) {
