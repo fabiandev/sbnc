@@ -155,6 +155,8 @@ class Core
                     }
                 } elseif (isset(self::$request['_sbnc_'.$first])) {
                     return self::$request['_sbnc_'.$first];
+                } elseif(isset(self::$request[$first])) {
+                    return self::$request[$first];
                 }
                 return null;
             case 'requestData':
