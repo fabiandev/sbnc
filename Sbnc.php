@@ -27,11 +27,11 @@ class Sbnc
     ######################################################################################
 
     /**
-     * CHANGE THIS VALUE AND BEGIN IT WITH A LETTER!
+     * This field name is used, if a session could not be created for storing a random one.
      *
      * @var string
      */
-    private static $prefix_field_name = 'kjb7A3f';
+    private static $fallback_prefix_field_name = 'kjb7A3f';
 
 
     /**
@@ -120,7 +120,10 @@ class Sbnc
      */
     public static function __callStatic($name, $params)
     {
-        self::init();
+        if (!self::$initialized) {
+            self::throwException('Sbnc was not initialized. Did you call Sbnc::start()?');
+        }
+
         try {
             return self::$core->call($name, $params);
         } catch (\Exception $e) {
@@ -152,6 +155,14 @@ class Sbnc
         self::$core->start($action);
     }
 
+    private static function startSession()
+    {
+        if (session_status() == PHP_SESSION_DISABLED) return false;
+        if (session_status() == PHP_SESSION_NONE && headers_sent()) return false;
+        if (session_status() != PHP_SESSION_ACTIVE && !session_start()) return false;
+        return true;
+    }
+
     /**
      * Load class autoloader, create core instance and initialize core
      */
@@ -159,17 +170,25 @@ class Sbnc
     {
         if (!self::$initialized) {
 
+            self::$initialized = true;
+
+            require_once __DIR__ . '/loader.php';
+
             $prefix_type = self::$options['prefix'];
-            $prefix_field = self::$prefix_field_name;
+            $prefix_field = self::$fallback_prefix_field_name;
+
+            if (self::startSession()) {
+                if (!helpers\Helpers::isPost()) {
+                    $_SESSION['sbnc_identifier'] = helpers\Helpers::randomKey(5, 8);
+                }
+                $prefix_field = $_SESSION['sbnc_identifier'];
+            }
 
             self::$options['prefix'] = [
                 'value' => $prefix_type,
                 'key' => $prefix_field
             ];
 
-            self::$initialized = true;
-
-            require_once __DIR__ . '/loader.php';
             self::$core = new core\Core([
                 'modules' => self::$modules,
                 'addons' => self::$addons,
@@ -181,7 +200,7 @@ class Sbnc
     }
 
     /**
-     * Throws and prints an exception
+     * Trigger an error
      *
      * @param $message String for Exception
      */
