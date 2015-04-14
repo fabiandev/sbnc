@@ -27,7 +27,7 @@ class Sbnc
     ######################################################################################
 
     /**
-     * CHANGE THIS VALUE ANF BEGIN IT WITH A LETTER!
+     * CHANGE THIS VALUE AND BEGIN IT WITH A LETTER!
      *
      * @var string
      */
