@@ -5,7 +5,7 @@ namespace sbnc;
 // sbnc. Class must be included before headers have been sent.
 //
 // Simply remove the line below to disable buffering.
-// ob_start();
+ob_start();
 
 /**
  * Class Sbnc
@@ -197,7 +197,7 @@ class Sbnc
      */
     public static function printException(\Exception $e)
     {
-        // if (ob_get_level() > 0) ob_clean();
+        if (ob_get_level() > 0) ob_clean();
         $err = '<h3>Sorry, there was an error (sbnc)!</h3>';
         $err .= '<pre>';
         $err .= '<span style="font-weight:600">' . $e->getMessage() . '</span>';
@@ -206,7 +206,7 @@ class Sbnc
         $err .= $e->getTraceAsString();
         $err .= '</pre>';
         echo $err;
-        // if (ob_get_level() > 0) ob_end_flush();
+        if (ob_get_level() > 0) ob_end_flush();
         exit;
     }
 
