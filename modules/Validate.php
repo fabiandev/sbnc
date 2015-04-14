@@ -111,7 +111,7 @@ class Validate extends Module
     {
         foreach ($this->validations as $key => $value) {
             foreach ($value as $validator) {
-                $val = Sbnc::request($key);
+                $val = Sbnc::requestData($key);
                 if ($val !== null) {
                     if (strcmp($validator, 'required') !== 0 && empty($val)) continue;
                     $data = explode(':', $validator);
