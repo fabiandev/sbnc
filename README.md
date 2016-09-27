@@ -3,7 +3,7 @@
 This is a developer pre-release!
 
 SBNC (Spam Block No Captcha) does what the name already tells you. It blocks spam with no need for captchas.
-[http://fabianweb.net/sbnc](http://fabianweb.net/sbnc) (website not yet updated to v0.2!)
+[https://fabianweb.net/sbnc](https://fabianweb.net/sbnc) 
 
 ## What's new
 
